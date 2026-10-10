@@ -25,8 +25,8 @@ export default async (req: Request) => {
 
     // Dispara para webhook ou Evolution API
     // Se a Evolution API URL estiver configurada:
-    const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://evolution.cloudfy.live';
-    const evolutionApiKey = process.env.EVOLUTION_API_KEY || '4296444B2C3B41198544D7C2C07FA4FE';
+    const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://funnyeagle-evolution.cloudfy.live';
+    const evolutionApiKey = process.env.EVOLUTION_API_KEY || '1E0FE7D2CCFB-4757-B948-F350F94E227F';
     const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agente41menus';
 
     let evolutionResult = null;

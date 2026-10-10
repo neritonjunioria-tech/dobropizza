@@ -360,7 +360,7 @@ export default function Cart({
       text += `🛵 Tempo est. de entrega:\n   ${deliveryTimeEstimate}\n`;
     } else {
       text += `-----------------------------------\n`;
-      text += `⏱️ Tempo est. de prep:\n   ${pickupTimeEstimate}\n`;
+      text += `⏰ Tempo est. de prep:\n   ${pickupTimeEstimate}\n`;
     }
 
     const orderDateObj = new Date();
@@ -426,13 +426,23 @@ export default function Cart({
     }
     text += `-----------------------------------`;
 
-    const encoded = encodeURIComponent(text);
-    const wappUrl = `https://wa.me/351938360931?text=${encoded}`;
+    // Envio automático oficial do resumo para a pizzaria e cliente (impossibilita alteração pelo cliente)
+    fetch('/.netlify/functions/send-order-whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: newOrderId || orderNumber,
+        customerPhone: telefone,
+        message: text
+      })
+    }).catch(err => console.warn('[Cart] Aviso no envio automático WhatsApp:', err));
+
+    const contactText = `Olá! Gostaria de falar sobre o meu pedido #${newOrderId || orderNumber}.`;
+    const contactWappUrl = `https://api.whatsapp.com/send?phone=351938360931&text=${encodeURIComponent(contactText)}`;
 
     trackEvent('purchase', { total_value: total, order_id: newOrderId || orderNumber });
-    window.open(wappUrl, "_blank");
 
-    setWhatsappUrl(wappUrl);
+    setWhatsappUrl(contactWappUrl);
     setIsSuccess(true);
     onClearCart();
   };
@@ -460,9 +470,9 @@ export default function Cart({
             setIsSuccess(false);
             onClose();
           }}
-          className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm transition-all animate-pulse cursor-pointer"
+          className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm transition-all cursor-pointer"
         >
-          📲 Abrir WhatsApp do Pedido
+          💬 Falar com a Pizzaria no WhatsApp
         </a>
         <button
           onClick={() => {
@@ -485,8 +495,8 @@ export default function Cart({
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2.5">
               <Check className="w-6 h-6 text-green-600" />
             </div>
-            <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido Gerado!</h2>
-            <p className="text-gray-500 text-xs mb-1">O seu pedido foi enviado com sucesso.</p>
+            <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} Confirmado!</h2>
+            <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipa.</p>
             {successActionButtons}
           </div>
         </div>
@@ -502,8 +512,8 @@ export default function Cart({
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2.5">
                 <Check className="w-6 h-6 text-green-600" />
               </div>
-              <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido Gerado!</h2>
-              <p className="text-gray-500 text-xs mb-1">O seu pedido foi enviado com sucesso.</p>
+              <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} Confirmado!</h2>
+              <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipa.</p>
               {successActionButtons}
             </div>
           </div>
