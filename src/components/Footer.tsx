@@ -20,7 +20,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-xs text-[#a89284] leading-relaxed pr-2">
-              Forno 420°C, Longa fermentação
+              Forno 420°C. Longa fermentação.
             </p>
           </div>
 
