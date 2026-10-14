@@ -5,7 +5,8 @@ import {
   Clock, Truck, Building2, Key, FileSpreadsheet, 
   Sparkles, Check, CheckCircle2, 
   Sliders, AlertCircle, Trash2, Upload,
-  Shield, CheckCheck, RefreshCw
+  Shield, CheckCheck, RefreshCw,
+  CreditCard, QrCode, Banknote, Instagram, Zap
 } from 'lucide-react';
 
 interface SettingsManagerProps {
@@ -19,7 +20,14 @@ interface SettingsManagerProps {
   onTestSound?: () => void;
 }
 
-type SettingsTab = 'empresa' | 'horarios' | 'impressao' | 'entregas' | 'notificacoes' | 'seguranca';
+type SettingsTab = 'empresa' | 'pagamentos' | 'horarios' | 'impressao' | 'entregas' | 'notificacoes' | 'seguranca';
+
+export interface PaymentMethodsConfig {
+  pix: boolean;
+  dinheiro: boolean;
+  credito: boolean;
+  debito: boolean;
+}
 
 export default function SettingsManager({ 
   onTestPrint, 
@@ -41,16 +49,18 @@ export default function SettingsManager({
 
   // ────────────────── ESTADO: EMPRESA & IDENTIDADE ──────────────────
   const [companyInfo, setCompanyInfo] = useState({ name: "DOBRO Pizzas", nif: '', address: '' });
+  const [instagramUrl, setInstagramUrl] = useState('https://www.instagram.com/dobropizzas/');
   const [savingCompany, setSavingCompany] = useState(false);
 
   useEffect(() => {
     async function loadCompany() {
-      const { data } = await supabase.from('settings').select('key, value').in('key', ['company_name', 'company_nif', 'company_address']);
+      const { data } = await supabase.from('settings').select('key, value').in('key', ['company_name', 'company_nif', 'company_address', 'instagram_url']);
       const info = { name: "DOBRO Pizzas", nif: '', address: '' };
       data?.forEach((row: any) => {
         if (row.key === 'company_name') info.name = row.value;
         if (row.key === 'company_nif') info.nif = row.value;
         if (row.key === 'company_address') info.address = row.value;
+        if (row.key === 'instagram_url' && row.value) setInstagramUrl(row.value);
       });
       setCompanyInfo(info);
     }
@@ -63,10 +73,86 @@ export default function SettingsManager({
       { key: 'company_name', value: companyInfo.name, updated_at: new Date().toISOString() },
       { key: 'company_nif', value: companyInfo.nif, updated_at: new Date().toISOString() },
       { key: 'company_address', value: companyInfo.address, updated_at: new Date().toISOString() },
+      { key: 'instagram_url', value: instagramUrl.trim(), updated_at: new Date().toISOString() },
     ]);
     setSavingCompany(false);
-    showSavedFeedback("Dados da empresa atualizados!");
+    showSavedFeedback("Dados da empresa e Instagram atualizados!");
   };
+
+  // ────────────────── ESTADO: FORMAS DE PAGAMENTO ATIVAS POR DIA ──────────────────
+  const [paymentConfig, setPaymentConfig] = useState<PaymentMethodsConfig>({
+    pix: true,
+    dinheiro: false,
+    credito: false,
+    debito: false
+  });
+  const [savingPayments, setSavingPayments] = useState(false);
+
+  useEffect(() => {
+    async function loadPaymentConfig() {
+      try {
+        const { data } = await supabase
+          .from('settings')
+          .select('value')
+          .eq('key', 'payment_methods_config')
+          .maybeSingle();
+        if (data?.value) {
+          const parsed = JSON.parse(data.value);
+          setPaymentConfig({
+            pix: parsed.pix !== false,
+            dinheiro: Boolean(parsed.dinheiro),
+            credito: Boolean(parsed.credito),
+            debito: Boolean(parsed.debito)
+          });
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar formas de pagamento salvas:', e);
+      }
+    }
+    loadPaymentConfig();
+  }, []);
+
+  const handleSavePayments = async (override?: PaymentMethodsConfig) => {
+    const cfg = override || paymentConfig;
+    if (!cfg.pix && !cfg.dinheiro && !cfg.credito && !cfg.debito) {
+      alert("Pelo menos uma forma de pagamento deve permanecer ativada!");
+      return;
+    }
+    setSavingPayments(true);
+    try {
+      const { error } = await supabase.from('settings').upsert({
+        key: 'payment_methods_config',
+        value: JSON.stringify(cfg),
+        updated_at: new Date().toISOString()
+      });
+      if (error) throw error;
+      showSavedFeedback("Formas de pagamento atualizadas para o dia!");
+    } catch (err: any) {
+      alert("Erro ao salvar formas de pagamento: " + (err?.message || err));
+    } finally {
+      setSavingPayments(false);
+    }
+  };
+
+  const handleTogglePaymentMethod = (key: keyof PaymentMethodsConfig) => {
+    setPaymentConfig(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      return next;
+    });
+  };
+
+  const handleQuickActivateOnlyPix = async () => {
+    const onlyPix: PaymentMethodsConfig = { pix: true, dinheiro: false, credito: false, debito: false };
+    setPaymentConfig(onlyPix);
+    await handleSavePayments(onlyPix);
+  };
+
+  const handleQuickActivateAll = async () => {
+    const all: PaymentMethodsConfig = { pix: true, dinheiro: true, credito: true, debito: true };
+    setPaymentConfig(all);
+    await handleSavePayments(all);
+  };
+
 
   // ────────────────── ESTADO: LOGO COM PREVIEW VISUAL ──────────────────
   const [adminLogoUrl, setAdminLogoUrl] = useState('');
@@ -199,9 +285,19 @@ export default function SettingsManager({
     showSavedFeedback("Configurações de entrega salvas com sucesso!");
   };
 
+  const isOnlyPixActive = paymentConfig.pix && !paymentConfig.dinheiro && !paymentConfig.credito && !paymentConfig.debito;
+  const activeMethodsCount = Object.values(paymentConfig).filter(Boolean).length;
+
   // Categorias do menu lateral de navegação
   const navItems = [
-    { id: 'empresa' as SettingsTab, label: 'Empresa & Marca', icon: Building2, desc: 'Nome, CNPJ, endereço e logo' },
+    { id: 'empresa' as SettingsTab, label: 'Empresa & Marca', icon: Building2, desc: 'Nome, CNPJ, Instagram e logo' },
+    { 
+      id: 'pagamentos' as SettingsTab, 
+      label: 'Formas de Pagamento', 
+      icon: CreditCard, 
+      desc: isOnlyPixActive ? 'Somente Pix Ativo Hoje' : `${activeMethodsCount} formas ativas`,
+      badge: isOnlyPixActive ? 'Apenas Pix' : null
+    },
     { id: 'horarios' as SettingsTab, label: 'Horários de Funcionamento', icon: Clock, desc: 'Turnos e dias operacionais' },
     { id: 'impressao' as SettingsTab, label: 'Impressão Térmica', icon: Printer, desc: 'Auto-impressão e atrasos' },
     { id: 'entregas' as SettingsTab, label: 'Entregas & Prazos', icon: Truck, desc: 'Tempo de espera e frete grátis' },
@@ -255,9 +351,18 @@ export default function SettingsManager({
                 }`}>
                   <Icon size={15} />
                 </div>
-                <div className="min-w-0">
-                  <span className="text-xs font-bold block truncate leading-tight">{item.label}</span>
-                  <span className={`text-[10px] block truncate leading-tight mt-0.5 ${isActive ? 'text-stone-400' : 'text-stone-400'}`}>{item.desc}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-bold block truncate leading-tight">{item.label}</span>
+                    {item.badge && (
+                      <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${
+                        isActive ? 'bg-[#d5af7a] text-[#083d07]' : 'bg-emerald-100 text-emerald-800'
+                      }`}>
+                        {item.badge}
+                      </span>
+                    )}
+                  </div>
+                  <span className={`text-[10px] block truncate leading-tight mt-0.5 ${isActive ? 'text-stone-300' : 'text-stone-400'}`}>{item.desc}</span>
                 </div>
               </button>
             );
@@ -277,7 +382,7 @@ export default function SettingsManager({
                   </div>
                   <div>
                     <h2 className="text-sm font-bold text-stone-900">Empresa & Identidade Visual</h2>
-                    <p className="text-xs text-stone-500">Dados impressos nas comandas térmicas e a logo oficial do painel.</p>
+                    <p className="text-xs text-stone-500">Dados impressos nas comandas térmicas, Instagram e a logo oficial da loja.</p>
                   </div>
                 </div>
 
@@ -354,9 +459,25 @@ export default function SettingsManager({
                         value={companyInfo.address} 
                         onChange={e => setCompanyInfo({...companyInfo, address: e.target.value})} 
                         className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
-                        placeholder="Ex: Rua das Flores, 41"
+                        placeholder="Ex: Rua Quirino Zagonel 500 - São José dos Pinhais"
                       />
                     </div>
+                  </div>
+
+                  {/* Campo de Instagram Dinâmico */}
+                  <div>
+                    <label className="text-xs font-semibold text-stone-700 block mb-1 flex items-center gap-1.5">
+                      <Instagram size={14} className="text-[#083d07]" />
+                      <span>Link do Instagram Oficial</span>
+                    </label>
+                    <input 
+                      type="url" 
+                      value={instagramUrl} 
+                      onChange={e => setInstagramUrl(e.target.value)} 
+                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
+                      placeholder="https://www.instagram.com/dobropizzas/"
+                    />
+                    <p className="text-[11px] text-stone-400 mt-1">Atualiza automaticamente o link e o @ no rodapé do cardápio digital.</p>
                   </div>
                 </div>
 
@@ -367,11 +488,166 @@ export default function SettingsManager({
                     className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
                     <Save size={14} />
-                    <span>{savingCompany ? 'Salvando...' : 'Salvar Dados da Empresa'}</span>
+                    <span>{savingCompany ? 'Salvando...' : 'Salvar Dados & Instagram'}</span>
                   </button>
                 </div>
               </div>
             )}
+
+            {/* ═══════════ FORMAS DE PAGAMENTO ATIVAS POR DIA ═══════════ */}
+            {activeTab === 'pagamentos' && (
+              <div className="p-6 space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-stone-100 flex-wrap gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-[#083d07] text-[#fdfbf7] flex items-center justify-center border border-[#083d07] shadow-2xs">
+                      <CreditCard size={16} />
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-stone-900">Formas de Pagamento Aceitas</h2>
+                      <p className="text-xs text-stone-500">Ligue ou desligue as formas de pagamento disponíveis para o cliente hoje.</p>
+                    </div>
+                  </div>
+
+                  {isOnlyPixActive ? (
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                      Hoje: Somente Pix Ativo
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                      {activeMethodsCount} formas disponíveis
+                    </span>
+                  )}
+                </div>
+
+                {/* Barra de Ações Rápidas */}
+                <div className="bg-[#F7F4EE] p-3.5 rounded-xl border border-[#E8D8D1] flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="text-xs text-[#44210F]">
+                    <span className="font-bold block">Ajuste Rápido do Dia:</span>
+                    <span className="text-[#745240] text-[11px]">Deseja aceitar apenas Pix hoje ou liberar todas?</span>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <button
+                      type="button"
+                      onClick={handleQuickActivateOnlyPix}
+                      disabled={savingPayments}
+                      className="flex-1 sm:flex-none px-3.5 py-2 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer border border-[#d5af7a]/40"
+                    >
+                      <Zap size={13} className="text-[#d5af7a]" />
+                      <span>Ativar Somente Pix Hoje</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleQuickActivateAll}
+                      disabled={savingPayments}
+                      className="flex-1 sm:flex-none px-3.5 py-2 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-lg text-xs font-semibold transition-all cursor-pointer"
+                    >
+                      Ativar Todas
+                    </button>
+                  </div>
+                </div>
+
+                {/* Lista de Métodos de Pagamento */}
+                <div className="space-y-3">
+                  {[
+                    {
+                      key: 'pix' as const,
+                      title: 'Pix Instantâneo',
+                      badge: 'Recomendado',
+                      desc: 'Pagamento imediato via chave Pix ou QR Code.',
+                      icon: QrCode,
+                      activeColor: 'border-emerald-500 bg-emerald-50/30'
+                    },
+                    {
+                      key: 'dinheiro' as const,
+                      title: 'Dinheiro em Espécie',
+                      badge: 'Na entrega/balcão',
+                      desc: 'Cliente paga em dinheiro e pode informar o valor para troco no pedido.',
+                      icon: Banknote,
+                      activeColor: 'border-amber-500 bg-amber-50/20'
+                    },
+                    {
+                      key: 'credito' as const,
+                      title: 'Cartão de Crédito',
+                      badge: 'Maquininha',
+                      desc: 'Entregador leva a maquininha para passar o cartão de crédito.',
+                      icon: CreditCard,
+                      activeColor: 'border-blue-500 bg-blue-50/20'
+                    },
+                    {
+                      key: 'debito' as const,
+                      title: 'Cartão de Débito',
+                      badge: 'Maquininha',
+                      desc: 'Entregador leva a maquininha para passar o cartão de débito.',
+                      icon: CreditCard,
+                      activeColor: 'border-indigo-500 bg-indigo-50/20'
+                    }
+                  ].map(method => {
+                    const isChecked = paymentConfig[method.key];
+                    const IconComp = method.icon;
+                    return (
+                      <div
+                        key={method.key}
+                        onClick={() => handleTogglePaymentMethod(method.key)}
+                        className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
+                          isChecked
+                            ? `${method.activeColor} shadow-2xs`
+                            : 'bg-stone-50/60 border-stone-200 opacity-60 hover:opacity-90'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
+                            isChecked
+                              ? 'bg-[#083d07] text-[#fdfbf7] border-[#083d07]'
+                              : 'bg-white text-stone-400 border-stone-200'
+                          }`}>
+                            <IconComp size={18} />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-xs font-bold text-stone-900">{method.title}</h3>
+                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-stone-200 text-stone-600">
+                                {method.badge}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-stone-500 mt-0.5 truncate">{method.desc}</p>
+                          </div>
+                        </div>
+
+                        {/* Switch Toggle */}
+                        <div className="shrink-0 flex items-center gap-2">
+                          <span className={`text-xs font-bold font-mono ${isChecked ? 'text-emerald-700' : 'text-stone-400'}`}>
+                            {isChecked ? 'ATIVO' : 'DESLIGADO'}
+                          </span>
+                          <div className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
+                            isChecked ? 'bg-[#083d07]' : 'bg-stone-300'
+                          }`}>
+                            <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                              isChecked ? 'translate-x-5' : 'translate-x-0'
+                            }`} />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+                  <span className="text-xs text-stone-500">
+                    O cardápio digital reflete essas opções no checkout imediatamente.
+                  </span>
+                  <button 
+                    onClick={() => handleSavePayments()} 
+                    disabled={savingPayments}
+                    className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer disabled:opacity-50"
+                  >
+                    <Save size={14} />
+                    <span>{savingPayments ? 'Salvando...' : 'Salvar Formas de Pagamento'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
 
             {/* ═══════════ 2. HORÁRIOS DE FUNCIONAMENTO ═══════════ */}
             {activeTab === 'horarios' && (

@@ -234,6 +234,8 @@ function App() {
   const handleSelectItem = (item: MenuItem) => {
     setSelectedItem(item);
     setIsModalOpen(true);
+    // Funnel "engaged" step: the customer opened a product
+    trackEvent('view_item', { item_id: item.id, item_name: item.name });
   };
 
   const totalCartQty = cart.reduce((sum, item) => sum + item.quantity, 0);

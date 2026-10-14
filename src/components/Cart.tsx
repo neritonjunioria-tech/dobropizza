@@ -92,6 +92,19 @@ export default function Cart({
   const [deliveryTimeEstimate, setDeliveryTimeEstimate] = useState('40 a 50 min');
   const [pickupTimeEstimate, setPickupTimeEstimate] = useState('25 a 35 min');
 
+  // Formas de pagamento ativas (padrão hoje: apenas Pix)
+  const [paymentConfig, setPaymentConfig] = useState<{
+    pix: boolean;
+    dinheiro: boolean;
+    credito: boolean;
+    debito: boolean;
+  }>({
+    pix: true,
+    dinheiro: false,
+    credito: false,
+    debito: false
+  });
+
   // Load saved customer checkout details from localStorage (Memory for fast re-orders)
   useEffect(() => {
     try {
@@ -166,13 +179,33 @@ export default function Cart({
         const { data: settingsRows, error: settingsError } = await supabase
           .from('settings')
           .select('key, value')
-          .in('key', ['free_delivery_threshold', 'delivery_min_order', 'delivery_time_estimate', 'pickup_time_estimate']);
+          .in('key', ['free_delivery_threshold', 'delivery_min_order', 'delivery_time_estimate', 'pickup_time_estimate', 'payment_methods_config']);
         if (settingsError) throw settingsError;
         settingsRows?.forEach((row: any) => {
           if (row.key === 'free_delivery_threshold') setFreeDeliveryThreshold(Number(row.value) > 0 ? Number(row.value) : Infinity);
           if (row.key === 'delivery_min_order') setMinDeliveryOrder(Number(row.value));
           if (row.key === 'delivery_time_estimate') setDeliveryTimeEstimate(row.value);
           if (row.key === 'pickup_time_estimate') setPickupTimeEstimate(row.value);
+          if (row.key === 'payment_methods_config' && row.value) {
+            try {
+              const parsed = JSON.parse(row.value);
+              const loadedCfg = {
+                pix: parsed.pix !== false,
+                dinheiro: Boolean(parsed.dinheiro),
+                credito: Boolean(parsed.credito),
+                debito: Boolean(parsed.debito)
+              };
+              setPaymentConfig(loadedCfg);
+
+              // Se a forma atualmente selecionada estiver desativada, ajusta para a primeira ativa
+              const activeCount = Object.values(loadedCfg).filter(Boolean).length;
+              if (activeCount === 1 && loadedCfg.pix) {
+                setPagamento('Pix');
+              }
+            } catch (e) {
+              // fallback
+            }
+          }
         });
       } catch (err) {
         console.warn('[Cart] Não foi possível carregar zonas/configurações do Supabase, usando valores padrão.', err);
@@ -872,57 +905,109 @@ export default function Cart({
                     </div>
                   )}
 
-                  {/* Pagamento: Débito, Crédito e Pix */}
+                  {/* Formas de Pagamento Dinâmicas (Controladas no Gestor) */}
                   <div>
                     <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase">
-                      Pagamento *
+                      Forma de Pagamento *
                     </label>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPagamento("Pix");
-                          saveCustomerData({ pagamento: "Pix" });
-                        }}
-                        className={`h-7 px-1.5 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
-                          pagamento === "Pix"
-                            ? "bg-[#083d07] text-white border-[#083d07] shadow-2xs"
-                            : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span>📱 Pix</span>
-                      </button>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPagamento("Cartão de Crédito");
-                          saveCustomerData({ pagamento: "Cartão de Crédito" });
-                        }}
-                        className={`h-7 px-1.5 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
-                          pagamento === "Cartão de Crédito"
-                            ? "bg-[#083d07] text-white border-[#083d07] shadow-2xs"
-                            : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span>💳 Crédito</span>
-                      </button>
+                    {/* Caso Somente Pix esteja ativo (padrão de hoje) */}
+                    {paymentConfig.pix && !paymentConfig.dinheiro && !paymentConfig.credito && !paymentConfig.debito ? (
+                      <div className="h-9 px-3 rounded-xl bg-[#083d07]/5 border border-[#083d07]/30 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#083d07]" />
+                          <span className="font-bold text-xs text-[#083d07]">Pix</span>
+                        </div>
+                        <span className="text-[10px] text-[#745240] font-medium">Pagamento instantâneo via Pix</span>
+                      </div>
+                    ) : (
+                      /* Caso o gestor libere mais opções */
+                      <div className="space-y-1.5">
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {paymentConfig.pix && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPagamento('Pix');
+                                saveCustomerData({ pagamento: 'Pix' });
+                              }}
+                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                pagamento === 'Pix'
+                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
+                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
+                              }`}
+                            >
+                              <span>Pix</span>
+                            </button>
+                          )}
+                          {paymentConfig.dinheiro && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPagamento('Dinheiro');
+                                saveCustomerData({ pagamento: 'Dinheiro' });
+                              }}
+                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                pagamento === 'Dinheiro'
+                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
+                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
+                              }`}
+                            >
+                              <span>Dinheiro</span>
+                            </button>
+                          )}
+                          {paymentConfig.credito && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPagamento('Cartão de Crédito');
+                                saveCustomerData({ pagamento: 'Cartão de Crédito' });
+                              }}
+                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                pagamento === 'Cartão de Crédito'
+                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
+                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
+                              }`}
+                            >
+                              <span>Cartão Crédito</span>
+                            </button>
+                          )}
+                          {paymentConfig.debito && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPagamento('Cartão de Débito');
+                                saveCustomerData({ pagamento: 'Cartão de Débito' });
+                              }}
+                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                                pagamento === 'Cartão de Débito'
+                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
+                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
+                              }`}
+                            >
+                              <span>Cartão Débito</span>
+                            </button>
+                          )}
+                        </div>
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setPagamento("Cartão de Débito");
-                          saveCustomerData({ pagamento: "Cartão de Débito" });
-                        }}
-                        className={`h-7 px-1.5 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
-                          pagamento === "Cartão de Débito"
-                            ? "bg-[#083d07] text-white border-[#083d07] shadow-2xs"
-                            : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span>💳 Débito</span>
-                      </button>
-                    </div>
+                        {/* Se selecionado Dinheiro, abre o campo de troco */}
+                        {pagamento === 'Dinheiro' && (
+                          <div className="pt-1">
+                            <label className="block text-[10px] font-bold text-gray-600 mb-0.5">
+                              Troco para quanto? (R$)
+                            </label>
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="Ex: 50,00 ou Não precisa de troco"
+                              value={trocoPara}
+                              onChange={(e) => setTrocoPara(e.target.value)}
+                              className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none font-medium transition-colors"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* CPF opcional */}
@@ -969,14 +1054,23 @@ export default function Cart({
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-500">
                       {orderType === "Delivery" ? (
-                        <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${brl(deliveryFee)}`}</strong></>
+                        zona.trim() ? (
+                          <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${brl(deliveryFee)}`}</strong></>
+                        ) : (
+                          <>Taxa entrega: <strong className="text-amber-700 font-semibold">Escolha o bairro</strong></>
+                        )
                       ) : (
                         'Retirada no balcão'
                       )}
                     </span>
                     <div className="flex items-center gap-1">
                       <span className="text-gray-500 font-medium">Total:</span>
-                      <span className="font-black text-[#083d07] text-base">R$ {brl(total)}</span>
+                      <span className="font-black text-[#083d07] text-base">
+                        R$ {brl(total)}
+                        {orderType === "Delivery" && !zona.trim() && (
+                          <span className="text-[10px] font-normal text-[#745240] ml-1">(+ entrega)</span>
+                        )}
+                      </span>
                     </div>
                   </div>
 

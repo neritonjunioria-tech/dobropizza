@@ -134,23 +134,25 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
       : 'SALVAR VÍNCULO';
 
   return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 no-print" onClick={onClose}>
+    <div className="fixed inset-0 bg-[#44210F]/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 no-print" onClick={onClose}>
       <div
-        className="bg-white rounded-xl w-full max-w-md shadow-2xl border border-stone-200 overflow-hidden"
+        className="bg-[#FDFBF7] rounded-2xl w-full max-w-md shadow-2xl border border-[#E8D8D1] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-3 p-4 border-b border-stone-100 bg-stone-50/50">
+        <div className="flex items-start justify-between gap-3 px-5 py-3.5 border-b border-[#D5AF7A]/40 bg-[#E5DDD4] text-[#44210F]">
           <div className="min-w-0">
-            <h2 className="text-sm font-black text-stone-900 flex items-center gap-1.5">
-              <Bike size={15} className="text-stone-700" />
+            <h2 className="text-sm font-bold text-[#44210F] flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[#083D07] text-[#FDFBF7] flex items-center justify-center shadow-2xs">
+                <Bike size={14} />
+              </div>
               <span>Entrega do Pedido #{order.id}</span>
             </h2>
             {order.customerName && (
-              <p className="text-xs text-stone-600 font-medium mt-0.5 truncate">{order.customerName}</p>
+              <p className="text-xs text-[#745240] font-medium mt-1 truncate pl-9">{order.customerName}</p>
             )}
             {(order.deliveryAddress || order.deliveryZone) && (
-              <p className="text-[11px] text-stone-500 mt-0.5 flex items-start gap-1">
-                <MapPin size={11} className="text-stone-400 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-[#745240] mt-0.5 flex items-start gap-1 pl-9">
+                <MapPin size={11} className="text-[#083D07] shrink-0 mt-0.5" />
                 <span className="leading-snug">
                   {order.deliveryAddress}
                   {order.deliveryZone ? ` (${order.deliveryZone})` : ''}
@@ -158,45 +160,48 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
               </p>
             )}
           </div>
-          <button onClick={onClose} className="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer" title="Fechar">
+          <button onClick={onClose} className="w-8 h-8 rounded-lg flex items-center justify-center text-[#745240] hover:text-[#44210F] hover:bg-black/5 transition-colors cursor-pointer" title="Fechar">
             <X size={16} />
           </button>
         </div>
 
-        <div className="p-4 space-y-3.5">
+        <div className="p-5 space-y-4">
           {isLocked && (
-            <div className="p-2.5 rounded-lg text-xs font-medium flex items-start gap-2 border bg-stone-100 text-stone-700 border-stone-200">
-              <Lock size={14} className="shrink-0 mt-0.5" />
+            <div className="p-3 rounded-xl text-xs font-medium flex items-start gap-2 border bg-[#F7F4EE] text-[#745240] border-[#E8D8D1]">
+              <Lock size={14} className="shrink-0 mt-0.5 text-[#083D07]" />
               <span>Esta entrega já entrou em um fechamento de motoboy. Para alterar, desfaça o fechamento na aba Motoboys.</span>
             </div>
           )}
 
-          <div className="space-y-1">
-            <span className="block text-[11px] font-semibold text-stone-700">Quem faz a entrega? *</span>
+          <div className="space-y-1.5">
+            <span className="block text-[11px] font-semibold text-[#44210F]">Quem faz a entrega? *</span>
             <div className="grid grid-cols-3 gap-2">
-              {PROVIDER_OPTIONS.map(p => (
-                <button
-                  key={p}
-                  type="button"
-                  disabled={isLocked}
-                  onClick={() => handleSelectProvider(p)}
-                  className={`h-10 px-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border disabled:opacity-50 disabled:cursor-not-allowed ${
-                    provider === p
-                      ? 'bg-[#745240] text-white border-[#745240] shadow-2xs font-black'
-                      : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                  }`}
-                >
-                  {p === 'proprio' ? 'Próprio' : PROVIDER_LABELS[p]}
-                </button>
-              ))}
+              {PROVIDER_OPTIONS.map(p => {
+                const isSelected = provider === p;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    disabled={isLocked}
+                    onClick={() => handleSelectProvider(p)}
+                    className={`h-10 px-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border disabled:opacity-50 disabled:cursor-not-allowed ${
+                      isSelected
+                        ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
+                        : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#F7F4EE] hover:text-[#44210F]'
+                    }`}
+                  >
+                    {p === 'proprio' ? 'Próprio' : PROVIDER_LABELS[p]}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {provider === 'proprio' && (
-            <div className="space-y-1">
-              <label className="block text-[11px] font-semibold text-stone-700">Motoboy *</label>
+            <div className="space-y-1.5">
+              <label className="block text-[11px] font-semibold text-[#44210F]">Motoboy *</label>
               {selectableMotoboys.length === 0 ? (
-                <p className="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-lg p-2.5 font-medium">
+                <p className="text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-xl p-3 font-medium">
                   Nenhum motoboy próprio cadastrado. Cadastre na aba Motoboys do gestor.
                 </p>
               ) : (
@@ -204,9 +209,9 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                   value={motoboyId}
                   disabled={isLocked}
                   onChange={(e) => handleSelectMotoboy(e.target.value)}
-                  className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#745240] outline-none cursor-pointer disabled:opacity-50"
+                  className="w-full h-10 px-3 bg-white border border-[#E8D8D1] rounded-xl text-xs font-medium text-[#44210F] focus:border-[#083D07] outline-none cursor-pointer disabled:opacity-50 transition-colors"
                 >
-                  <option value="">Selecione...</option>
+                  <option value="">Selecione o Motoboy...</option>
                   {selectableMotoboys.map(m => (
                     <option key={m.id} value={m.id}>
                       {m.name}{m.is_active ? '' : ' (inativo)'}
@@ -217,12 +222,12 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
             </div>
           )}
 
-          <div className="space-y-1">
-            <label className="block text-[11px] font-semibold text-stone-700">
+          <div className="space-y-1.5">
+            <label className="block text-[11px] font-semibold text-[#44210F]">
               {provider === 'proprio' ? 'Valor pago ao motoboy (R$) *' : `Valor cobrado pela plataforma ${PROVIDER_LABELS[provider]} (R$) *`}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400 font-mono">R$</span>
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-[#745240] font-mono">R$</span>
               <input
                 type="text"
                 inputMode="decimal"
@@ -242,27 +247,27 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                     setCost(num.toFixed(2).replace('.', ','));
                   }
                 }}
-                className="w-full h-10 pl-10 pr-3 bg-stone-50 border border-stone-200 rounded-lg text-sm font-bold text-stone-900 font-mono focus:bg-white focus:border-[#745240] focus:ring-1 focus:ring-[#745240] outline-none transition-all disabled:opacity-50"
+                className="w-full h-10 pl-10 pr-3 bg-white border border-[#E8D8D1] rounded-xl text-sm font-bold text-[#44210F] font-mono focus:border-[#083D07] outline-none transition-all disabled:opacity-50"
               />
             </div>
-            <p className="text-[10px] text-stone-400 font-mono">Exemplo: R$ 12,50</p>
+            <p className="text-[10px] text-[#745240] font-mono">Exemplo: R$ 12,50</p>
           </div>
 
           {error && (
-            <div className="p-2.5 rounded-lg text-xs font-medium flex items-start gap-2 border bg-rose-50 text-rose-900 border-rose-200">
+            <div className="p-3 rounded-xl text-xs font-medium flex items-start gap-2 border bg-rose-50 text-rose-900 border-rose-200">
               <AlertCircle size={14} className="text-rose-600 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
         </div>
 
-        <div className="p-3 border-t border-stone-100 bg-stone-50/50 flex items-center justify-between gap-2">
+        <div className="px-5 py-3.5 border-t border-[#E8D8D1] bg-[#F7F4EE] flex items-center justify-between gap-2">
           {order.deliveryProvider && !nextStatus && !isLocked ? (
             <button
               type="button"
               onClick={handleClear}
               disabled={saving}
-              className="text-[11px] font-mono font-bold text-stone-500 hover:text-rose-600 transition-colors cursor-pointer disabled:opacity-50"
+              className="text-xs font-medium text-[#745240] hover:text-rose-600 transition-colors cursor-pointer disabled:opacity-50"
             >
               Remover vínculo
             </button>
@@ -273,7 +278,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
             <button
               type="button"
               onClick={onClose}
-              className="h-9 px-3.5 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+              className="h-9 px-4 bg-white hover:bg-[#FDFBF7] text-[#745240] hover:text-[#44210F] border border-[#E8D8D1] rounded-xl text-xs font-semibold transition-colors cursor-pointer"
             >
               Cancelar
             </button>
@@ -281,10 +286,10 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
               type="button"
               onClick={handleSave}
               disabled={saving || isLocked}
-              className="h-9 px-3.5 flex items-center gap-1.5 bg-[#745240] hover:bg-[#5c3a21] active:bg-[#44210f] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-9 px-4 flex items-center gap-1.5 bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer border border-[#D5AF7A]/40 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check size={14} className="stroke-[2.5]" />
-              <span>{saving ? 'SALVANDO...' : confirmLabel}</span>
+              <span>{saving ? 'Salvando...' : confirmLabel}</span>
             </button>
           </div>
         </div>

@@ -29,11 +29,16 @@ Ela começou como cópia do projeto de outro cliente (41 Menus), mas **não tem 
 2. **Trava de Segurança n8n**: É terminantemente proibido ativar o n8n, publicar ou habilitar workflows da Jéssica, disparar mensagens em massa ou alternar `bot_active` sem comando e consentimento explícito do usuário.
 3. Todo e qualquer fluxo de n8n deve permanecer desligado/desativado por padrão até ordem expressa do usuário.
 
-## Como publicar
+## Como publicar (Regra Estrita de Autorização)
 
-1. O caminho padrão é fazer push para o GitHub da DOBRO (`origin`). O Netlify da conta neritonjunioria publica sozinho a partir desse repositório.
-2. Só publique quando o usuário pedir explicitamente.
-3. Antes de qualquer deploy, confirme e informe ao usuário: conta Netlify, nome do site, remote do Git e ref do Supabase. Se qualquer um não for da DOBRO, **pare e avise**.
+1. **Deploy / Git Push Travado por Padrão**: O agente está proibido de rodar `git push origin main` ou qualquer comando de deploy de forma automática.
+2. **Fluxo Obrigatório**:
+   - Desenvolver e aplicar alterações no código local.
+   - Validar com `npm run build` localmente.
+   - Apresentar o resumo das alterações ao usuário.
+   - **Aguardar a autorização expressa do usuário** (ex: "pode fazer o deploy", "autorizado", "pode subir") antes de executar qualquer `git push`.
+3. O caminho de deploy é exclusivamente o push para o GitHub da DOBRO (`origin`), que dispara o build na Netlify da conta `neritonjunioria@gmail.com`.
+4. Antes de qualquer deploy, confirme e informe ao usuário: conta Netlify, nome do site, remote do Git e ref do Supabase. Se qualquer um não for da DOBRO, **pare e avise**.
 
 ## Conteúdo
 

@@ -1,5 +1,6 @@
 # Regras de Git e Deploy
 
-1. **Branch Main Protegida**: NUNCA fazer commit ou push para a branch `main` de forma automática.
-2. **Autorização Obrigatória**: O push ou merge para a branch `main` só pode ser realizado com autorização e comando explícito do usuário.
-3. **Desenvolvimento Contínuo**: Todo o desenvolvimento, testes e commits intermediários devem ser feitos exclusivamente na branch `dev` (ou branches de feature).
+1. **Deploy Automático Proibido**: Todo e qualquer deploy (push para a branch `main`) está estritamente bloqueado por padrão.
+2. **Autorização Prévia Obrigatória**: O agente NUNCA deve fazer push para a `main` ou disparar deploy de forma autônoma. O push para a `main` só é permitido após o usuário analisar as alterações e dar o comando/autorização explícita (ex: "pode subir", "pode fazer o deploy", "autorizado").
+3. **Fluxo Local**: O agente desenvolve localmente, testa e valida o build (`npm run build`), apresenta o resultado e aguarda a autorização do usuário antes de publicar em produção.
+

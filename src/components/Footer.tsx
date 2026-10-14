@@ -1,7 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Instagram, MapPin, Clock, ExternalLink, Phone } from "lucide-react";
+import { supabase } from '../lib/supabase';
 
 export default function Footer() {
+  const [instagramUrl, setInstagramUrl] = useState('https://www.instagram.com/dobropizzas/');
+
+  useEffect(() => {
+    async function loadInstagram() {
+      try {
+        const { data } = await supabase
+          .from('settings')
+          .select('value')
+          .eq('key', 'instagram_url')
+          .maybeSingle();
+        if (data?.value && data.value.trim()) {
+          setInstagramUrl(data.value.trim());
+        }
+      } catch (err) {
+        // Fallback para o valor padrão já definido
+      }
+    }
+    loadInstagram();
+  }, []);
+
+  const instagramHandle = React.useMemo(() => {
+    try {
+      const clean = instagramUrl.replace(/\/+$/, '');
+      const parts = clean.split('instagram.com/');
+      if (parts.length > 1 && parts[1]) {
+        const handle = parts[1].split('/')[0].replace(/[^a-zA-Z0-9._]/g, '');
+        if (handle) return `@${handle}`;
+      }
+    } catch {
+      // fallback
+    }
+    return '@dobropizzas';
+  }, [instagramUrl]);
+
   return (
     <footer className="bg-[#141b14] text-[#e8d8d1] border-t border-[#233124] pt-12 pb-28 lg:pb-8 px-4 mt-12">
       <div className="max-w-7xl mx-auto">
@@ -73,13 +108,13 @@ export default function Footer() {
               </a>
               <div>
                 <a
-                  href="https://www.instagram.com/dobropizzas/"
+                  href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-xs text-[#c4b5aa] hover:text-white transition-colors group"
                 >
                   <Instagram className="w-3.5 h-3.5 text-[#d5af7a] group-hover:scale-110 transition-transform" />
-                  <span>@dobropizzas</span>
+                  <span>{instagramHandle}</span>
                   <ExternalLink className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
                 </a>
               </div>
@@ -101,3 +136,4 @@ export default function Footer() {
     </footer>
   );
 }
+

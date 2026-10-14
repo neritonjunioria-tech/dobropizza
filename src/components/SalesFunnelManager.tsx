@@ -85,98 +85,53 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
         endOfDate = new Date(endDate + 'T23:59:59.999');
       }
 
-      // 1. Buscar telemetria de eventos na tabela analytics_events
-      let { data: eventsData, error: evError } = await supabase
-        .from('analytics_events')
-        .select('event_name, session_id, created_at, event_data')
-        .gte('created_at', startOfDate.toISOString())
-        .lte('created_at', endOfDate.toISOString());
-
-      // 2. Fallback resiliente na tabela settings
-      if (evError || !eventsData || eventsData.length === 0) {
-        const { data: settingsRows } = await supabase
-          .from('settings')
-          .select('key, value')
-          .like('key', 'analytics_events_%');
-
-        let allFallbackEvents: any[] = [];
-        settingsRows?.forEach(row => {
-          try {
-            const parsed = JSON.parse(row.value);
-            if (Array.isArray(parsed)) allFallbackEvents.push(...parsed);
-          } catch (e) {}
-        });
-
-        const filteredFallback = allFallbackEvents.filter(ev => {
-          const evDate = new Date(ev.created_at);
-          return evDate >= startOfDate && evDate <= endOfDate;
-        });
-
-        if (filteredFallback.length > 0) {
-          eventsData = filteredFallback;
-        }
+      // Real counts only, from the menu's own tracking (analytics_events). No estimates or minimums.
+      // Reads in pages of 1000 rows so long periods are not cut off.
+      const eventsData: any[] = [];
+      for (let from = 0; ; from += 1000) {
+        const { data: page, error: evError } = await supabase
+          .from('analytics_events')
+          .select('event_name, session_id, created_at, event_data')
+          .gte('created_at', startOfDate.toISOString())
+          .lte('created_at', endOfDate.toISOString())
+          .order('created_at')
+          .range(from, from + 999);
+        if (evError) throw evError;
+        eventsData.push(...(page || []));
+        if (!page || page.length < 1000) break;
       }
 
-      // 3. Buscar pedidos reais e faturamento verídico na tabela orders
-      const { data: ordersData } = await supabase
-        .from('orders')
-        .select('id, total_amount, status, created_at')
-        .gte('created_at', startOfDate.toISOString())
-        .lte('created_at', endOfDate.toISOString());
-
-      const activeOrders = (ordersData || []).filter(
-        (o: any) => o.status !== 'Cancelado' && o.status !== 'cancelado'
-      );
-
-      const uniqueVisitors = new Set<string>();
+      const visitorSessions = new Set<string>();
+      const engagedSessions = new Set<string>();
       const addedToCartSessions = new Set<string>();
       const initiatedCheckoutSessions = new Set<string>();
-      const purchasedSessions = new Set<string>();
+      const purchasedOrders = new Map<string, number>();
 
-      eventsData?.forEach((ev: any) => {
+      eventsData.forEach((ev: any) => {
         const sId = ev.session_id;
         if (!sId) return;
-        uniqueVisitors.add(sId);
+        visitorSessions.add(sId);
+        if (ev.event_name === 'view_item' || ev.event_name === 'add_to_cart') engagedSessions.add(sId);
         if (ev.event_name === 'add_to_cart') addedToCartSessions.add(sId);
         if (ev.event_name === 'initiate_checkout') initiatedCheckoutSessions.add(sId);
-        if (ev.event_name === 'purchase') purchasedSessions.add(sId);
+        if (ev.event_name === 'purchase') {
+          const orderKey = String(ev.event_data?.order_id ?? `${sId}-${ev.created_at}`);
+          purchasedOrders.set(orderKey, Number(ev.event_data?.total_value) || 0);
+        }
       });
 
-      const completedOrdersCount = Math.max(purchasedSessions.size, activeOrders.length);
-      const totalRevenue = activeOrders.reduce((acc: number, o: any) => acc + Number(o.total_amount || 0), 0);
-      const ticketMedio = completedOrdersCount > 0 ? totalRevenue / completedOrdersCount : 0;
-
-      // Base verídica de visitantes com fallback proporcional quando telemetria recente
-      const rawVisitors = uniqueVisitors.size;
-      const visitors = Math.max(
-        rawVisitors,
-        completedOrdersCount > 0 ? Math.round(completedOrdersCount * 3.8) : (period === 'hoje' ? 14 : 45)
-      );
-
-      // Engajados: exploraram itens do cardápio
-      const engaged = Math.max(
-        Math.round(visitors * 0.72),
-        Math.round(addedToCartSessions.size * 1.35)
-      );
-
-      // Leads no Carrinho
-      const addedToCart = Math.max(
-        addedToCartSessions.size,
-        completedOrdersCount > 0 ? Math.round(completedOrdersCount * 2.2) : Math.round(visitors * 0.35)
-      );
-
-      // Oportunidades no Checkout
-      const initiatedCheckout = Math.max(
-        initiatedCheckoutSessions.size,
-        completedOrdersCount > 0 ? Math.round(completedOrdersCount * 1.35) : Math.round(addedToCart * 0.6)
-      );
-
-      const purchases = completedOrdersCount;
+      // Each step only counts people who reached it (a visitor who bought also counts as engaged, cart and checkout)
+      const visitors = visitorSessions.size;
+      const engaged = engagedSessions.size;
+      const addedToCart = addedToCartSessions.size;
+      const initiatedCheckout = initiatedCheckoutSessions.size;
+      const purchases = purchasedOrders.size;
+      const totalRevenue = [...purchasedOrders.values()].reduce((acc, v) => acc + v, 0);
+      const ticketMedio = purchases > 0 ? totalRevenue / purchases : 0;
 
       const conversionRate = visitors > 0 ? (purchases / visitors) * 100 : 0;
       const cartAbandonmentRate = addedToCart > 0 ? Math.max(0, 100 - (purchases / addedToCart) * 100) : 0;
       const checkoutDropRate = initiatedCheckout > 0 ? Math.max(0, 100 - (purchases / initiatedCheckout) * 100) : 0;
-
       setData({
         visitors,
         engaged,
@@ -194,6 +149,15 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
     } finally {
       setLoading(false);
     }
+  };
+
+  // Clears the funnel tracking (visits, product views, cart, checkout). Orders are not touched.
+  const resetFunnel = async () => {
+    if (!window.confirm('Zerar o funil de vendas? Todas as visitas e cliques registrados até agora serão apagados e a contagem recomeça do zero. Os pedidos não são afetados.')) return;
+    setLoading(true);
+    const { error } = await supabase.from('analytics_events').delete().gte('created_at', '1970-01-01');
+    if (error) window.alert('Não foi possível zerar a contagem: ' + error.message);
+    await fetchFunnelData();
   };
 
   useEffect(() => {
@@ -323,6 +287,15 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             >
               <RefreshCw size={11} className={loading ? 'animate-spin text-rose-600' : 'text-stone-400'} />
               <span className="hidden sm:inline">Atualizar</span>
+            </button>
+
+            <button
+              onClick={resetFunnel}
+              disabled={loading}
+              title="Apagar todas as visitas e cliques registrados e começar a contagem do zero"
+              className="h-7 px-2 rounded-lg border border-rose-200 bg-white text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer shadow-2xs text-[11px] font-mono font-medium"
+            >
+              Zerar contagem
             </button>
           </div>
         </div>

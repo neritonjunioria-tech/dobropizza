@@ -1431,154 +1431,8 @@ export default function AdminDashboard() {
               {activeTab === 'pedidos' && 'Pedidos'}
               {activeTab === 'caixa' && 'Caixa'}
               {activeTab === 'motoboys' && 'Motoboys'}
-              {activeTab === "relatorios" && (
-          <div className="mt-1 space-y-2.5 pb-12">
-            {/* Filtro de Tempo Compacto Padronizado */}
-            <motion.div 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-              className="bg-white rounded-xl border border-stone-200/90 shadow-2xs px-3 py-1.5"
-            >
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-600 shrink-0" />
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-stone-800">
-                    Período dos Relatórios
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <PeriodFilterCompact
-                    value={dateFilter as any}
-                    startDate={customStartDate}
-                    endDate={customEndDate}
-                    onChange={(res) => {
-                      setDateFilter(res.period);
-                      dateFilterRef.current = res.period;
-                      if (res.startDate) {
-                        setCustomStartDate(res.startDate);
-                        customStartDateRef.current = res.startDate;
-                      }
-                      if (res.endDate) {
-                        setCustomEndDate(res.endDate);
-                        customEndDateRef.current = res.endDate;
-                      }
-                      fetchDashboardData(false, res.period);
-                    }}
-                    align="right"
-                  />
-
-                  <button
-                    onClick={() => fetchDashboardData()}
-                    className="h-7 px-2 rounded-lg border border-stone-200 bg-white text-stone-600 hover:text-stone-950 hover:bg-stone-50 transition-colors cursor-pointer shadow-2xs flex items-center gap-1 text-[11px] font-mono font-medium"
-                    title="Recarregar dados"
-                  >
-                    <RefreshCw size={11} className={isLoading ? 'animate-spin text-rose-600' : 'text-[#745240]'} />
-                    <span className="hidden sm:inline">Atualizar</span>
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Relatórios Financeiros & Faturamento */}
-            <div>
-              <motion.h2 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-                className="text-[10.5px] font-mono font-bold uppercase tracking-wider text-stone-600 flex items-center gap-1.5 mb-1.5"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Relatórios Financeiros & Faturamento
-              </motion.h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
-                <ReportCard
-                  customDelay={0.05}
-                  title="Fluxo de Caixa"
-                  value={`R$ ${(dashboardData?.lucroLiquido ?? (filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0) - (expenses.reduce((s, e) => s + Number(e.amount || 0), 0)))).toFixed(2)}`}
-                  icon={<TrendingUp size={14} strokeWidth={1.5} className="text-emerald-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'fluxo_caixa', title: 'Relatório de Fluxo de Caixa (Entradas vs Saídas)'})}
-                  subtitle="Entradas, Saídas e Lucro"
-                />
-                <ReportCard
-                  customDelay={0.10}
-                  title="Faturamento Geral"
-                  value={`R$ ${filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0).toFixed(2)}`}
-                  icon={<DollarSign size={14} strokeWidth={1.5} className="text-emerald-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'faturamento', title: 'Faturamento Geral por Dia'})}
-                  subtitle="Vendas por dia e pedidos"
-                />
-                <ReportCard
-                  customDelay={0.15}
-                  title="Pedidos no período"
-                  value={`${filteredOrders.length} pedidos`}
-                  icon={<Calendar size={14} strokeWidth={1.5} className="text-emerald-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'vendas_mes', title: 'Detalhamento de Pedidos'})}
-                  subtitle="Lista completa de vendas"
-                />
-                <ReportCard
-                  customDelay={0.20}
-                  title="Ticket Médio"
-                  value={`R$ ${filteredOrders.length > 0 ? (filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0) / filteredOrders.length).toFixed(2) : '0.00'}`}
-                  icon={<CreditCard size={14} strokeWidth={1.5} className="text-emerald-950" />}
-                  onClick={() => {
-                    setTicketMedioTab('todos');
-                    setReportModal({isOpen: true, type: 'ticket_medio', title: 'Ticket Médio por Operação (Mesa, Retirada e Entrega)'});
-                  }}
-                  subtitle="Média por pedido e canais"
-                />
-              </div>
-            </div>
-
-            {/* Vendas por Canal, Produtos & Operação */}
-            <div>
-              <motion.h2 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.1, ease: [0.2, 0, 0, 1] }}
-                className="text-[10.5px] font-mono font-bold uppercase tracking-wider text-stone-600 flex items-center gap-1.5 mb-1.5"
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" /> Vendas por Canal, Produtos & Operação
-              </motion.h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
-                <ReportCard
-                  customDelay={0.15}
-                  title="Vendas de produtos"
-                  value=""
-                  icon={<Package size={14} strokeWidth={1.5} className="text-amber-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'produtos', title: 'Vendas de Produtos'})}
-                  subtitle="Detalhamento por item"
-                />
-                <ReportCard
-                  customDelay={0.20}
-                  title="Vendas de complementos"
-                  value=""
-                  icon={<UtensilsCrossed size={14} strokeWidth={1.5} className="text-amber-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'complementos', title: 'Vendas de Complementos (Bordas e Extras)'})}
-                  subtitle="Bordas e extras"
-                />
-                <ReportCard
-                  customDelay={0.25}
-                  title="Formas de Pagamento"
-                  value=""
-                  icon={<CreditCard size={14} strokeWidth={1.5} className="text-amber-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'pagamentos', title: 'Formas de Pagamento'})}
-                  subtitle="PIX, Cartão e Dinheiro"
-                />
-                <ReportCard
-                  customDelay={0.30}
-                  title="Cancelamentos"
-                  value=""
-                  icon={<AlertCircle size={14} strokeWidth={1.5} className="text-amber-950" />}
-                  onClick={() => setReportModal({isOpen: true, type: 'cancelamentos', title: 'Pedidos Cancelados'})}
-                  subtitle="Análise de perdas"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'cardapio-digital' && 'Cardápio Digital'}
+              {activeTab === 'relatorios' && 'Relatórios'}
+              {activeTab === 'cardapio-digital' && 'Cardápio Digital'}
               {activeTab === 'gestao-cardapio' && 'Produtos'}
               {activeTab === 'categorias' && 'Categorias'}
               {activeTab === 'configuracoes' && 'Configurações'}
@@ -5528,114 +5382,144 @@ function EditOrderModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/70 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-[#44210F]/60 backdrop-blur-xs"
       onClick={onClose}
     >
       <div 
-        className="bg-stone-100 rounded-xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-[#d5af7a]/60"
+        className="bg-[#FDFBF7] rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-[#E8D8D1]"
         onClick={(e) => e.stopPropagation()}
       >
         
-        {/* Header Compacto */}
-        <div className="px-3.5 py-2 bg-[#e5ddd4] text-[#44210f] flex justify-between items-center shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="p-1 bg-[#745240] text-amber-100 rounded border border-[#5c3a21]">
-              <Edit3 size={14} />
+        {/* Header Elegante Dobro */}
+        <div className="px-5 py-3.5 bg-[#E5DDD4] text-[#44210F] flex justify-between items-center shrink-0 border-b border-[#D5AF7A]/40">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#083D07] text-[#FDFBF7] flex items-center justify-center shadow-2xs">
+              <Edit3 size={15} />
             </div>
             <div>
-              <h3 className="font-extrabold text-xs leading-tight text-[#44210f] tracking-tight">Editar Pedido #{order.id}</h3>
-              <p className="text-[9px] text-[#745240] font-medium leading-none mt-0.5">Altere produtos, valores e forma de pagamento</p>
+              <h3 className="font-bold text-sm text-[#44210F] tracking-tight">Editar Pedido #{order.id}</h3>
+              <p className="text-xs text-[#745240] font-normal">Altere dados do cliente, entrega e itens</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-stone-500 hover:text-white bg-stone-200 hover:bg-rose-600 rounded transition-colors cursor-pointer border border-stone-300 hover:border-rose-500"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-[#745240] hover:text-[#44210F] hover:bg-black/5 transition-colors cursor-pointer"
+            title="Fechar"
           >
-            <X size={14} />
+            <X size={16} />
           </button>
         </div>
 
-        {/* Real-time total summary bar Compacto */}
-        <div className="bg-[#E8D8D1] px-3.5 py-1.5 border-b border-[#D5AF7A] flex items-center justify-between text-xs text-[#745240] font-bold shrink-0">
-          <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
-            <span className="text-[#5c3a21]">
-              Subtotal: <strong className="text-[#44210f] font-bold">R$ {subtotal.toFixed(2).replace('.', ',')}</strong>
+        {/* Resumo Financeiro em Tempo Real */}
+        <div className="bg-[#F7F4EE] px-5 py-2.5 border-b border-[#E8D8D1] flex items-center justify-between text-xs text-[#745240] shrink-0 flex-wrap gap-2">
+          <div className="flex items-center gap-3 text-xs flex-wrap font-mono">
+            <span>
+              Subtotal: <strong className="text-[#44210F] font-bold">R$ {subtotal.toFixed(2).replace('.', ',')}</strong>
             </span>
             {orderType === 'entrega' && activeDeliveryFee > 0 && (
-              <span className="text-sky-700 font-semibold">
-                (+) Ent: R$ {activeDeliveryFee.toFixed(2).replace('.', ',')}
+              <span className="text-[#083D07] font-semibold">
+                (+) Entrega: R$ {activeDeliveryFee.toFixed(2).replace('.', ',')}
               </span>
             )}
             {Number(additionalAmount) > 0 && (
-              <span className="text-amber-800 font-semibold">
+              <span className="text-[#745240] font-semibold">
                 (+) Adic: R$ {Number(additionalAmount).toFixed(2).replace('.', ',')}
               </span>
             )}
             {Number(discountAmount) > 0 && (
-              <span className="text-emerald-800 font-semibold">
+              <span className="text-[#083D07] font-semibold">
                 (-) Desc: R$ {Number(discountAmount).toFixed(2).replace('.', ',')}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <span className="text-[9px] font-mono text-[#745240] uppercase">Total:</span>
-            <span className="text-sm font-black text-rose-600 font-mono leading-none">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[11px] font-medium text-[#745240] uppercase">Total:</span>
+            <span className="text-base font-bold text-[#083D07] font-mono leading-none">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
           </div>
         </div>
 
         {/* Form Body com Conteúdo Otimizado */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-3 py-2 space-y-2 flex flex-col justify-between">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto px-4 py-3.5 space-y-3 flex flex-col justify-between">
+          <div className="space-y-3">
             {/* Section 1: Customer Info & 1-Click Order Type */}
-            <div className="bg-white p-2.5 rounded-lg border border-stone-200/90 shadow-2xs space-y-2">
-              <div className="flex items-center justify-between">
-                <h4 className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">
-                  Cliente & Atendimento
-                </h4>
-                {orderType === 'entrega' && activeDeliveryFee > 0 && (
-                  <span className="text-[10px] font-mono font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-                    + R$ {activeDeliveryFee.toFixed(2)} Taxa de Entrega
-                  </span>
-                )}
-              </div>
+            <div className="bg-white p-4 rounded-xl border border-[#E8D8D1] shadow-2xs space-y-3">
+              <h4 className="text-xs font-semibold text-[#44210F]">
+                Cliente & Atendimento
+              </h4>
 
-              {/* Linha 1: Dados do Cliente e Pagamento */}
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-1.5">
-                <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Nome</label>
+              {/* Linha 1: Dados do Cliente */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                <div className="sm:col-span-5 space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">Nome</label>
                   <input
                     type="text"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors"
+                    className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] focus:bg-white transition-colors"
                     required
                   />
                 </div>
-                <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Telefone</label>
+                <div className="sm:col-span-4 space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">Telefone</label>
                   <input
                     type="text"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors"
+                    className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] focus:bg-white transition-colors"
                   />
                 </div>
-                <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">CPF na nota (Opcional)</label>
+                <div className="sm:col-span-3 space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">CPF na Nota</label>
                   <input
                     type="text"
                     value={customerNif}
                     onChange={(e) => setCustomerNif(e.target.value)}
-                    placeholder="Ex: 123456789"
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors font-mono"
+                    placeholder="Opcional"
+                    className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-mono text-[#44210F] outline-none focus:border-[#083D07] focus:bg-white transition-colors"
                   />
                 </div>
-                <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Pagamento</label>
+              </div>
+
+              {/* Linha 2: Tipo de Pedido e Pagamento */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 pt-2.5 border-t border-[#E8D8D1]/60">
+                <div className="sm:col-span-8 space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">
+                    Tipo de Pedido
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                    {[
+                      { key: 'entrega', label: 'Entrega', icon: Bike },
+                      { key: 'retirada', label: 'Retirada', icon: ShoppingBag },
+                      { key: 'balcao', label: 'Balcão', icon: Store },
+                      { key: 'mesa', label: 'Mesa', icon: UtensilsCrossed }
+                    ].map((btn) => {
+                      const isSelected = orderType === btn.key;
+                      const IconComp = btn.icon;
+                      return (
+                        <button
+                          key={btn.key}
+                          type="button"
+                          onClick={() => handleSelectOrderType(btn.key)}
+                          className={`py-2 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer border text-center ${
+                            isSelected
+                              ? 'bg-[#E5DDD4] text-[#44210F] font-bold border-[#D5AF7A] shadow-xs'
+                              : 'bg-white text-[#745240] font-medium border-[#E8D8D1] hover:bg-[#F7F4EE] hover:text-[#44210F]'
+                          }`}
+                        >
+                          <IconComp size={14} className={isSelected ? 'text-[#083D07]' : 'text-[#745240]'} />
+                          <span className="text-xs">{btn.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="sm:col-span-4 space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">Forma de Pagamento</label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors cursor-pointer"
+                    className="w-full px-3 py-2 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-semibold text-[#44210F] outline-none focus:border-[#083D07] focus:bg-white transition-colors cursor-pointer"
                   >
                     <option value="Pix">Pix</option>
                     <option value="Dinheiro">Dinheiro</option>
@@ -5645,83 +5529,48 @@ function EditOrderModal({
                 </div>
               </div>
 
-              {/* Linha 2: Tipo de Atendimento em 1 CLIQUE */}
-              <div className="space-y-1 pt-1.5 border-t border-stone-100">
-                <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">
-                  Tipo de Pedido (1 Clique para alterar)
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                  {[
-                    { key: 'entrega', label: 'Entrega', icon: Bike, desc: 'Delivery' },
-                    { key: 'retirada', label: 'Retirada', icon: ShoppingBag, desc: 'Cliente busca' },
-                    { key: 'balcao', label: 'Balcão', icon: Store, desc: 'Balcão' },
-                    { key: 'mesa', label: 'Mesa', icon: UtensilsCrossed, desc: 'Consumo Local' }
-                  ].map((btn) => {
-                    const isSelected = orderType === btn.key;
-                    const IconComp = btn.icon;
-                    return (
-                      <button
-                        key={btn.key}
-                        type="button"
-                        onClick={() => handleSelectOrderType(btn.key)}
-                        className={`py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer border text-center ${
-                          isSelected
-                            ? btn.key === 'entrega'
-                              ? 'bg-sky-600 text-white font-black border-sky-700 shadow-xs ring-2 ring-sky-300'
-                              : 'bg-[#745240] text-white font-black border-[#5c3a21] shadow-xs ring-2 ring-[#d5af7a]/40'
-                            : 'bg-stone-50 text-stone-700 font-bold border-stone-200 hover:bg-stone-100'
-                        }`}
-                      >
-                        <IconComp size={13} className={isSelected ? 'text-white' : 'text-stone-500'} />
-                        <span className="text-[11px]">{btn.label}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* Se for Entrega: Morada, Seleção de Zonas Cadastradas e Taxa Automática */}
               {orderType === 'entrega' && (
-                <div className="pt-2 border-t border-stone-100 space-y-2 bg-sky-50/50 p-2 rounded-lg border border-sky-100">
-                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                <div className="pt-3 border-t border-[#E8D8D1] space-y-3 bg-[#F7F4EE] p-3.5 rounded-xl border border-[#E8D8D1]">
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
                     {/* Endereço / Morada */}
-                    <div className="sm:col-span-6 space-y-0.5">
-                      <label className="block text-[8px] font-mono font-bold text-sky-950 uppercase tracking-wider flex items-center gap-1">
-                        <MapPin size={11} className="text-sky-600" /> Endereço de Entrega
+                    <div className="sm:col-span-6 space-y-1">
+                      <label className="block text-[11px] font-medium text-[#745240] flex items-center gap-1">
+                        <MapPin size={12} className="text-[#083D07]" /> Endereço de Entrega
                       </label>
                       <input
                         type="text"
                         value={deliveryAddress}
                         onChange={(e) => setDeliveryAddress(e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white rounded border border-sky-200 text-xs font-semibold text-stone-900 outline-none focus:border-sky-600 transition-colors shadow-2xs"
-                        placeholder="Rua, número, andar, código postal, pontos de ref..."
+                        className="w-full px-3 py-1.5 bg-white rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors"
+                        placeholder="Rua, número, complemento, bairro..."
                         required={orderType === 'entrega'}
                       />
                     </div>
 
                     {/* Zona de Entrega (Select com Todas as Zonas Cadastradas) */}
-                    <div className="sm:col-span-4 space-y-0.5">
-                      <label className="block text-[8px] font-mono font-bold text-sky-950 uppercase tracking-wider flex items-center justify-between">
-                        <span>Zona de Entrega</span>
-                        {loadingZones && <span className="text-[7.5px] text-sky-600 font-normal">Carregando...</span>}
+                    <div className="sm:col-span-4 space-y-1">
+                      <label className="block text-[11px] font-medium text-[#745240] flex items-center justify-between">
+                        <span>Bairro / Região</span>
+                        {loadingZones && <span className="text-[10px] text-[#745240] font-normal">Carregando...</span>}
                       </label>
                       <select
                         value={deliveryZone}
                         onChange={(e) => handleSelectZone(e.target.value)}
-                        className="w-full px-2 py-1.5 bg-white rounded border border-sky-200 text-xs font-bold text-stone-900 outline-none focus:border-sky-600 transition-colors cursor-pointer shadow-2xs"
+                        className="w-full px-2.5 py-1.5 bg-white rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors cursor-pointer"
                       >
-                        <option value="">-- Selecione a Zona --</option>
+                        <option value="">-- Selecione o Bairro --</option>
                         {zones.map((z) => (
                           <option key={z.id} value={z.name}>
-                            {z.name} (+ R$ {z.fee.toFixed(2)})
+                            {z.name} (R$ {z.fee.toFixed(2).replace('.', ',')})
                           </option>
                         ))}
                       </select>
                     </div>
 
                     {/* Taxa de Entrega (R$) */}
-                    <div className="sm:col-span-2 space-y-0.5">
-                      <label className="block text-[8px] font-mono font-bold text-sky-950 uppercase tracking-wider text-center">
+                    <div className="sm:col-span-2 space-y-1">
+                      <label className="block text-[11px] font-medium text-[#745240] text-center">
                         Taxa (R$)
                       </label>
                       <input
@@ -5730,34 +5579,21 @@ function EditOrderModal({
                         min="0"
                         value={deliveryFee}
                         onChange={(e) => setDeliveryFee(parseFloat(e.target.value) || 0)}
-                        className="w-full px-2 py-1.5 bg-white rounded border border-sky-200 text-xs font-black text-sky-800 outline-none focus:border-sky-600 transition-colors font-mono text-center shadow-2xs"
+                        className="w-full px-2 py-1.5 bg-white rounded-lg border border-[#E8D8D1] text-xs font-bold font-mono text-[#083D07] outline-none focus:border-[#083D07] transition-colors text-center"
                       />
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-[10px] text-sky-900 font-medium px-1">
-                    <span>
-                      {deliveryZone ? (
-                        <>Zona: <strong>{deliveryZone}</strong></>
-                      ) : (
-                        <span className="text-amber-800 font-semibold">⚠️ Selecione uma zona para somar a taxa</span>
-                      )}
-                    </span>
-                    <span className="font-mono font-bold text-sky-800">
-                      Taxa somada no total: + R$ {activeDeliveryFee.toFixed(2).replace('.', ',')}
-                    </span>
-                  </div>
-
                   {/* Bloco de Motoboy / Logística de Entrega */}
-                  <div className="pt-2 border-t border-sky-200/80 space-y-2">
+                  <div className="pt-2.5 border-t border-[#E8D8D1] space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[8.5px] font-mono font-bold text-sky-950 uppercase tracking-wider flex items-center gap-1">
-                        <Bike size={12} className="text-sky-700" />
-                        Quem faz a entrega?
+                      <span className="text-[11px] font-medium text-[#745240] flex items-center gap-1.5">
+                        <Bike size={13} className="text-[#083D07]" />
+                        Logística de Entrega
                       </span>
                       {order.motoboySettlementId && (
-                        <span className="text-[8px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                          🔒 Fechamento realizado
+                        <span className="text-[10px] font-semibold text-[#745240] bg-[#FDFBF7] px-2 py-0.5 rounded border border-[#E8D8D1]">
+                          Fechamento realizado
                         </span>
                       )}
                     </div>
@@ -5776,10 +5612,10 @@ function EditOrderModal({
                             key={p.key}
                             type="button"
                             onClick={() => handleSelectProvider(p.key as any)}
-                            className={`py-1 px-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer border text-center ${
+                            className={`py-1.5 px-2 rounded-lg text-xs font-medium transition-all cursor-pointer border text-center ${
                               isSelected
-                                ? 'bg-[#745240] text-white border-[#5c3a21] shadow-2xs font-black'
-                                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                                ? 'bg-[#E5DDD4] text-[#44210F] font-bold border-[#D5AF7A] shadow-xs'
+                                : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
                             }`}
                           >
                             {p.label}
@@ -5790,20 +5626,20 @@ function EditOrderModal({
 
                     {/* Se for Motoboy Próprio: Seleção do Motoboy + Valor Pago */}
                     {deliveryProvider === 'proprio' && (
-                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-white/90 p-2 rounded-lg border border-sky-200/90 shadow-2xs">
-                        <div className="sm:col-span-7 space-y-0.5">
-                          <label className="block text-[8px] font-mono font-bold text-stone-600 uppercase tracking-wider">
-                            Motoboy Próprio *
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 bg-white p-2.5 rounded-xl border border-[#E8D8D1]">
+                        <div className="sm:col-span-7 space-y-1">
+                          <label className="block text-[11px] font-medium text-[#745240]">
+                            Motoboy Próprio
                           </label>
                           {motoboys.length === 0 ? (
-                            <p className="text-[9.5px] text-amber-800 font-medium bg-amber-50 p-1.5 rounded border border-amber-200">
+                            <p className="text-xs text-amber-900 bg-amber-50 p-2 rounded-lg border border-amber-200">
                               Nenhum motoboy próprio cadastrado. Cadastre na aba Motoboys.
                             </p>
                           ) : (
                             <select
                               value={motoboyId}
                               onChange={(e) => handleSelectMotoboy(e.target.value)}
-                              className="w-full px-2 py-1.5 bg-white rounded border border-stone-300 text-xs font-bold text-stone-900 outline-none focus:border-[#745240] transition-colors cursor-pointer"
+                              className="w-full px-3 py-1.5 bg-white rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors cursor-pointer"
                             >
                               <option value="">-- Selecione o Motoboy --</option>
                               {motoboys.filter(m => m.is_active || m.id === motoboyId).map(m => (
@@ -5815,16 +5651,16 @@ function EditOrderModal({
                           )}
                         </div>
 
-                        <div className="sm:col-span-5 space-y-0.5">
-                          <label className="block text-[8px] font-mono font-bold text-stone-600 uppercase tracking-wider">
+                        <div className="sm:col-span-5 space-y-1">
+                          <label className="block text-[11px] font-medium text-[#745240]">
                             Valor Pago ao Motoboy (R$)
                           </label>
                           <div className="relative">
-                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-stone-400 font-mono">R$</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[#745240]">R$</span>
                             <input
                               type="text"
                               inputMode="decimal"
-                              placeholder="12,50"
+                              placeholder="10,00"
                               value={deliveryCost}
                               onFocus={(e) => e.target.select()}
                               onChange={(e) => {
@@ -5838,26 +5674,25 @@ function EditOrderModal({
                                   setDeliveryCost(num.toFixed(2).replace('.', ','));
                                 }
                               }}
-                              className="w-full pl-8 pr-2 py-1.5 bg-white rounded border border-stone-300 text-xs font-mono font-bold text-stone-900 outline-none focus:border-[#745240] transition-colors"
+                              className="w-full pl-8 pr-3 py-1.5 bg-white rounded-lg border border-[#E8D8D1] text-xs font-mono font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors"
                             />
                           </div>
-                          <span className="text-[8px] text-stone-400 font-mono">Ex: R$ 12,50</span>
                         </div>
                       </div>
                     )}
 
                     {/* Se for Uber ou iFood: Custo da Plataforma */}
                     {(deliveryProvider === 'uber' || deliveryProvider === 'ifood') && (
-                      <div className="bg-white/90 p-2 rounded-lg border border-sky-200/90 shadow-2xs flex items-center justify-between gap-2">
-                        <div className="text-[11px] text-stone-700 font-medium">
-                          Valor cobrado pela plataforma <strong className="uppercase">{deliveryProvider}</strong>:
+                      <div className="bg-white p-2.5 rounded-xl border border-[#E8D8D1] flex items-center justify-between gap-2.5">
+                        <div className="text-xs text-[#745240]">
+                          Valor cobrado pela plataforma <strong className="uppercase text-[#44210F]">{deliveryProvider}</strong>:
                         </div>
                         <div className="relative w-32">
-                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-stone-400 font-mono">R$</span>
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-[#745240]">R$</span>
                           <input
                             type="text"
                             inputMode="decimal"
-                            placeholder="12,50"
+                            placeholder="10,00"
                             value={deliveryCost}
                             onFocus={(e) => e.target.select()}
                             onChange={(e) => {
@@ -5871,7 +5706,7 @@ function EditOrderModal({
                                 setDeliveryCost(num.toFixed(2).replace('.', ','));
                               }
                             }}
-                            className="w-full pl-8 pr-2 py-1.5 bg-white rounded border border-stone-300 text-xs font-mono font-bold text-stone-900 outline-none focus:border-[#745240] transition-colors"
+                            className="w-full pl-8 pr-3 py-1.5 bg-white rounded-lg border border-[#E8D8D1] text-xs font-mono font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors"
                           />
                         </div>
                       </div>
@@ -5882,59 +5717,59 @@ function EditOrderModal({
 
               {/* Se Pagamento em Dinheiro: Campo de Troco */}
               {paymentMethod === 'Dinheiro' && (
-                <div className="pt-1.5 border-t border-stone-100 grid grid-cols-2 gap-2">
-                  <div className="space-y-0.5">
-                    <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Troco Para (R$)</label>
+                <div className="pt-2 border-t border-[#E8D8D1] grid grid-cols-2 gap-2.5">
+                  <div className="space-y-1">
+                    <label className="block text-[11px] font-medium text-[#745240]">Troco Para (R$)</label>
                     <input
                       type="number"
                       step="0.01"
                       min="0"
                       value={cashProvided || ''}
                       onChange={(e) => setCashProvided(parseFloat(e.target.value) || 0)}
-                      className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-xs font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors"
+                      className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-bold text-[#44210F] outline-none focus:border-[#083D07] focus:bg-white transition-colors"
                       placeholder="Ex: 50.00"
                     />
                   </div>
-                  <div className="flex items-center justify-between bg-stone-50 px-2 py-1 rounded border border-stone-100">
-                    <span className="text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Troco:</span>
-                    <span className="text-xs font-black text-emerald-600">R$ {calculatedChange.toFixed(2)}</span>
+                  <div className="flex items-center justify-between bg-[#F7F4EE] px-3 py-1.5 rounded-lg border border-[#E8D8D1]">
+                    <span className="text-xs font-medium text-[#745240]">Troco a devolver:</span>
+                    <span className="text-sm font-bold font-mono text-[#083D07]">R$ {calculatedChange.toFixed(2).replace('.', ',')}</span>
                   </div>
                 </div>
               )}
             </div>
 
             {/* Section 2: Items List & Add Items */}
-            <div className="space-y-1.5 bg-white p-2 rounded-lg border border-stone-200/90 shadow-2xs">
+            <div className="bg-white p-4 rounded-xl border border-[#E8D8D1] shadow-2xs space-y-3">
               <div className="flex justify-between items-center">
-                <h4 className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">Itens do Pedido ({items.length})</h4>
+                <h4 className="text-xs font-semibold text-[#44210F]">Itens do Pedido ({items.length})</h4>
               </div>
 
-              {/* Current Items Table Compacto */}
-              <div className="border border-stone-200/80 rounded overflow-hidden bg-stone-50/60 max-h-36 overflow-y-auto">
+              {/* Current Items Table */}
+              <div className="border border-[#E8D8D1] rounded-xl overflow-hidden bg-[#FDFBF7] max-h-44 overflow-y-auto">
                 {items.length === 0 ? (
-                  <div className="p-2 text-center text-xs text-stone-400">Nenhum item no pedido.</div>
+                  <div className="p-4 text-center text-xs text-[#745240]">Nenhum item no pedido.</div>
                 ) : (
-                  <div className="divide-y divide-stone-100">
+                  <div className="divide-y divide-[#E8D8D1]/60">
                     {items.map((item, idx) => {
                       const price = Number(item.priceCalculated || item.price || 0);
                       const qty = Number(item.quantity || 1);
                       return (
-                        <div key={idx} className="px-2 py-1.5 flex items-center justify-between gap-2 bg-white hover:bg-stone-50 transition-colors">
+                        <div key={idx} className="px-3 py-2 flex items-center justify-between gap-2 bg-white hover:bg-[#FDFBF7] transition-colors">
                           <div className="flex-1 min-w-0">
-                            <div className="font-bold text-xs text-stone-900 truncate">{formatItemNameForPrint(item)}</div>
-                            <div className="text-[9px] text-stone-400 font-medium">
-                              {item.size ? `${item.size} | ` : ''}R$ {price.toFixed(2)} un.
+                            <div className="font-semibold text-xs text-[#44210F] truncate">{formatItemNameForPrint(item)}</div>
+                            <div className="text-[11px] text-[#745240] font-normal">
+                              {item.size ? `${item.size} • ` : ''}R$ {price.toFixed(2).replace('.', ',')} un.
                             </div>
                             {/* Tags de Extras Adicionados */}
                             {item.extras && item.extras.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-0.5">
+                              <div className="flex flex-wrap gap-1 mt-1">
                                 {item.extras.map((ex: any, exIdx: number) => (
                                   <span
                                     key={exIdx}
-                                    className="text-[8.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded flex items-center gap-0.5 shadow-2xs"
+                                    className="text-[10px] font-medium bg-[#F7F4EE] text-[#745240] border border-[#E8D8D1] px-1.5 py-0.5 rounded-md flex items-center gap-1"
                                   >
                                     <span>+{ex.name}</span>
-                                    <span className="font-mono text-[8px] text-rose-800">(R$ {Number(ex.price).toFixed(2)})</span>
+                                    <span className="font-mono text-[#083D07]">(R$ {Number(ex.price).toFixed(2).replace('.', ',')})</span>
                                   </span>
                                 ))}
                               </div>
@@ -5942,40 +5777,40 @@ function EditOrderModal({
                           </div>
 
                           {/* Qty Controls */}
-                          <div className="flex items-center gap-0.5 bg-stone-100 px-1 py-0.5 rounded border border-stone-200">
+                          <div className="flex items-center gap-1 bg-[#F7F4EE] px-1.5 py-1 rounded-lg border border-[#E8D8D1]">
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(idx, -1)}
-                              className="w-4 h-4 rounded bg-white text-stone-800 font-bold text-[10px] flex items-center justify-center border border-stone-200 hover:bg-stone-50 transition-colors cursor-pointer"
+                              className="w-5 h-5 rounded-md bg-white text-[#44210F] font-bold text-xs flex items-center justify-center border border-[#E8D8D1] hover:bg-[#FDFBF7] transition-colors cursor-pointer"
                             >
                               -
                             </button>
-                            <span className="w-5 text-center text-xs font-bold text-stone-900">{qty}</span>
+                            <span className="w-5 text-center text-xs font-bold text-[#44210F]">{qty}</span>
                             <button
                               type="button"
                               onClick={() => handleUpdateQty(idx, 1)}
-                              className="w-4 h-4 rounded bg-white text-stone-800 font-bold text-[10px] flex items-center justify-center border border-stone-200 hover:bg-stone-50 transition-colors cursor-pointer"
+                              className="w-5 h-5 rounded-md bg-white text-[#44210F] font-bold text-xs flex items-center justify-center border border-[#E8D8D1] hover:bg-[#FDFBF7] transition-colors cursor-pointer"
                             >
                               +
                             </button>
                           </div>
 
-                          <div className="font-bold text-xs text-stone-900 w-14 text-right font-mono">
-                            R$ {(price * qty).toFixed(2)}
+                          <div className="font-bold text-xs text-[#44210F] w-16 text-right font-mono">
+                            R$ {(price * qty).toFixed(2).replace('.', ',')}
                           </div>
 
                           <div className="flex items-center gap-1">
                             <button
                               type="button"
                               onClick={() => handleStartEditItem(idx)}
-                              className={`p-1 rounded transition-colors cursor-pointer ${
+                              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                                 editingItemIndex === idx
-                                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                                  : 'text-stone-400 hover:text-amber-600 hover:bg-amber-50'
+                                  ? 'bg-[#E5DDD4] text-[#44210F] border border-[#D5AF7A]'
+                                  : 'text-[#745240] hover:text-[#083D07] hover:bg-[#F7F4EE]'
                               }`}
                               title="Editar este item"
                             >
-                              <Edit2 size={12} />
+                              <Edit2 size={13} />
                             </button>
                             <button
                               type="button"
@@ -5983,10 +5818,10 @@ function EditOrderModal({
                                 if (editingItemIndex === idx) handleCancelEdit();
                                 handleRemoveItem(idx);
                               }}
-                              className="p-1 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded transition-colors cursor-pointer"
+                              className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                               title="Remover Item"
                             >
-                              <Trash2 size={12} />
+                              <Trash2 size={13} />
                             </button>
                           </div>
                         </div>
@@ -5996,43 +5831,43 @@ function EditOrderModal({
                 )}
               </div>
 
-              {/* Add/Edit Product Block CRM Style */}
-              <div className="p-2 bg-stone-50 rounded-lg border border-stone-200/90 space-y-2">
+              {/* Add/Edit Product Block */}
+              <div className="p-3.5 bg-[#F7F4EE] rounded-xl border border-[#E8D8D1] space-y-3">
                 {/* Active Edit Banner */}
                 {editingItemIndex !== null && (
-                  <div className="flex items-center justify-between px-2 py-1 bg-amber-100 border border-amber-300 rounded text-amber-900 text-[11px] font-bold">
+                  <div className="flex items-center justify-between px-3 py-1.5 bg-[#E5DDD4] border border-[#D5AF7A] rounded-lg text-[#44210F] text-xs font-semibold">
                     <span className="flex items-center gap-1.5">
-                      <Edit2 size={12} className="text-amber-700" />
+                      <Edit2 size={13} className="text-[#083D07]" />
                       Editando Item #{editingItemIndex + 1}
                     </span>
                     <button
                       type="button"
                       onClick={handleCancelEdit}
-                      className="text-[10px] text-amber-800 hover:text-amber-950 font-bold underline cursor-pointer"
+                      className="text-xs text-[#745240] hover:text-[#44210F] font-medium underline cursor-pointer"
                     >
                       Cancelar Edição
                     </button>
                   </div>
                 )}
 
-                {/* Category Filter Pills */}
-                <div className="flex items-center gap-1 overflow-x-auto pb-0.5">
+                {/* Category Filter Pills (Limpo, sem arco-íris) */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
                   {[
                     { id: 'all', label: 'Todos' },
-                    { id: 'pizzas', label: '🍕 Pizzas' },
-                    { id: 'esfihas', label: '🥟 Esfihas' },
-                    { id: 'bebidas', label: '🥤 Bebidas' },
-                    { id: 'extras', label: '🥓 Extras' },
-                    { id: 'outros', label: '🍟 Outros' }
+                    { id: 'pizzas', label: 'Pizzas' },
+                    { id: 'esfihas', label: 'Esfihas' },
+                    { id: 'bebidas', label: 'Bebidas' },
+                    { id: 'extras', label: 'Extras' },
+                    { id: 'outros', label: 'Outros' }
                   ].map(cat => (
                     <button
                       key={cat.id}
                       type="button"
                       onClick={() => setCategoryFilter(cat.id as any)}
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all shrink-0 cursor-pointer border ${
+                      className={`px-3 py-1 rounded-lg text-xs font-medium transition-all shrink-0 cursor-pointer border ${
                         categoryFilter === cat.id
-                          ? 'bg-[#745240] text-white border-[#5c3a21] shadow-xs'
-                          : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-100'
+                          ? 'bg-[#083D07] text-[#FDFBF7] font-semibold border-[#083D07] shadow-xs'
+                          : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
                       }`}
                     >
                       {cat.label}
@@ -6043,7 +5878,7 @@ function EditOrderModal({
                 {/* Smart Product Search Combobox */}
                 <div ref={productSearchContainerRef} className="relative">
                   <div className="relative">
-                    <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
+                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#745240]" />
                     <input
                       type="text"
                       value={selectedProductSearch}
@@ -6055,8 +5890,8 @@ function EditOrderModal({
                           setSelectedProductId('');
                         }
                       }}
-                      placeholder={categoryFilter === 'pizzas' ? "Buscar pizza por nome ou número..." : categoryFilter === 'extras' ? "Pesquisar adicional extra (bacon, queijo...)" : "Pesquisar sabor, produto ou adicional extra..."}
-                      className="w-full pl-7 pr-7 py-1.5 bg-white rounded-lg border border-stone-200 text-xs font-bold text-stone-900 outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] transition-all"
+                      placeholder={categoryFilter === 'pizzas' ? "Buscar pizza por nome..." : categoryFilter === 'extras' ? "Pesquisar adicional extra (bacon, queijo...)" : "Pesquisar sabor, produto ou adicional..."}
+                      className="w-full pl-8 pr-8 py-2 bg-white rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-all"
                     />
                     {selectedProductSearch && (
                       <button
@@ -6066,7 +5901,7 @@ function EditOrderModal({
                           setSelectedProductId('');
                           setIsProductSearchOpen(false);
                         }}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs font-bold"
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#745240] hover:text-[#44210F] text-xs font-bold"
                       >
                         ✕
                       </button>
@@ -6075,9 +5910,9 @@ function EditOrderModal({
 
                   {/* Autocomplete dropdown */}
                   {isProductSearchOpen && (
-                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-stone-300 rounded-lg shadow-xl z-40 max-h-48 overflow-y-auto divide-y divide-stone-100">
+                    <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#E8D8D1] rounded-xl shadow-xl z-40 max-h-48 overflow-y-auto divide-y divide-[#E8D8D1]/40">
                       {filteredMenuItems.length === 0 ? (
-                        <div className="p-2.5 text-center text-xs text-stone-400">
+                        <div className="p-3 text-center text-xs text-[#745240]">
                           Nenhum produto ou adicional encontrado.
                         </div>
                       ) : (
@@ -6092,27 +5927,25 @@ function EditOrderModal({
                             <div
                               key={m.id}
                               onClick={() => handleSelectProduct(m)}
-                              className={`p-2 text-xs cursor-pointer flex items-center justify-between hover:bg-stone-50 transition-colors ${
-                                selectedProductId === m.id || isSelectedExtra ? 'bg-amber-50/60 font-bold' : ''
+                              className={`p-2.5 text-xs cursor-pointer flex items-center justify-between hover:bg-[#F7F4EE] transition-colors ${
+                                selectedProductId === m.id || isSelectedExtra ? 'bg-[#E5DDD4] font-semibold text-[#44210F]' : 'text-[#44210F]'
                               }`}
                             >
                               <div className="flex-1 min-w-0 pr-2">
-                                <div className="font-bold text-stone-900 truncate flex items-center gap-1.5">
-                                  {isP && <span className="text-[10px]">🍕</span>}
-                                  {isEx && <span className="text-[10px]">{getExtraIcon(m.name)}</span>}
+                                <div className="font-semibold text-xs truncate flex items-center gap-1.5">
                                   <span>{m.name}</span>
                                   {isEx && (
-                                    <span className="text-[9px] font-bold text-rose-600 bg-rose-50 px-1 rounded border border-rose-200">
-                                      Adicional Extra
+                                    <span className="text-[10px] font-medium text-[#745240] bg-[#F7F4EE] px-1.5 py-0.5 rounded border border-[#E8D8D1]">
+                                      Adicional
                                     </span>
                                   )}
                                 </div>
                                 {m.ingredients && (
-                                  <div className="text-[10px] text-stone-400 truncate">{m.ingredients}</div>
+                                  <div className="text-[11px] text-[#745240] truncate mt-0.5">{m.ingredients}</div>
                                 )}
                               </div>
-                              <span className="text-[11px] font-mono font-bold text-stone-600 shrink-0">
-                                {isP ? `a partir de R$ ${displayPrice.toFixed(2)}` : `R$ ${displayPrice.toFixed(2)}`}
+                              <span className="text-xs font-mono font-medium text-[#083D07] shrink-0">
+                                {isP ? `a partir de R$ ${displayPrice.toFixed(2).replace('.', ',')}` : `R$ ${displayPrice.toFixed(2).replace('.', ',')}`}
                               </span>
                             </div>
                           );
@@ -6124,17 +5957,17 @@ function EditOrderModal({
 
                 {/* Size Selection */}
                 {isCurrentSelectionPizza && selectedBaseMenuItem && (selectedBaseMenuItem.priceP || selectedBaseMenuItem.priceM || selectedBaseMenuItem.priceG || selectedBaseMenuItem.priceBig || selectedBaseMenuItem.priceSuperBig) ? (
-                  <div className="space-y-1 pt-1 border-t border-stone-200/60">
+                  <div className="space-y-1.5 pt-2 border-t border-[#E8D8D1]/80">
                     <div className="flex items-center justify-between">
-                      <label className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">
+                      <label className="text-xs font-medium text-[#745240]">
                         Tamanho da Pizza
                       </label>
-                      <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                      <span className="text-xs font-semibold text-[#083D07]">
                         {selectedSize === 'priceSuperBig' ? 'Até 4 Sabores' : selectedSize === 'priceBig' ? 'Até 3 Sabores' : selectedSize === 'priceG' ? 'Até 2 Sabores' : '1 Sabor'}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-5 gap-1">
+                    <div className="grid grid-cols-5 gap-1.5">
                       {[
                         { key: 'priceP', label: 'P', sub: '1 Sab' },
                         { key: 'priceM', label: 'M', sub: '1 Sab' },
@@ -6149,17 +5982,17 @@ function EditOrderModal({
                             key={sz.key}
                             type="button"
                             onClick={() => handleSelectSize(sz.key)}
-                            className={`py-1.5 px-1 rounded-md flex flex-col items-center justify-center transition-all cursor-pointer border text-center ${
+                            className={`py-2 px-1.5 rounded-lg flex flex-col items-center justify-center transition-all cursor-pointer border text-center ${
                               isSelected
-                                ? 'bg-amber-400 text-stone-950 font-black border-amber-500 shadow-xs'
-                                : 'bg-white text-stone-700 font-bold border-stone-200 hover:bg-stone-50'
+                                ? 'bg-[#E5DDD4] text-[#44210F] font-bold border-[#D5AF7A] shadow-xs'
+                                : 'bg-white text-[#745240] font-medium border-[#E8D8D1] hover:bg-[#FDFBF7]'
                             }`}
                           >
-                            <span className="text-[10px] leading-tight">{sz.label}</span>
-                            <span className="text-[8px] opacity-75 leading-tight">{sz.sub}</span>
+                            <span className="text-xs leading-tight">{sz.label}</span>
+                            <span className="text-[10px] opacity-75 leading-tight">{sz.sub}</span>
                             {szPrice > 0 && (
-                              <span className="text-[8.5px] font-mono mt-0.5 leading-none">
-                                R$ {szPrice.toFixed(1)}
+                              <span className="text-[10px] font-mono mt-0.5 leading-none font-semibold text-[#083D07]">
+                                R$ {szPrice.toFixed(0)}
                               </span>
                             )}
                           </button>
@@ -6169,253 +6002,33 @@ function EditOrderModal({
                   </div>
                 ) : (
                   selectedProductId && (
-                    <div className="flex items-center justify-between px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-700 border border-stone-200">
-                      <span className="text-[10px] font-mono text-stone-500 uppercase">{isPizzaItem(selectedBaseMenuItem) ? 'Tamanho único 28cm' : 'Item simples'}</span>
-                      <span className="font-mono text-stone-900">
+                    <div className="flex items-center justify-between px-3 py-1.5 bg-white rounded-lg text-xs font-medium text-[#44210F] border border-[#E8D8D1]">
+                      <span className="text-[11px] text-[#745240]">{isPizzaItem(selectedBaseMenuItem) ? 'Tamanho único 28cm' : 'Item simples'}</span>
+                      <span className="font-mono font-bold text-[#083D07]">
                         R$ {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0).toFixed(2).replace('.', ',')}
                       </span>
                     </div>
                   )
                 )}
 
-                {/* Multi-Flavor Pizza Manager (G, Big, Super Big) */}
-                {maxAdditionalFlavors > 0 && isCurrentSelectionPizza && ['priceG', 'priceBig', 'priceSuperBig'].includes(selectedSize) && selectedProductId && (
-                  <div className="space-y-1.5 pt-1.5 border-t border-stone-200/60">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">
-                        Sabores Selecionados ({totalFlavors} de {maxAdditionalFlavors + 1})
-                      </span>
-                      <span className="text-[9px] text-stone-500 font-medium">
-                        Cálculo pelo maior valor
-                      </span>
-                    </div>
-
-                    {/* 1º Sabor (Base) */}
-                    <div className="flex items-center justify-between p-1.5 bg-white rounded-md border border-stone-200 text-xs">
-                      <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="font-mono text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200 shrink-0">
-                          {getFractionText(0, totalFlavors)}
-                        </span>
-                        <span className="font-bold text-stone-900 truncate">
-                          {selectedBaseMenuItem?.name || selectedProductSearch}
-                        </span>
-                      </div>
-                      <span className="text-[10px] font-mono font-bold text-stone-500 shrink-0">
-                        R$ {getPizzaPriceForSize(selectedBaseMenuItem, selectedSize).toFixed(2)}
-                      </span>
-                    </div>
-
-                    {/* Sabores Adicionais já selecionados */}
-                    {customAdditionalFlavors.map((flavor, idx) => {
-                      const matchingItem = menuItems.find(m => m.id === flavor.id);
-                      const sPrice = matchingItem ? getPizzaPriceForSize(matchingItem, selectedSize) : 0;
-                      const isSearchingThis = searchingFlavorSlot === idx;
-
-                      if (isSearchingThis) {
-                        return (
-                          <div key={idx} className="p-2 bg-amber-50/70 border-2 border-amber-400 rounded-lg space-y-1.5 shadow-sm">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[10px] font-black text-amber-900 flex items-center gap-1">
-                                <Search size={11} className="text-amber-700" />
-                                Trocar {idx + 2}º Sabor (Somente Pizzas):
-                              </span>
-                              <button
-                                type="button"
-                                onClick={() => { setSearchingFlavorSlot(null); setFlavorSearchQuery(''); }}
-                                className="text-stone-400 hover:text-stone-700 text-[10px] font-bold"
-                              >
-                                Cancelar ✕
-                              </button>
-                            </div>
-                            <input
-                              ref={flavorSearchInputRef}
-                              type="text"
-                              value={flavorSearchQuery}
-                              onChange={e => setFlavorSearchQuery(e.target.value)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter' && filteredSlotPizzas.length > 0) {
-                                  e.preventDefault();
-                                  const chosen = filteredSlotPizzas[0];
-                                  const next = [...customAdditionalFlavors];
-                                  next[idx] = { id: chosen.id, search: chosen.name };
-                                  setCustomAdditionalFlavors(next);
-                                  setSearchingFlavorSlot(null);
-                                  setFlavorSearchQuery('');
-                                } else if (e.key === 'Escape') {
-                                  setSearchingFlavorSlot(null);
-                                }
-                              }}
-                              placeholder="Nome ou número da pizza..."
-                              className="w-full px-2 py-1 bg-white border border-stone-300 rounded text-xs font-bold text-stone-900 outline-none focus:border-amber-500"
-                            />
-                            <div className="max-h-32 overflow-y-auto divide-y divide-stone-100 bg-white rounded border border-stone-200">
-                              {filteredSlotPizzas.length === 0 ? (
-                                <div className="p-2 text-center text-[10px] text-stone-400">Nenhuma pizza encontrada.</div>
-                              ) : (
-                                filteredSlotPizzas.map(p => (
-                                  <div
-                                    key={p.id}
-                                    onClick={() => {
-                                      const next = [...customAdditionalFlavors];
-                                      next[idx] = { id: p.id, search: p.name };
-                                      setCustomAdditionalFlavors(next);
-                                      setSearchingFlavorSlot(null);
-                                      setFlavorSearchQuery('');
-                                    }}
-                                    className="p-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 cursor-pointer flex justify-between items-center"
-                                  >
-                                    <span className="truncate">{p.name}</span>
-                                    <span className="text-[10px] font-mono text-stone-500 shrink-0">
-                                      R$ {getPizzaPriceForSize(p, selectedSize).toFixed(2)}
-                                    </span>
-                                  </div>
-                                ))
-                              )}
-                            </div>
-                          </div>
-                        );
-                      }
-
-                      return (
-                        <div key={idx} className="flex items-center justify-between p-1.5 bg-white rounded-md border border-stone-200 text-xs">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="font-mono text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200 shrink-0">
-                              {getFractionText(idx + 1, totalFlavors)}
-                            </span>
-                            <span className="font-bold text-stone-900 truncate">
-                              {flavor.search || flavor.id}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            {sPrice > 0 && (
-                              <span className="text-[10px] font-mono font-bold text-stone-500 mr-0.5">
-                                R$ {sPrice.toFixed(2)}
-                              </span>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSearchingFlavorSlot(idx);
-                                setFlavorSearchQuery('');
-                              }}
-                              className="px-1.5 py-0.5 bg-stone-50 hover:bg-amber-50 text-amber-900 border border-stone-200 rounded text-[9.5px] font-bold flex items-center gap-1 cursor-pointer"
-                              title="Trocar este sabor"
-                            >
-                              <RotateCcw size={10} />
-                              <span>Trocar</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setCustomAdditionalFlavors(prev => prev.filter((_, i) => i !== idx));
-                              }}
-                              className="w-5 h-5 flex items-center justify-center text-stone-400 hover:text-rose-600 rounded hover:bg-rose-50 cursor-pointer transition-colors text-xs font-bold"
-                              title="Remover este sabor"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {/* Novo slot de busca ativo para adicionar sabor */}
-                    {searchingFlavorSlot === customAdditionalFlavors.length && (
-                      <div className="p-2 bg-amber-50/70 border-2 border-amber-400 rounded-lg space-y-1.5 shadow-sm">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-black text-amber-900 flex items-center gap-1">
-                            <Search size={11} className="text-amber-700" />
-                            Adicionar {customAdditionalFlavors.length + 2}º Sabor (Somente Pizzas):
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => { setSearchingFlavorSlot(null); setFlavorSearchQuery(''); }}
-                            className="text-stone-400 hover:text-stone-700 text-[10px] font-bold"
-                          >
-                            Cancelar ✕
-                          </button>
-                        </div>
-                        <input
-                          ref={flavorSearchInputRef}
-                          type="text"
-                          value={flavorSearchQuery}
-                          onChange={e => setFlavorSearchQuery(e.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter' && filteredSlotPizzas.length > 0) {
-                              e.preventDefault();
-                              const chosen = filteredSlotPizzas[0];
-                              setCustomAdditionalFlavors(prev => [...prev, { id: chosen.id, search: chosen.name }]);
-                              setSearchingFlavorSlot(null);
-                              setFlavorSearchQuery('');
-                            } else if (e.key === 'Escape') {
-                              setSearchingFlavorSlot(null);
-                            }
-                          }}
-                          placeholder="Digite o nome ou número da pizza..."
-                          className="w-full px-2 py-1 bg-white border border-stone-300 rounded text-xs font-bold text-stone-900 outline-none focus:border-amber-500"
-                        />
-                        <div className="max-h-32 overflow-y-auto divide-y divide-stone-100 bg-white rounded border border-stone-200">
-                          {filteredSlotPizzas.length === 0 ? (
-                            <div className="p-2 text-center text-[10px] text-stone-400">Nenhuma pizza encontrada.</div>
-                          ) : (
-                            filteredSlotPizzas.map(p => (
-                              <div
-                                key={p.id}
-                                onClick={() => {
-                                  setCustomAdditionalFlavors(prev => [...prev, { id: p.id, search: p.name }]);
-                                  setSearchingFlavorSlot(null);
-                                  setFlavorSearchQuery('');
-                                }}
-                                className="p-1.5 text-xs font-bold text-stone-800 hover:bg-amber-50 cursor-pointer flex justify-between items-center"
-                              >
-                                <span className="truncate">{p.name}</span>
-                                <span className="text-[10px] font-mono text-stone-500 shrink-0">
-                                  R$ {getPizzaPriceForSize(p, selectedSize).toFixed(2)}
-                                </span>
-                              </div>
-                            ))
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Botão para abrir o combobox de sabor adicional */}
-                    {searchingFlavorSlot === null && customAdditionalFlavors.length < maxAdditionalFlavors && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSearchingFlavorSlot(customAdditionalFlavors.length);
-                          setFlavorSearchQuery('');
-                        }}
-                        className="w-full py-1.5 px-2 border border-dashed border-amber-400 hover:border-amber-500 bg-amber-50/50 hover:bg-amber-50 text-amber-950 rounded-md text-[11px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
-                      >
-                        <Plus size={12} className="text-amber-700 stroke-[3]" />
-                        <span>
-                          + Adicionar {customAdditionalFlavors.length === 0 ? (selectedSize === 'priceG' ? '2º Sabor (Meio a Meio)' : '2º Sabor') : `${customAdditionalFlavors.length + 2}º Sabor`}
-                        </span>
-                      </button>
-                    )}
-                  </div>
-                )}
-
-                {/* Seletor de Adicionais Extras (Bacon, Queijo, etc.) */}
+                {/* Seletor de Adicionais Extras */}
                 {(isCurrentSelectionPizza || editingItemIndex !== null || selectedProductId) && (
-                  <div className="space-y-1.5 pt-2 border-t border-stone-200/60 bg-white/80 p-2 rounded-lg border border-stone-200/90 shadow-2xs">
+                  <div className="space-y-2 pt-2.5 border-t border-[#E8D8D1]/80 bg-white p-3 rounded-xl border border-[#E8D8D1]">
                     <div className="flex items-center justify-between">
-                      <label className="text-[9px] font-mono font-bold text-stone-600 uppercase tracking-wider flex items-center gap-1.5">
-                        <span>🥓 Adicionais Extras</span>
+                      <label className="text-xs font-medium text-[#44210F] flex items-center gap-1.5">
+                        <span>Adicionais Extras</span>
                         {selectedExtras.length > 0 && (
-                          <span className="text-rose-600 font-bold bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200 text-[8.5px]">
-                            + R$ {selectedExtras.reduce((s, e) => s + (Number(e.price) || 0), 0).toFixed(2)}
+                          <span className="text-[#083D07] font-semibold bg-[#F7F4EE] px-2 py-0.5 rounded-md border border-[#E8D8D1] text-[11px]">
+                            + R$ {selectedExtras.reduce((s, e) => s + (Number(e.price) || 0), 0).toFixed(2).replace('.', ',')}
                           </span>
                         )}
                       </label>
-                      <span className="text-[8.5px] text-stone-400 font-medium">
-                        {selectedExtras.length === 0 ? 'Toque no adicional para incluir' : `${selectedExtras.length} selecionado(s)`}
+                      <span className="text-[11px] text-[#745240]">
+                        {selectedExtras.length === 0 ? 'Toque para incluir' : `${selectedExtras.length} selecionado(s)`}
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                       {availableExtras.map((extra) => {
                         const isSelected = selectedExtras.some(e => e.id === extra.id || e.name.toLowerCase() === extra.name.toLowerCase());
                         return (
@@ -6423,18 +6036,15 @@ function EditOrderModal({
                             key={extra.id}
                             type="button"
                             onClick={() => handleToggleExtra(extra)}
-                            className={`py-1.5 px-2 rounded-md flex items-center justify-between transition-all cursor-pointer border text-left ${
+                            className={`py-2 px-2.5 rounded-lg flex items-center justify-between transition-all cursor-pointer border text-left ${
                               isSelected
-                                ? 'bg-rose-50 text-rose-900 border-rose-300 font-black shadow-2xs ring-1 ring-rose-400'
-                                : 'bg-white text-stone-700 font-bold border-stone-200 hover:bg-stone-50 hover:border-stone-300'
+                                ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-2xs'
+                                : 'bg-[#FDFBF7] text-[#745240] font-medium border-[#E8D8D1] hover:bg-white'
                             }`}
                           >
-                            <div className="flex items-center gap-1 min-w-0">
-                              <span className="text-xs">{getExtraIcon(extra.name)}</span>
-                              <span className="text-[10px] truncate leading-tight">{extra.name}</span>
-                            </div>
-                            <span className={`text-[9px] font-mono shrink-0 ml-1 leading-none ${isSelected ? 'text-rose-700 font-black' : 'text-stone-500'}`}>
-                              +R$ {extra.price.toFixed(2)}
+                            <span className="text-xs truncate">{extra.name}</span>
+                            <span className={`text-[11px] font-mono shrink-0 ml-1 leading-none ${isSelected ? 'text-[#083D07] font-bold' : 'text-[#745240]'}`}>
+                              +R$ {extra.price.toFixed(2).replace('.', ',')}
                             </span>
                           </button>
                         );
@@ -6448,13 +6058,9 @@ function EditOrderModal({
                   type="button"
                   onClick={handleAddItem}
                   disabled={!selectedProductId && !selectedProductSearch.trim() && editingItemIndex === null}
-                  className={`w-full py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer ${
-                    editingItemIndex !== null
-                      ? 'bg-amber-500 hover:bg-amber-600 text-stone-950'
-                      : 'bg-[#745240] hover:bg-[#5c3a21] text-white'
-                  } disabled:opacity-40 disabled:cursor-not-allowed`}
+                  className="w-full py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] border border-[#D5AF7A]/40 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <Check size={14} className="stroke-[2.5]" />
+                  <Check size={15} className="stroke-[2.5]" />
                   <span>
                     {editingItemIndex !== null ? 'Salvar Alteração no Pedido' : 'Incluir no Pedido'}
                     {currentItemFinalPrice > 0 && ` (R$ ${currentItemFinalPrice.toFixed(2).replace('.', ',')} un.)`}
@@ -6463,13 +6069,13 @@ function EditOrderModal({
               </div>
             </div>
 
-            {/* Section 3: Financial Adjustments Compacto */}
-            <div className="bg-white p-2 rounded-lg border border-stone-200/90 shadow-2xs space-y-1.5">
-              <h4 className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">Ajustes Financeiros</h4>
+            {/* Section 3: Financial Adjustments */}
+            <div className="bg-white p-4 rounded-xl border border-[#E8D8D1] shadow-2xs space-y-2.5">
+              <h4 className="text-xs font-semibold text-[#44210F]">Ajustes Financeiros</h4>
               
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-emerald-700 uppercase tracking-wider">
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">
                     Desconto (- R$)
                   </label>
                   <input
@@ -6479,12 +6085,12 @@ function EditOrderModal({
                     value={discountAmount || ''}
                     onChange={(e) => setDiscountAmount(parseFloat(e.target.value) || 0)}
                     placeholder="0.00"
-                    className="w-full px-2 py-1 bg-emerald-50/20 rounded border border-emerald-200 text-xs font-bold text-emerald-900 outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#083D07] outline-none focus:border-[#083D07] transition-colors"
                   />
                 </div>
-                <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-amber-700 uppercase tracking-wider">
-                    Taxa Extra (+ R$)
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-[#745240]">
+                    Taxa Adicional (+ R$)
                   </label>
                   <input
                     type="number"
@@ -6493,50 +6099,50 @@ function EditOrderModal({
                     value={additionalAmount || ''}
                     onChange={(e) => setAdditionalAmount(parseFloat(e.target.value) || 0)}
                     placeholder="0.00"
-                    className="w-full px-2 py-1 bg-amber-50/20 rounded border border-amber-200 text-xs font-bold text-amber-900 outline-none focus:border-amber-500 transition-colors"
+                    className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="space-y-0.5">
-                <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">
-                  Obs. Taxa Adicional (Sai no Cupom)
+              <div className="space-y-1">
+                <label className="block text-[11px] font-medium text-[#745240]">
+                  Observação da Taxa Adicional (Sai no Cupom)
                 </label>
                 <input
                   type="text"
                   value={editReason}
                   onChange={(e) => setEditReason(e.target.value)}
-                  placeholder="Ex: Embalagem extra, taxa atendimento..."
-                  className="w-full px-2 py-1 bg-amber-50/20 rounded border border-amber-300 text-[11px] font-medium text-stone-900 outline-none focus:border-amber-600 transition-colors"
+                  placeholder="Ex: Embalagem especial, taxa de serviço..."
+                  className="w-full px-3 py-1.5 bg-[#FDFBF7] rounded-lg border border-[#E8D8D1] text-xs font-medium text-[#44210F] outline-none focus:border-[#083D07] transition-colors"
                 />
               </div>
             </div>
           </div>
 
-          {/* Section 4: Live Total Calculation & Actions Bar Integrada */}
-          <div className="mt-1 pt-1.5 border-t border-stone-200/80 flex items-center justify-between gap-2 bg-[#e5ddd4] text-[#44210f] p-2 rounded-lg shadow-sm shrink-0">
+          {/* Section 4: Actions Bar */}
+          <div className="mt-2 pt-2 border-t border-[#D5AF7A]/40 flex items-center justify-between gap-3 bg-[#E5DDD4] text-[#44210F] p-3 rounded-xl shadow-xs shrink-0 flex-wrap">
             <div>
-              <span className="block text-[8px] font-mono text-[#745240] uppercase">Total Recalculado</span>
+              <span className="block text-[10px] font-medium text-[#745240] uppercase">Total Recalculado</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-xl font-black text-rose-600 leading-none font-mono">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
+                <span className="text-xl font-bold text-[#083D07] leading-none font-mono">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
                 {orderType === 'entrega' && activeDeliveryFee > 0 && (
-                  <span className="text-[10px] text-sky-700 font-mono font-medium">(inclui R$ {activeDeliveryFee.toFixed(2).replace('.', ',')} entrega)</span>
+                  <span className="text-[11px] text-[#745240] font-mono">(inclui R$ {activeDeliveryFee.toFixed(2).replace('.', ',')} entrega)</span>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 rounded font-bold text-xs bg-stone-200 hover:bg-stone-300 text-stone-800 transition-colors cursor-pointer border border-stone-300"
+                className="px-4 py-2 rounded-lg font-semibold text-xs bg-white text-[#745240] border border-[#E8D8D1] hover:bg-[#FDFBF7] hover:text-[#44210F] transition-colors cursor-pointer"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-4 py-1.5 rounded font-bold text-xs bg-[#745240] hover:bg-[#5c3a21] text-white shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1 border border-[#5c3a21]"
+                className="px-5 py-2 rounded-lg font-bold text-xs bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] shadow-xs transition-all active:translate-y-px cursor-pointer flex items-center gap-1.5 border border-[#D5AF7A]/40"
               >
                 {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
