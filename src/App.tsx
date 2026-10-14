@@ -84,6 +84,25 @@ function App() {
   
   const { trackEvent } = useAnalytics();
 
+  // Last order placed on this phone (saved by the cart), so the customer can reopen order tracking
+  const readLastOrder = () => {
+    try {
+      const raw = localStorage.getItem('dobro_last_order');
+      if (!raw) return null;
+      const o = JSON.parse(raw);
+      if (!o?.code || !o?.at || Date.now() - o.at > 12 * 60 * 60 * 1000) return null;
+      return o as { id: number | string; code: string; at: number };
+    } catch { return null; }
+  };
+  const [lastOrder, setLastOrder] = useState(readLastOrder);
+  useEffect(() => {
+    const refresh = () => setLastOrder(readLastOrder());
+    window.addEventListener('dobro-last-order', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('dobro-last-order', refresh); window.removeEventListener('storage', refresh); };
+  }, []);
+  const dismissLastOrder = () => { try { localStorage.removeItem('dobro_last_order'); } catch { /* ignore */ } setLastOrder(null); };
+
   useEffect(() => {
     trackEvent('page_view');
   }, []);
@@ -342,6 +361,22 @@ function App() {
       {!businessStatus.loading && !businessStatus.isOpen && (
         <div className="bg-[#44210f] text-[#fdfbf7] text-center py-2 px-4 text-sm font-medium border-b border-[#d5af7a]/30">
           Estamos preparando a casa{businessStatus.todayLabel ? ` — hoje funcionamos das ${businessStatus.todayLabel}` : ''}. Você pode navegar pelo cardápio e preparar o seu pedido com calma!
+        </div>
+      )}
+
+      {lastOrder && (
+        <div className="bg-[#083d07] text-[#fdfbf7] px-4 py-2.5">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <span className="text-sm font-medium">Seu pedido {lastOrder.id ? `#${lastOrder.id}` : ''} está em andamento.</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <a href={`/track/${lastOrder.code}`} className="bg-[#fdfbf7] text-[#083d07] font-bold text-xs rounded-full px-3.5 py-1.5 hover:bg-[#e8d8d1] transition-colors">
+                Acompanhar pedido
+              </a>
+              <button onClick={dismissLastOrder} aria-label="Fechar aviso do pedido" className="p-1 text-[#fdfbf7]/70 hover:text-white cursor-pointer">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

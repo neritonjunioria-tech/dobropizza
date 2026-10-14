@@ -225,6 +225,7 @@ export default function Cart({
     const orderNumber = Math.floor(1000 + Math.random() * 9000);
 
     let newOrderId = null;
+    let newTrackingCode: string | null = null;
     let orderSavedSuccessfully = false;
     try {
       // The order goes through a database function: the public key cannot read orders or customers directly.
@@ -264,6 +265,7 @@ export default function Cart({
       if (data && data.length > 0) {
         newOrderId = data[0].id;
         setSavedOrderId(newOrderId);
+        newTrackingCode = data[0].tracking_code;
         setSavedTrackingCode(data[0].tracking_code);
         orderSavedSuccessfully = true;
       }
@@ -362,6 +364,14 @@ export default function Cart({
     text += `[PAGAMENTO]\n`;
     text += `Forma: ${pagamento}\n`;
     text += `-----------------------------------`;
+    if (newTrackingCode) {
+      text += `\n🔍 Acompanhe seu pedido:\n${window.location.origin}/track/${newTrackingCode}`;
+      // Keep the order on this phone so the customer can reopen the tracking page later
+      try {
+        localStorage.setItem('dobro_last_order', JSON.stringify({ id: newOrderId, code: newTrackingCode, at: Date.now() }));
+        window.dispatchEvent(new Event('dobro-last-order'));
+      } catch { /* private mode: tracking link still goes in the WhatsApp message */ }
+    }
 
     // Envio automático oficial do resumo para a pizzaria e cliente (impossibilita alteração pelo cliente)
     fetch('/.netlify/functions/send-order-whatsapp', {
@@ -374,8 +384,8 @@ export default function Cart({
       })
     }).catch(err => console.warn('[Cart] Aviso no envio automático WhatsApp:', err));
 
-    const contactText = `Olá DOBRO Pizzas! Gostaria de falar sobre o meu pedido #${newOrderId || orderNumber}.`;
-    const contactWappUrl = `https://wa.me/${RESTAURANT_WHATSAPP_PHONE}?text=${encodeURIComponent(contactText)}`;
+    // The customer sends the full summary to the pizzeria on WhatsApp to confirm the order
+    const contactWappUrl = `https://wa.me/${RESTAURANT_WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
 
     trackEvent('purchase', { total_value: total, order_id: newOrderId || orderNumber });
 
@@ -388,29 +398,22 @@ export default function Cart({
   if (isSuccess) {
     const successActionButtons = (
       <div className="w-full max-w-xs mx-auto flex flex-col gap-2.5 mt-3">
-        {savedOrderId && (
-          <a
-            href={`/track/${savedTrackingCode}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full bg-[#8b0000] hover:bg-[#6b0000] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm transition-all cursor-pointer"
-          >
-            🔍 Acompanhar Pedido
-          </a>
-        )}
         <a
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => {
-            onClearCart();
-            setIsSuccess(false);
-            onClose();
-          }}
-          className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm transition-all cursor-pointer"
+          className="w-full bg-[#25D366] hover:bg-[#1EBE5D] text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-1.5 text-sm shadow-sm transition-all cursor-pointer"
         >
-          💬 Falar com a Pizzaria no WhatsApp
+          Enviar pedido no WhatsApp
         </a>
+        {savedTrackingCode && (
+          <a
+            href={`/track/${savedTrackingCode}`}
+            className="w-full bg-white border border-[#083d07] text-[#083d07] hover:bg-[#083d07] hover:text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs shadow-sm transition-all cursor-pointer"
+          >
+            Acompanhar pedido
+          </a>
+        )}
         <button
           onClick={() => {
             setIsSuccess(false);
@@ -432,8 +435,8 @@ export default function Cart({
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2.5">
               <Check className="w-6 h-6 text-green-600" />
             </div>
-            <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} Confirmado!</h2>
-            <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipe.</p>
+            <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} registrado!</h2>
+            <p className="text-gray-500 text-xs mb-1">Falta só um passo: toque em <strong>Enviar pedido no WhatsApp</strong> para mandar o resumo à pizzaria e confirmar.</p>
             {successActionButtons}
           </div>
         </div>
@@ -449,8 +452,8 @@ export default function Cart({
               <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-2.5">
                 <Check className="w-6 h-6 text-green-600" />
               </div>
-              <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} Confirmado!</h2>
-              <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipe.</p>
+              <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} registrado!</h2>
+              <p className="text-gray-500 text-xs mb-1">Falta só um passo: toque em <strong>Enviar pedido no WhatsApp</strong> para mandar o resumo à pizzaria e confirmar.</p>
               {successActionButtons}
             </div>
           </div>

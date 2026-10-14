@@ -25,9 +25,13 @@ export default async (req: Request) => {
 
     // Dispara para webhook ou Evolution API
     // Se a Evolution API URL estiver configurada:
-    const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://funnyeagle-evolution.cloudfy.live';
-    const evolutionApiKey = process.env.EVOLUTION_API_KEY || '1E0FE7D2CCFB-4757-B948-F350F94E227F';
-    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agentedobropizza';
+    // Only DOBRO's own WhatsApp robot (Netlify env). No fallback to any other client's server.
+    const evolutionUrl = process.env.EVOLUTION_API_URL;
+    const evolutionApiKey = process.env.EVOLUTION_API_KEY;
+    const instanceName = process.env.EVOLUTION_INSTANCE_NAME;
+    if (!evolutionUrl || !evolutionApiKey || !instanceName) {
+      return new Response(JSON.stringify({ success: false, skipped: true, message: 'Envio de WhatsApp não configurado' }), { status: 200, headers });
+    }
 
     let evolutionResult = null;
     try {

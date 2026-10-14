@@ -24,10 +24,16 @@ export default async (req: Request) => {
       return new Response(JSON.stringify({ success: false, message: 'message é obrigatória' }), { status: 400, headers });
     }
 
-    const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://funnyeagle-evolution.cloudfy.live';
-    const evolutionApiKey = process.env.EVOLUTION_API_KEY || '1E0FE7D2CCFB-4757-B948-F350F94E227F';
-    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agentedobropizza';
+    // Only DOBRO's own WhatsApp robot, configured in DOBRO's Netlify. No fallback to any other client's server.
+    const evolutionUrl = process.env.EVOLUTION_API_URL;
+    const evolutionApiKey = process.env.EVOLUTION_API_KEY;
+    const instanceName = process.env.EVOLUTION_INSTANCE_NAME;
     const pizzeriaPhone = '5541995984072';
+
+    if (!evolutionUrl || !evolutionApiKey || !instanceName) {
+      // Robot not set up yet: the customer sends the summary from the WhatsApp button on the order screen
+      return new Response(JSON.stringify({ success: false, skipped: true, message: 'Envio automático não configurado' }), { status: 200, headers });
+    }
 
     // 1. Enviar para o número da pizzaria (garante que a pizzaria recebe o resumo inalterável)
     let puzzeriaResult = null;
