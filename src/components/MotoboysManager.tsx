@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Bike, Plus, X, Check, AlertCircle, CheckCircle2, Edit2, Trash2,
-  RefreshCw, Phone, Wallet, RotateCcw, Lock, Power, Printer
+  RefreshCw, Phone, Wallet, RotateCcw, Lock, Power, Printer, MapPin
 } from 'lucide-react';
 import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { supabase } from '../lib/supabase';
@@ -52,7 +52,7 @@ interface MotoboysManagerProps {
   onChange?: () => void;
 }
 
-type SectionTab = 'entregas' | 'motoboys' | 'fechamentos' | 'relatorio';
+type SectionTab = 'entregas' | 'motoboys' | 'bairros' | 'fechamentos' | 'relatorio';
 type DeliveryFilter = 'todos' | 'sem' | DeliveryProvider;
 
 const ORDER_COLUMNS =
@@ -145,6 +145,15 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
   const [settleDiscount, setSettleDiscount] = useState('');
   const [settleNotes, setSettleNotes] = useState('');
 
+  // Bairros e Taxas de Entrega
+  const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
+  const [editingZoneId, setEditingZoneId] = useState<string | null>(null);
+  const [zoneFormName, setZoneFormName] = useState('');
+  const [zoneFormFee, setZoneFormFee] = useState('');
+  const [zoneFormActive, setZoneFormActive] = useState(true);
+  const [showZoneModal, setShowZoneModal] = useState(false);
+  const [savingZone, setSavingZone] = useState(false);
+
   const loadData = async (isBackground = false) => {
     if (!isBackground) setLoading(true);
     try {
@@ -158,7 +167,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
       if (from) periodQuery = periodQuery.gte('created_at', from.toISOString());
       if (to) periodQuery = periodQuery.lte('created_at', to.toISOString());
 
-      const [motoboysRes, periodRes, openRes, settlementsRes] = await Promise.all([
+      const [motoboysRes, periodRes, openRes, settlementsRes, zonesRes] = await Promise.all([
         supabase.from('motoboys').select('*').order('name', { ascending: true }),
         periodQuery,
         // Entregas de motoboy próprio ainda não fechadas (independente do período)
@@ -169,6 +178,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
           .is('motoboy_settlement_id', null)
           .order('created_at', { ascending: true }),
         supabase.from('motoboy_settlements').select('*').order('created_at', { ascending: false }).limit(200),
+        supabase.from('delivery_zones').select('*').order('sort_order', { ascending: true }),
       ]);
 
       const firstError = motoboysRes.error || periodRes.error || openRes.error || settlementsRes.error;
@@ -185,6 +195,9 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
       setDeliveries((periodRes.data || []).map(mapOrderRow));
       setOpenDeliveries((openRes.data || []).map(mapOrderRow).filter(o => isOrderActive(o.status)));
       setSettlements(settlementsRes.data || []);
+      if (zonesRes.data) {
+        setDeliveryZones(zonesRes.data);
+      }
     } catch (err: any) {
       console.error('Erro ao carregar controle de motoboys:', err);
       setFeedback({ type: 'error', message: 'Erro ao carregar dados: ' + (err.message || String(err)) });
@@ -340,6 +353,86 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
           ? `"${motoboy.name}" já tem entregas ou fechamentos registrados e não pode ser excluído. Desative-o para que deixe de aparecer no despacho.`
           : 'Erro ao excluir: ' + (err.message || String(err)),
       });
+    }
+  };
+
+  // ---------------------------------------------------------------------------
+  // Gestão de Bairros e Taxas de Entrega
+  // ---------------------------------------------------------------------------
+  const handleToggleZoneActive = async (zone: any) => {
+    try {
+      const nextActive = !zone.is_active;
+      setDeliveryZones(prev => prev.map(z => z.id === zone.id ? { ...z, is_active: nextActive } : z));
+      const { error } = await supabase.from('delivery_zones').update({ is_active: nextActive }).eq('id', zone.id);
+      if (error) throw error;
+      setFeedback({ type: 'success', message: `Bairro "${zone.name}" ${nextActive ? 'ativado' : 'pausado'} com sucesso.` });
+      refreshAll();
+    } catch (err: any) {
+      console.error('Erro ao alternar status do bairro:', err);
+      setFeedback({ type: 'error', message: 'Erro ao atualizar bairro: ' + (err.message || String(err)) });
+      loadData(true);
+    }
+  };
+
+  const handleSaveZone = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!zoneFormName.trim()) return;
+    const feeNum = parseFloat(zoneFormFee.replace(',', '.'));
+    if (isNaN(feeNum) || feeNum < 0) {
+      setFeedback({ type: 'error', message: 'Informe uma taxa de entrega válida.' });
+      return;
+    }
+
+    setSavingZone(true);
+    try {
+      if (editingZoneId) {
+        const { error } = await supabase
+          .from('delivery_zones')
+          .update({
+            name: zoneFormName.trim(),
+            fee: Number(feeNum.toFixed(2)),
+            is_active: zoneFormActive,
+          })
+          .eq('id', editingZoneId);
+        if (error) throw error;
+        setFeedback({ type: 'success', message: `Bairro "${zoneFormName}" atualizado com sucesso!` });
+      } else {
+        const maxSort = deliveryZones.reduce((max, z) => Math.max(max, z.sort_order || 0), 0);
+        const { error } = await supabase
+          .from('delivery_zones')
+          .insert({
+            name: zoneFormName.trim(),
+            fee: Number(feeNum.toFixed(2)),
+            is_active: zoneFormActive,
+            sort_order: maxSort + 1,
+          });
+        if (error) throw error;
+        setFeedback({ type: 'success', message: `Bairro "${zoneFormName}" cadastrado com sucesso!` });
+      }
+      setShowZoneModal(false);
+      setEditingZoneId(null);
+      setZoneFormName('');
+      setZoneFormFee('');
+      refreshAll();
+    } catch (err: any) {
+      console.error('Erro ao salvar bairro:', err);
+      setFeedback({ type: 'error', message: 'Erro ao salvar bairro: ' + (err.message || String(err)) });
+    } finally {
+      setSavingZone(false);
+    }
+  };
+
+  const handleDeleteZone = async (zone: any) => {
+    if (!window.confirm(`Deseja realmente excluir o bairro "${zone.name}" das zonas de entrega?`)) return;
+    try {
+      const { error } = await supabase.from('delivery_zones').delete().eq('id', zone.id);
+      if (error) throw error;
+      setFeedback({ type: 'success', message: `Bairro "${zone.name}" removido com sucesso.` });
+      setDeliveryZones(prev => prev.filter(z => z.id !== zone.id));
+      refreshAll();
+    } catch (err: any) {
+      console.error('Erro ao remover bairro:', err);
+      setFeedback({ type: 'error', message: 'Erro ao remover bairro: ' + (err.message || String(err)) });
     }
   };
 
@@ -519,13 +612,29 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
           >
             <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
           </button>
-          <button
-            onClick={() => openMotoboyForm('new')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60"
-          >
-            <Plus size={15} className="stroke-[2.5]" />
-            <span>NOVO MOTOBOY</span>
-          </button>
+          {section === 'bairros' ? (
+            <button
+              onClick={() => {
+                setEditingZoneId(null);
+                setZoneFormName('');
+                setZoneFormFee('7,90');
+                setZoneFormActive(true);
+                setShowZoneModal(true);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60"
+            >
+              <Plus size={15} className="stroke-[2.5]" />
+              <span>NOVO BAIRRO</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => openMotoboyForm('new')}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60"
+            >
+              <Plus size={15} className="stroke-[2.5]" />
+              <span>NOVO MOTOBOY</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -601,6 +710,10 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
         <button type="button" onClick={() => setSection('motoboys')} className={pillClass(section === 'motoboys')}>
           <span>Motoboys</span>
           <span className="opacity-70 tabular-nums font-normal">({motoboys.length})</span>
+        </button>
+        <button type="button" onClick={() => setSection('bairros')} className={pillClass(section === 'bairros')}>
+          <span>Bairros & Taxas</span>
+          <span className="opacity-70 tabular-nums font-normal">({deliveryZones.length})</span>
         </button>
         <button type="button" onClick={() => setSection('fechamentos')} className={pillClass(section === 'fechamentos')}>
           <span>Fechamentos</span>
@@ -875,6 +988,123 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
         </div>
       )}
 
+      {/* BAIRROS & TAXAS DE ENTREGA */}
+      {section === 'bairros' && (
+        <div className="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs space-y-4 mt-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-stone-100">
+            <div>
+              <h3 className="text-sm font-bold text-stone-900 flex items-center gap-1.5">
+                <MapPin size={16} className="text-[#d5af7a]" />
+                Bairros e Taxas de Entrega
+              </h3>
+              <p className="text-xs text-stone-500 mt-0.5">
+                Altere valores, ative/pause bairros e adicione novas regiões atendidas pela DOBRO Pizzas.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingZoneId(null);
+                setZoneFormName('');
+                setZoneFormFee('7,90');
+                setZoneFormActive(true);
+                setShowZoneModal(true);
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg text-xs font-bold font-mono transition-colors cursor-pointer self-start sm:self-auto shadow-xs"
+            >
+              <Plus size={14} />
+              <span>Adicionar Bairro</span>
+            </button>
+          </div>
+
+          {deliveryZones.length === 0 ? (
+            <div className="py-12 text-center flex flex-col items-center justify-center text-stone-400 bg-stone-50/50 rounded-xl border border-dashed border-stone-200">
+              <MapPin size={36} className="mb-2 opacity-40 text-stone-500" />
+              <p className="font-bold text-stone-700 text-sm">Nenhum bairro cadastrado</p>
+              <p className="text-stone-500 font-mono text-xs mt-0.5">Clique em Adicionar Bairro para cadastrar as zonas de entrega.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-stone-200">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="border-b border-stone-200 text-[11px] font-mono font-bold text-stone-600 uppercase tracking-wider bg-stone-50">
+                    <th className="py-3 px-4 w-12 text-center">#</th>
+                    <th className="py-3 px-4">Bairro / Região</th>
+                    <th className="py-3 px-4">Taxa de Frete</th>
+                    <th className="py-3 px-4 text-center">Status no Cardápio</th>
+                    <th className="py-3 px-4 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="text-xs font-mono divide-y divide-stone-100">
+                  {deliveryZones.map((z, idx) => (
+                    <tr key={z.id} className={`hover:bg-stone-50/80 transition-colors ${!z.is_active ? 'opacity-60 bg-stone-50/40' : ''}`}>
+                      <td className="py-3 px-4 text-center font-bold text-stone-400 tabular-nums">{idx + 1}</td>
+                      <td className="py-3 px-4">
+                        <div className="font-bold text-stone-900 text-xs sm:text-sm font-sans flex items-center gap-1.5">
+                          <MapPin size={13} className={z.is_active ? "text-emerald-600" : "text-stone-400"} />
+                          <span>{z.name}</span>
+                          {idx === 0 && (
+                            <span className="text-[9px] font-mono font-bold bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded ml-1">
+                              1º da lista
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-4">
+                        <span className="font-black text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200 text-sm tabular-nums">
+                          R$ {Number(z.fee || 0).toFixed(2).replace('.', ',')}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleZoneActive(z)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold font-sans transition-colors cursor-pointer border ${
+                            z.is_active
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                              : 'bg-stone-100 text-stone-600 border-stone-300 hover:bg-stone-200'
+                          }`}
+                          title="Clique para alternar entre ativo e pausado"
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full ${z.is_active ? 'bg-emerald-600' : 'bg-stone-400'}`} />
+                          <span>{z.is_active ? 'Ativo' : 'Pausado'}</span>
+                        </button>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingZoneId(z.id);
+                              setZoneFormName(z.name);
+                              setZoneFormFee(Number(z.fee || 0).toFixed(2).replace('.', ','));
+                              setZoneFormActive(z.is_active);
+                              setShowZoneModal(true);
+                            }}
+                            className="p-1.5 text-stone-600 hover:text-stone-900 bg-stone-50 hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
+                            title="Editar Bairro / Valor"
+                          >
+                            <Edit2 size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteZone(z)}
+                            className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-md transition-colors cursor-pointer"
+                            title="Remover Bairro"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* MODAL: CADASTRO DE MOTOBOY */}
       {editingMotoboy && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setEditingMotoboy(null)}>
@@ -1067,6 +1297,92 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* MODAL: CADASTRO / EDIÇÃO DE BAIRRO */}
+      {showZoneModal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowZoneModal(false)}>
+          <form
+            onSubmit={handleSaveZone}
+            className="bg-white rounded-xl w-full max-w-sm shadow-2xl border border-stone-200 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b border-stone-100 bg-stone-50/50">
+              <h2 className="text-sm font-bold text-stone-900 flex items-center gap-1.5">
+                <MapPin size={16} className="text-[#d5af7a]" />
+                {editingZoneId ? 'Editar Bairro / Taxa' : 'Novo Bairro de Entrega'}
+              </h2>
+              <button type="button" onClick={() => setShowZoneModal(false)} className="text-stone-400 hover:text-stone-700 cursor-pointer">
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3.5">
+              <div className="space-y-1">
+                <label className="block text-[11px] font-semibold text-stone-700">Nome do Bairro / Região *</label>
+                <input
+                  type="text"
+                  required
+                  autoFocus
+                  placeholder="Ex: Braga"
+                  value={zoneFormName}
+                  onChange={e => setZoneFormName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-[11px] font-semibold text-stone-700">Taxa de Frete (R$) *</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400 font-mono">R$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    required
+                    placeholder="7,90"
+                    value={zoneFormFee}
+                    onFocus={e => e.target.select()}
+                    onChange={e => setZoneFormFee(e.target.value.replace(/[^0-9.,]/g, ''))}
+                    className="w-full h-9 pl-9 pr-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
+                  />
+                </div>
+                <span className="text-[10px] text-stone-400 font-mono">Exemplo: 7,90</span>
+              </div>
+
+              <div className="flex items-center justify-between pt-2 border-t border-stone-100">
+                <div>
+                  <span className="block text-xs font-bold text-stone-800">Ativo para Pedidos</span>
+                  <span className="text-[10px] text-stone-400">Aparece na seleção do cliente</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setZoneFormActive(!zoneFormActive)}
+                  className={`w-11 h-6 rounded-full transition-colors relative cursor-pointer ${zoneFormActive ? 'bg-emerald-600' : 'bg-stone-300'}`}
+                >
+                  <span className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${zoneFormActive ? 'left-6' : 'left-1'}`} />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-stone-100 bg-stone-50/50 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowZoneModal(false)}
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold text-stone-600 hover:bg-stone-200 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                disabled={savingZone}
+                className="px-4 py-1.5 rounded-lg text-xs font-black font-mono tracking-wide bg-[#083d07] hover:bg-[#0b520a] text-white shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                {savingZone ? <RefreshCw size={13} className="animate-spin" /> : <Check size={13} />}
+                <span>{editingZoneId ? 'Salvar Alterações' : 'Cadastrar Bairro'}</span>
+              </button>
+            </div>
+          </form>
         </div>
       )}
 

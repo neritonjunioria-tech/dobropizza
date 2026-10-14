@@ -81,7 +81,7 @@ import AgentManager from '../components/AgentManager';
 import { BillingManager } from '../components/BillingManager';
 import MotoboysManager from '../components/MotoboysManager';
 import MotoboyAssignModal from '../components/MotoboyAssignModal';
-import { Motoboy, isDeliveryOrderType, getDeliveryResponsibleLabel } from '../utils/motoboys';
+import { Motoboy, DeliveryProvider, isDeliveryOrderType, getDeliveryResponsibleLabel } from '../utils/motoboys';
 import { SubscriptionLockoutOverlay } from '../components/SubscriptionLockoutOverlay';
 import ExtrasManager from '../components/ExtrasManager';
 import { useSubscription } from '../hooks/useSubscription';
@@ -104,7 +104,7 @@ const safeGetDate = (dStr: any): Date | null => {
 
 const formatCurrency = (val: any): string => {
   const num = typeof val === 'number' ? val : Number(val) || 0;
-  return `R$ ${num.toFixed(2)}`;
+  return `R$ ${num.toFixed(2).replace('.', ',')}`;
 };
 
 const safeParseItems = (items: any): any[] => {
@@ -276,6 +276,12 @@ export default function AdminDashboard() {
       delivery_address: updatedOrder.delivery_address || updatedOrder.deliveryAddress || '',
       deliveryZone: updatedOrder.delivery_zone || updatedOrder.deliveryZone || '',
       delivery_zone: updatedOrder.delivery_zone || updatedOrder.deliveryZone || '',
+      deliveryProvider: updatedOrder.deliveryProvider !== undefined ? updatedOrder.deliveryProvider : (updatedOrder.delivery_provider ?? null),
+      delivery_provider: updatedOrder.deliveryProvider !== undefined ? updatedOrder.deliveryProvider : (updatedOrder.delivery_provider ?? null),
+      motoboyId: updatedOrder.motoboyId !== undefined ? updatedOrder.motoboyId : (updatedOrder.motoboy_id ?? null),
+      motoboy_id: updatedOrder.motoboyId !== undefined ? updatedOrder.motoboyId : (updatedOrder.motoboy_id ?? null),
+      deliveryCost: updatedOrder.deliveryCost !== undefined ? (updatedOrder.deliveryCost === null ? null : Number(updatedOrder.deliveryCost)) : (updatedOrder.delivery_cost ?? null),
+      delivery_cost: updatedOrder.deliveryCost !== undefined ? (updatedOrder.deliveryCost === null ? null : Number(updatedOrder.deliveryCost)) : (updatedOrder.delivery_cost ?? null),
       items: updatedOrder.items,
       discountAmount: Number(updatedOrder.discount_amount ?? updatedOrder.discountAmount ?? 0),
       discount_amount: Number(updatedOrder.discount_amount ?? updatedOrder.discountAmount ?? 0),
@@ -349,6 +355,9 @@ export default function AdminDashboard() {
         payment_method: formattedUpdatedOrder.paymentMethod,
         delivery_address: formattedUpdatedOrder.deliveryAddress,
         delivery_zone: formattedUpdatedOrder.deliveryZone,
+        delivery_provider: formattedUpdatedOrder.delivery_provider,
+        motoboy_id: formattedUpdatedOrder.motoboy_id,
+        delivery_cost: formattedUpdatedOrder.delivery_cost,
         items: formattedUpdatedOrder.items,
         discount_amount: formattedUpdatedOrder.discountAmount,
         additional_amount: formattedUpdatedOrder.additionalAmount,
@@ -1229,9 +1238,11 @@ export default function AdminDashboard() {
 
   // Toda entrega precisa de um motoboy (próprio ou plataforma) antes de sair ou ser concluída
   const changeOrderStatus = (order: any, status: string) => {
+    const rawType = order.orderType || order.order_type;
+    const provider = order.deliveryProvider || order.delivery_provider;
     const needsMotoboy =
-      isDeliveryOrderType(order.orderType) &&
-      !order.deliveryProvider &&
+      isDeliveryOrderType(rawType) &&
+      !provider &&
       (status === 'Saiu para Entrega' || status === 'Finalizado');
     if (needsMotoboy) {
       setAssigningDelivery({ order, nextStatus: status });
@@ -1241,23 +1252,29 @@ export default function AdminDashboard() {
   };
 
   const renderMotoboyBadge = (order: any) => {
-    if (!isDeliveryOrderType(order.orderType)) return null;
-    const responsible = getDeliveryResponsibleLabel(order.deliveryProvider, order.motoboyId, motoboys);
+    const rawType = order.orderType || order.order_type;
+    if (!isDeliveryOrderType(rawType)) return null;
+    const provider = order.deliveryProvider || order.delivery_provider;
+    const motoboyId = order.motoboyId || order.motoboy_id;
+    const cost = order.deliveryCost !== undefined && order.deliveryCost !== null ? order.deliveryCost : order.delivery_cost;
+    const responsible = getDeliveryResponsibleLabel(provider, motoboyId, motoboys);
     return (
       <button
         type="button"
         onClick={() => setAssigningDelivery({ order })}
-        title={responsible ? 'Alterar motoboy da entrega' : 'Vincular motoboy à entrega'}
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border cursor-pointer transition-colors ${
+        title={responsible ? 'Alterar motoboy da entrega' : 'Vincular motoboy à entrega imediatamente'}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-bold border cursor-pointer transition-all ${
           responsible
-            ? 'bg-white text-stone-800 border-stone-200 hover:bg-stone-100'
-            : 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200'
+            ? 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100 shadow-2xs'
+            : 'bg-amber-100 text-amber-950 border-amber-300 hover:bg-amber-200 animate-pulse'
         }`}
       >
-        <Bike size={12} />
-        <span>{responsible || 'Sem motoboy'}</span>
-        {responsible && order.deliveryCost !== null && order.deliveryCost !== undefined && (
-          <span className="font-normal text-stone-500 tabular-nums">R$ {Number(order.deliveryCost).toFixed(2)}</span>
+        <Bike size={13} className={responsible ? 'text-emerald-700' : 'text-amber-700'} />
+        <span>{responsible || '+ Vincular Motoboy'}</span>
+        {responsible && cost !== null && cost !== undefined && (
+          <span className="font-bold text-emerald-800 tabular-nums">
+            R$ {Number(cost).toFixed(2).replace('.', ',')}
+          </span>
         )}
       </button>
     );
@@ -4639,7 +4656,7 @@ export default function AdminDashboard() {
 
                 {/* Footer */}
                 <div style={{ textAlign: 'center', marginTop: '8px', paddingTop: '4px', borderTop: '1px solid #000', fontSize: '10px', fontWeight: 'normal' }}>
-                  <p style={{ margin: 0 }}>Obrigado por fazer um pedido de DOBRO Pizzas</p>
+                  <p style={{ margin: 0 }}>Obrigado por fazer um pedido na DOBRO Pizzas</p>
                 </div>
               </div>
             </div>
@@ -4647,7 +4664,7 @@ export default function AdminDashboard() {
             <div style={{ padding: '12px 20px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '10px', flexShrink: 0 }}>
               <button
                 onClick={handleConfirmPrint}
-                style={{ flex: 1, backgroundColor: '#083d07', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ flex: 1, backgroundColor: '#745240', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
               >
                 <Printer size={16} /> Imprimir
               </button>
@@ -4788,7 +4805,7 @@ export default function AdminDashboard() {
 
             {/* Footer */}
             <div style={{ textAlign: 'center', marginTop: '10px', paddingTop: '6px', borderTop: '1px solid #000', fontSize: '10pt', fontWeight: 'normal' }}>
-              <p style={{ margin: 0 }}>Obrigado por fazer um pedido de DOBRO Pizzas</p>
+              <p style={{ margin: 0 }}>Obrigado por fazer um pedido na DOBRO Pizzas</p>
             </div>
           </div>
         </div>
@@ -4797,6 +4814,7 @@ export default function AdminDashboard() {
       <EditOrderModal
         order={editingOrder}
         menuItems={menuItems && menuItems.length > 0 ? menuItems : ALL_MENU_ITEMS}
+        motoboys={motoboys}
         onClose={() => setEditingOrder(null)}
         onSave={handleSaveOrderEdit}
       />
@@ -4804,7 +4822,16 @@ export default function AdminDashboard() {
 
     {assigningDelivery && (
       <MotoboyAssignModal
-        order={assigningDelivery.order}
+        order={{
+          id: assigningDelivery.order.id,
+          customerName: assigningDelivery.order.customerName || assigningDelivery.order.customer_name,
+          deliveryAddress: assigningDelivery.order.deliveryAddress || assigningDelivery.order.delivery_address,
+          deliveryZone: assigningDelivery.order.deliveryZone || assigningDelivery.order.delivery_zone,
+          deliveryProvider: assigningDelivery.order.deliveryProvider || assigningDelivery.order.delivery_provider,
+          motoboyId: assigningDelivery.order.motoboyId || assigningDelivery.order.motoboy_id,
+          deliveryCost: assigningDelivery.order.deliveryCost !== undefined && assigningDelivery.order.deliveryCost !== null ? assigningDelivery.order.deliveryCost : assigningDelivery.order.delivery_cost,
+          motoboySettlementId: assigningDelivery.order.motoboySettlementId || assigningDelivery.order.motoboy_settlement_id,
+        }}
         motoboys={motoboys}
         nextStatus={assigningDelivery.nextStatus}
         onClose={() => setAssigningDelivery(null)}
@@ -4825,7 +4852,19 @@ export default function AdminDashboard() {
   );
 }
 
-function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, menuItems: any[], onClose: () => void, onSave: (updatedOrder: any) => Promise<void> }) {
+function EditOrderModal({
+  order,
+  menuItems,
+  motoboys = [],
+  onClose,
+  onSave
+}: {
+  order: any;
+  menuItems: any[];
+  motoboys?: Motoboy[];
+  onClose: () => void;
+  onSave: (updatedOrder: any) => Promise<void>;
+}) {
   const rawCustomerName = (order.customerName || order.customer_name || '').toString();
   const nifMatch = rawCustomerName.match(/\((?:NIF|CPF):\s*([^)]+)\)/i);
   const initialNif = (order.nif || (nifMatch ? nifMatch[1] : '')).toString().trim();
@@ -4846,6 +4885,44 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
     if (raw === 'entrega' || raw === 'delivery') return 'entrega';
     return normalizeOrderType(order.orderType || order.order_type);
   });
+
+  // Estado de Motoboy / Logística de Entrega
+  const initialProvider = (order.deliveryProvider || order.delivery_provider || (order.orderType === 'entrega' || order.order_type === 'entrega' ? 'proprio' : 'none')) as DeliveryProvider | 'none';
+  const [deliveryProvider, setDeliveryProvider] = useState<DeliveryProvider | 'none'>(initialProvider);
+  const [motoboyId, setMotoboyId] = useState<string>(order.motoboyId || order.motoboy_id || '');
+  const [deliveryCost, setDeliveryCost] = useState<string>(() => {
+    const c = order.deliveryCost ?? order.delivery_cost;
+    if (c !== null && c !== undefined && c !== '') {
+      return Number(c).toFixed(2).replace('.', ',');
+    }
+    const found = (order.motoboyId || order.motoboy_id) ? motoboys.find(m => m.id === (order.motoboyId || order.motoboy_id)) : null;
+    return found?.default_fee ? Number(found.default_fee).toFixed(2).replace('.', ',') : '10,00';
+  });
+  const [costTouched, setCostTouched] = useState(order.deliveryCost !== null && order.deliveryCost !== undefined && order.deliveryCost !== '');
+
+  const handleSelectProvider = (p: DeliveryProvider | 'none') => {
+    setDeliveryProvider(p);
+    if (!costTouched) {
+      if (p === 'proprio' && motoboyId) {
+        const found = motoboys.find(m => m.id === motoboyId);
+        setDeliveryCost(found?.default_fee ? Number(found.default_fee).toFixed(2).replace('.', ',') : '10,00');
+      } else if (p === 'none') {
+        setDeliveryCost('0,00');
+      } else {
+        setDeliveryCost('10,00');
+      }
+    }
+  };
+
+  const handleSelectMotoboy = (id: string) => {
+    setMotoboyId(id);
+    if (!costTouched && id) {
+      const found = motoboys.find(m => m.id === id);
+      if (found?.default_fee) {
+        setDeliveryCost(Number(found.default_fee).toFixed(2).replace('.', ','));
+      }
+    }
+  };
 
   const [zones, setZones] = useState<{ id: string; name: string; fee: number }[]>([]);
   const [loadingZones, setLoadingZones] = useState(false);
@@ -5399,6 +5476,11 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
       ? `${customerName.trim()} (CPF: ${customerNif.trim()})`
       : customerName.trim();
 
+    const numCost = parseFloat(deliveryCost.replace(',', '.'));
+    const finalCost = isNaN(numCost) ? null : Number(numCost.toFixed(2));
+    const effectiveProvider = (orderType === 'entrega' && deliveryProvider !== 'none') ? deliveryProvider : null;
+    const effectiveMotoboyId = (orderType === 'entrega' && deliveryProvider === 'proprio' && motoboyId) ? motoboyId : null;
+
     const updatedPayload = {
       ...order,
       customer_name: finalCustomerName,
@@ -5413,6 +5495,12 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
       deliveryAddress: orderType === 'entrega' ? deliveryAddress : '',
       delivery_zone: orderType === 'entrega' ? deliveryZone : '',
       deliveryZone: orderType === 'entrega' ? deliveryZone : '',
+      delivery_provider: effectiveProvider,
+      deliveryProvider: effectiveProvider,
+      motoboy_id: effectiveMotoboyId,
+      motoboyId: effectiveMotoboyId,
+      delivery_cost: orderType === 'entrega' && effectiveProvider ? finalCost : null,
+      deliveryCost: orderType === 'entrega' && effectiveProvider ? finalCost : null,
       items: items,
       discount_amount: Number(discountAmount) || 0,
       additional_amount: Number(additionalAmount) || 0,
@@ -5483,14 +5571,14 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
       onClick={onClose}
     >
       <div 
-        className="bg-stone-100 rounded-xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-[#0b520a]"
+        className="bg-stone-100 rounded-xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-[#d5af7a]/60"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header Compacto */}
         <div className="px-3.5 py-2 bg-[#e5ddd4] text-[#44210f] flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
-            <div className="p-1 bg-[#0b520a] text-rose-500 rounded border border-stone-700">
+            <div className="p-1 bg-[#745240] text-amber-100 rounded border border-[#5c3a21]">
               <Edit3 size={14} />
             </div>
             <div>
@@ -5500,37 +5588,37 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-stone-400 hover:text-white bg-[#083d07] hover:bg-rose-600 rounded transition-colors cursor-pointer border border-[#0b520a] hover:border-rose-500"
+            className="p-1 text-stone-500 hover:text-white bg-stone-200 hover:bg-rose-600 rounded transition-colors cursor-pointer border border-stone-300 hover:border-rose-500"
           >
             <X size={14} />
           </button>
         </div>
 
         {/* Real-time total summary bar Compacto */}
-        <div className="bg-[#E8D8D1] px-3.5 py-1.5 border-b border-[#D5AF7A] flex items-center justify-between text-xs text-[#083D07] font-bold shrink-0">
+        <div className="bg-[#E8D8D1] px-3.5 py-1.5 border-b border-[#D5AF7A] flex items-center justify-between text-xs text-[#745240] font-bold shrink-0">
           <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
-            <span className="text-stone-300">
-              Subtotal: <strong className="text-white font-bold">R$ {subtotal.toFixed(2)}</strong>
+            <span className="text-[#5c3a21]">
+              Subtotal: <strong className="text-[#44210f] font-bold">R$ {subtotal.toFixed(2).replace('.', ',')}</strong>
             </span>
             {orderType === 'entrega' && activeDeliveryFee > 0 && (
-              <span className="text-sky-400 font-semibold">
-                (+) Ent: R$ {activeDeliveryFee.toFixed(2)}
+              <span className="text-sky-700 font-semibold">
+                (+) Ent: R$ {activeDeliveryFee.toFixed(2).replace('.', ',')}
               </span>
             )}
             {Number(additionalAmount) > 0 && (
-              <span className="text-amber-400 font-semibold">
-                (+) Adic: R$ {Number(additionalAmount).toFixed(2)}
+              <span className="text-amber-800 font-semibold">
+                (+) Adic: R$ {Number(additionalAmount).toFixed(2).replace('.', ',')}
               </span>
             )}
             {Number(discountAmount) > 0 && (
-              <span className="text-emerald-400 font-semibold">
-                (-) Desc: R$ {Number(discountAmount).toFixed(2)}
+              <span className="text-emerald-800 font-semibold">
+                (-) Desc: R$ {Number(discountAmount).toFixed(2).replace('.', ',')}
               </span>
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            <span className="text-[9px] font-mono text-stone-400 uppercase">Total:</span>
-            <span className="text-sm font-black text-rose-500 font-mono leading-none">R$ {finalTotal.toFixed(2)}</span>
+            <span className="text-[9px] font-mono text-[#745240] uppercase">Total:</span>
+            <span className="text-sm font-black text-rose-600 font-mono leading-none">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
           </div>
         </div>
 
@@ -5619,7 +5707,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                           isSelected
                             ? btn.key === 'entrega'
                               ? 'bg-sky-600 text-white font-black border-sky-700 shadow-xs ring-2 ring-sky-300'
-                              : 'bg-[#083d07] text-white font-black border-[#062b06] shadow-xs ring-2 ring-stone-300'
+                              : 'bg-[#745240] text-white font-black border-[#5c3a21] shadow-xs ring-2 ring-[#d5af7a]/40'
                             : 'bg-stone-50 text-stone-700 font-bold border-stone-200 hover:bg-stone-100'
                         }`}
                       >
@@ -5695,8 +5783,138 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                       )}
                     </span>
                     <span className="font-mono font-bold text-sky-800">
-                      Taxa somada no total: + R$ {activeDeliveryFee.toFixed(2)}
+                      Taxa somada no total: + R$ {activeDeliveryFee.toFixed(2).replace('.', ',')}
                     </span>
+                  </div>
+
+                  {/* Bloco de Motoboy / Logística de Entrega */}
+                  <div className="pt-2 border-t border-sky-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[8.5px] font-mono font-bold text-sky-950 uppercase tracking-wider flex items-center gap-1">
+                        <Bike size={12} className="text-sky-700" />
+                        Quem faz a entrega?
+                      </span>
+                      {order.motoboySettlementId && (
+                        <span className="text-[8px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                          🔒 Fechamento realizado
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Seleção do Provedor de Entrega */}
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {[
+                        { key: 'proprio', label: 'Próprio' },
+                        { key: 'uber', label: 'Uber' },
+                        { key: 'ifood', label: 'iFood' },
+                        { key: 'none', label: 'Sem Motoboy' }
+                      ].map(p => {
+                        const isSelected = deliveryProvider === p.key;
+                        return (
+                          <button
+                            key={p.key}
+                            type="button"
+                            onClick={() => handleSelectProvider(p.key as any)}
+                            className={`py-1 px-1.5 rounded-md text-[10px] font-bold transition-all cursor-pointer border text-center ${
+                              isSelected
+                                ? 'bg-[#745240] text-white border-[#5c3a21] shadow-2xs font-black'
+                                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                            }`}
+                          >
+                            {p.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Se for Motoboy Próprio: Seleção do Motoboy + Valor Pago */}
+                    {deliveryProvider === 'proprio' && (
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-white/90 p-2 rounded-lg border border-sky-200/90 shadow-2xs">
+                        <div className="sm:col-span-7 space-y-0.5">
+                          <label className="block text-[8px] font-mono font-bold text-stone-600 uppercase tracking-wider">
+                            Motoboy Próprio *
+                          </label>
+                          {motoboys.length === 0 ? (
+                            <p className="text-[9.5px] text-amber-800 font-medium bg-amber-50 p-1.5 rounded border border-amber-200">
+                              Nenhum motoboy próprio cadastrado. Cadastre na aba Motoboys.
+                            </p>
+                          ) : (
+                            <select
+                              value={motoboyId}
+                              onChange={(e) => handleSelectMotoboy(e.target.value)}
+                              className="w-full px-2 py-1.5 bg-white rounded border border-stone-300 text-xs font-bold text-stone-900 outline-none focus:border-[#745240] transition-colors cursor-pointer"
+                            >
+                              <option value="">-- Selecione o Motoboy --</option>
+                              {motoboys.filter(m => m.is_active || m.id === motoboyId).map(m => (
+                                <option key={m.id} value={m.id}>
+                                  {m.name} {m.default_fee ? `(R$ ${Number(m.default_fee).toFixed(2).replace('.', ',')})` : ''} {!m.is_active ? '(Inativo)' : ''}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+
+                        <div className="sm:col-span-5 space-y-0.5">
+                          <label className="block text-[8px] font-mono font-bold text-stone-600 uppercase tracking-wider">
+                            Valor Pago ao Motoboy (R$)
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-stone-400 font-mono">R$</span>
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="12,50"
+                              value={deliveryCost}
+                              onFocus={(e) => e.target.select()}
+                              onChange={(e) => {
+                                const val = e.target.value.replace(/[^0-9.,]/g, '');
+                                setDeliveryCost(val);
+                                setCostTouched(true);
+                              }}
+                              onBlur={() => {
+                                const num = parseFloat(deliveryCost.replace(',', '.'));
+                                if (!isNaN(num) && num >= 0) {
+                                  setDeliveryCost(num.toFixed(2).replace('.', ','));
+                                }
+                              }}
+                              className="w-full pl-8 pr-2 py-1.5 bg-white rounded border border-stone-300 text-xs font-mono font-bold text-stone-900 outline-none focus:border-[#745240] transition-colors"
+                            />
+                          </div>
+                          <span className="text-[8px] text-stone-400 font-mono">Ex: R$ 12,50</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Se for Uber ou iFood: Custo da Plataforma */}
+                    {(deliveryProvider === 'uber' || deliveryProvider === 'ifood') && (
+                      <div className="bg-white/90 p-2 rounded-lg border border-sky-200/90 shadow-2xs flex items-center justify-between gap-2">
+                        <div className="text-[11px] text-stone-700 font-medium">
+                          Valor cobrado pela plataforma <strong className="uppercase">{deliveryProvider}</strong>:
+                        </div>
+                        <div className="relative w-32">
+                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-stone-400 font-mono">R$</span>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            placeholder="12,50"
+                            value={deliveryCost}
+                            onFocus={(e) => e.target.select()}
+                            onChange={(e) => {
+                              const val = e.target.value.replace(/[^0-9.,]/g, '');
+                              setDeliveryCost(val);
+                              setCostTouched(true);
+                            }}
+                            onBlur={() => {
+                              const num = parseFloat(deliveryCost.replace(',', '.'));
+                              if (!isNaN(num) && num >= 0) {
+                                setDeliveryCost(num.toFixed(2).replace('.', ','));
+                              }
+                            }}
+                            className="w-full pl-8 pr-2 py-1.5 bg-white rounded border border-stone-300 text-xs font-mono font-bold text-stone-900 outline-none focus:border-[#745240] transition-colors"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -5852,7 +6070,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                       onClick={() => setCategoryFilter(cat.id as any)}
                       className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all shrink-0 cursor-pointer border ${
                         categoryFilter === cat.id
-                          ? 'bg-[#083d07] text-white border-[#083d07] shadow-xs'
+                          ? 'bg-[#745240] text-white border-[#5c3a21] shadow-xs'
                           : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-100'
                       }`}
                     >
@@ -6272,13 +6490,13 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                   className={`w-full py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer ${
                     editingItemIndex !== null
                       ? 'bg-amber-500 hover:bg-amber-600 text-stone-950'
-                      : 'bg-[#062b06] hover:bg-[#0b520a] text-white'
+                      : 'bg-[#745240] hover:bg-[#5c3a21] text-white'
                   } disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   <Check size={14} className="stroke-[2.5]" />
                   <span>
                     {editingItemIndex !== null ? 'Salvar Alteração no Pedido' : 'Incluir no Pedido'}
-                    {currentItemFinalPrice > 0 && ` (R$ ${currentItemFinalPrice.toFixed(2)} un.)`}
+                    {currentItemFinalPrice > 0 && ` (R$ ${currentItemFinalPrice.toFixed(2).replace('.', ',')} un.)`}
                   </span>
                 </button>
               </div>
@@ -6339,9 +6557,9 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
             <div>
               <span className="block text-[8px] font-mono text-[#745240] uppercase">Total Recalculado</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-xl font-black text-rose-500 leading-none font-mono">R$ {finalTotal.toFixed(2)}</span>
+                <span className="text-xl font-black text-rose-600 leading-none font-mono">R$ {finalTotal.toFixed(2).replace('.', ',')}</span>
                 {orderType === 'entrega' && activeDeliveryFee > 0 && (
-                  <span className="text-[10px] text-sky-400 font-mono font-medium">(inclui R$ {activeDeliveryFee.toFixed(2)} entrega)</span>
+                  <span className="text-[10px] text-sky-700 font-mono font-medium">(inclui R$ {activeDeliveryFee.toFixed(2).replace('.', ',')} entrega)</span>
                 )}
               </div>
             </div>
@@ -6350,16 +6568,16 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 rounded font-bold text-xs bg-[#0b520a] hover:bg-stone-700 text-stone-300 transition-colors cursor-pointer border border-stone-700"
+                className="px-3 py-1.5 rounded font-bold text-xs bg-stone-200 hover:bg-stone-300 text-stone-800 transition-colors cursor-pointer border border-stone-300"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-4 py-1.5 rounded font-bold text-xs bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1 border border-rose-500"
+                className="px-4 py-1.5 rounded font-bold text-xs bg-[#745240] hover:bg-[#5c3a21] text-white shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1 border border-[#5c3a21]"
               >
-                {saving ? 'Salvando...' : 'Salvar'}
+                {saving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
             </div>
           </div>

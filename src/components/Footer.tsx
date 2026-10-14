@@ -73,13 +73,13 @@ export default function Footer() {
               </a>
               <div>
                 <a
-                  href="https://www.instagram.com/dobropizza/"
+                  href="https://www.instagram.com/dobropizzas/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-xs text-[#c4b5aa] hover:text-white transition-colors group"
                 >
                   <Instagram className="w-3.5 h-3.5 text-[#d5af7a] group-hover:scale-110 transition-transform" />
-                  <span>@dobropizza</span>
+                  <span>@dobropizzas</span>
                   <ExternalLink className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
                 </a>
               </div>

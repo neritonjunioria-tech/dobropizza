@@ -192,8 +192,6 @@ export default function MenuManager() {
       finalImageUrl = `${import.meta.env.VITE_SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co'}/storage/v1/object/public/cardapio-dobropizza/${finalImageUrl}`;
     }
 
-    const isPizza = ['pizzas', 'tradicionais', 'especiais', 'gourmet', 'doces'].includes(editingItem.category) || editingItem.id?.startsWith('p-');
-
     const parseNum = (val: any) => {
       if (val === undefined || val === null || val === '') return null;
       const parsed = parseFloat(String(val).replace(',', '.'));
@@ -205,34 +203,19 @@ export default function MenuManager() {
       name: editingItem.name,
       ingredients: editingItem.ingredients,
       category: editingItem.category,
-      price_single: isPizza ? null : parseNum(editingItem.price_single),
-      price_p: isPizza ? parseNum(editingItem.price_p) : null,
-      price_m: isPizza ? parseNum(editingItem.price_m) : null,
-      price_g: isPizza ? parseNum(editingItem.price_g) : null,
+      price_single: parseNum(editingItem.price_single),
+      price_p: null,
+      price_m: null,
+      price_g: null,
+      price_big: null,
+      price_super_big: null,
       image_url: finalImageUrl,
       day_of_week: editingItem.day_of_week || null,
       is_active: editingItem.is_active !== undefined ? editingItem.is_active : true,
       is_bestseller: editingItem.is_bestseller !== undefined ? editingItem.is_bestseller : false
     };
 
-    // Apenas tenta enviar tamanhos extras se preenchidos em pizzas
-    if (isPizza) {
-      const pBig = parseNum(editingItem.price_big);
-      const pSuperBig = parseNum(editingItem.price_super_big);
-      if (pBig !== null) dbItem.price_big = pBig;
-      if (pSuperBig !== null) dbItem.price_super_big = pSuperBig;
-    }
-
     let { error } = await supabase.from('menu_items').upsert(dbItem, { onConflict: 'id' });
-    
-    // Auto-recuperação: se as colunas price_big/price_super_big não existirem no schema cache do Supabase,
-    // remove esses campos extras e salva perfeitamente sem travar o gestor.
-    if (error && (error.message.includes('price_big') || error.message.includes('price_super_big'))) {
-      delete dbItem.price_big;
-      delete dbItem.price_super_big;
-      const retryResult = await supabase.from('menu_items').upsert(dbItem, { onConflict: 'id' });
-      error = retryResult.error;
-    }
     
     if (error) {
       setFeedback("Erro ao salvar: " + error.message);
@@ -320,15 +303,15 @@ export default function MenuManager() {
               Puxar Cardápio Inicial (Migrar)
             </button>
           )}
-          <button onClick={openNewModal} className="px-4 py-2.5 bg-[#083d07] text-[#fdfbf7] font-bold rounded-lg text-sm hover:bg-[#0b520a] transition-colors flex items-center gap-2 border border-[#d5af7a]/60 cursor-pointer shadow-sm">
+          <button onClick={openNewModal} className="px-4 py-2.5 bg-[#745240] text-[#fdfbf7] font-bold rounded-lg text-sm hover:bg-[#5c3a21] transition-colors flex items-center gap-2 border border-[#d5af7a]/60 cursor-pointer shadow-sm">
             <Plus size={16} /> Novo Produto
           </button>
         </div>
       </div>
 
       {feedback && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#083d07] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-stone-700 text-xs font-bold flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-4 duration-200">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#745240] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-stone-700 text-xs font-bold flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-4 duration-200">
+          <div className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
           <span>{feedback}</span>
         </div>
       )}
@@ -381,7 +364,7 @@ export default function MenuManager() {
           <thead>
             <tr className="bg-[#FAFAF9] border-b border-[#E7E5E1] text-[11px] font-mono font-bold text-[#78716C] uppercase tracking-wider">
               <th className="py-3 px-4">Produto</th>
-              <th className="py-3 px-4">Preço(s)</th>
+              <th className="py-3 px-4">Preço (R$)</th>
               <th className="py-3 px-4 text-center">Status</th>
               <th className="py-3 px-4 text-right">Ações</th>
             </tr>
@@ -389,6 +372,8 @@ export default function MenuManager() {
           <tbody className="divide-y divide-[#F0EFED] text-sm">
             {filteredItems.map(item => {
               const isPaused = pausedItems.includes(item.id);
+              const displayPrice = item.price_single ?? item.price_g ?? item.price_m ?? item.price_p ?? 0;
+              const formatted = Number(displayPrice).toFixed(2).replace('.', ',');
               
               return (
                 <tr key={item.id} className="hover:bg-stone-50/50 transition-colors">
@@ -410,41 +395,24 @@ export default function MenuManager() {
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    {item.price_single !== null ? (
-                      <div className="flex items-center gap-1">
-                        <span className="text-stone-500 font-mono">R$</span>
-                        <input 
-                          type="text" 
-                          defaultValue={item.price_single}
-                          onBlur={(e) => handleQuickPriceEdit(item.id, 'price_single', e.target.value)}
-                          className="w-16 px-2 py-1 text-sm font-mono font-bold border border-stone-200 rounded-md focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-col">
-                          <span className="text-[9px] font-mono text-stone-400">Peq</span>
-                          <div className="flex items-center gap-0.5">
-                            <span className="text-stone-400 font-mono text-xs">R$</span>
-                            <input type="text" defaultValue={item.price_p} onBlur={(e) => handleQuickPriceEdit(item.id, 'price_p', e.target.value)} className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold border border-stone-200 rounded-md outline-none focus:border-amber-500" />
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[9px] font-mono text-stone-400">Méd</span>
-                          <div className="flex items-center gap-0.5">
-                            <span className="text-stone-400 font-mono text-xs">R$</span>
-                            <input type="text" defaultValue={item.price_m} onBlur={(e) => handleQuickPriceEdit(item.id, 'price_m', e.target.value)} className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold border border-stone-200 rounded-md outline-none focus:border-amber-500" />
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[9px] font-mono text-stone-400">Grd</span>
-                          <div className="flex items-center gap-0.5">
-                            <span className="text-stone-400 font-mono text-xs">R$</span>
-                            <input type="text" defaultValue={item.price_g} onBlur={(e) => handleQuickPriceEdit(item.id, 'price_g', e.target.value)} className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold border border-stone-200 rounded-md outline-none focus:border-amber-500" />
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-stone-400 font-mono font-bold text-xs">R$</span>
+                      <input 
+                        type="text" 
+                        inputMode="decimal"
+                        defaultValue={formatted}
+                        onFocus={(e) => e.target.select()}
+                        onBlur={(e) => {
+                          const cleaned = e.target.value.replace(',', '.');
+                          const num = parseFloat(cleaned);
+                          if (!isNaN(num)) {
+                            handleQuickPriceEdit(item.id, 'price_single', String(num));
+                            e.target.value = num.toFixed(2).replace('.', ',');
+                          }
+                        }}
+                        className="w-20 px-2 py-1 text-sm font-mono font-bold border border-stone-200 rounded-md focus:border-[#745240] focus:ring-1 focus:ring-[#745240] outline-none"
+                      />
+                    </div>
                   </td>
                   <td className="py-3 px-4 text-center">
                     <button
@@ -586,87 +554,43 @@ export default function MenuManager() {
               </div>
 
               <div className="border-t border-stone-100 pt-2.5">
-                {(() => {
-                  const isPizza = ['pizzas', 'tradicionais', 'especiais', 'gourmet', 'doces'].includes(editingItem.category) || editingItem.id?.startsWith('p-');
-
-                  if (isPizza) {
-                    return (
-                      <div>
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-[10px] font-black text-stone-700 uppercase tracking-wider flex items-center gap-1">
-                            🍕 Preços por Tamanho da Pizza
-                          </h3>
-                          <span className="text-[9.5px] font-mono text-stone-400">Preencha os tamanhos disponíveis</span>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-                          <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
-                            <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Pequena (P)</label>
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
-                              <input type="number" step="0.01" value={editingItem.price_p ?? ''} onChange={e => setEditingItem({...editingItem, price_p: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
-                            </div>
-                          </div>
-                          <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
-                            <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Média (M)</label>
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
-                              <input type="number" step="0.01" value={editingItem.price_m ?? ''} onChange={e => setEditingItem({...editingItem, price_m: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
-                            </div>
-                          </div>
-                          <div className="p-2 rounded-lg bg-amber-50/50 border border-amber-300 space-y-1">
-                            <label className="block text-[9.5px] font-mono font-bold text-amber-900 uppercase">Grande (G) *</label>
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-amber-700">R$</span>
-                              <input type="number" step="0.01" value={editingItem.price_g ?? ''} onChange={e => setEditingItem({...editingItem, price_g: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-amber-400 rounded focus:border-amber-600 outline-none" />
-                            </div>
-                          </div>
-                          <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
-                            <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Big (Família)</label>
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
-                              <input type="number" step="0.01" value={editingItem.price_big ?? ''} onChange={e => setEditingItem({...editingItem, price_big: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
-                            </div>
-                          </div>
-                          <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
-                            <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Super Big (GG)</label>
-                            <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
-                              <input type="number" step="0.01" value={editingItem.price_super_big ?? ''} onChange={e => setEditingItem({...editingItem, price_super_big: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div className="p-3 bg-emerald-50/40 border border-emerald-200 rounded-xl space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[10px] font-mono font-bold text-emerald-800 uppercase tracking-wider">
-                          Preço do Produto (R$)
-                        </label>
-                        <span className="text-[9.5px] font-mono text-emerald-700">Valor único para venda individual</span>
-                      </div>
-                      <div className="relative max-w-xs">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-emerald-700 text-sm">R$</span>
-                        <input
-                          type="number"
-                          step="0.01"
-                          required
-                          value={editingItem.price_single ?? ''}
-                          onChange={e => setEditingItem({...editingItem, price_single: e.target.value})}
-                          placeholder="0.00"
-                          className="w-full pl-8 pr-3 py-2 bg-white border border-emerald-300 rounded-lg text-sm font-black font-mono text-emerald-950 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-200 outline-none shadow-2xs"
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
+                <div className="p-3 bg-stone-50 border border-stone-200 rounded-xl space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-[10px] font-mono font-bold text-stone-700 uppercase tracking-wider">
+                      Preço do Produto (R$) — Tamanho Único 28cm
+                    </label>
+                    <span className="text-[9.5px] font-mono text-stone-500">Ex: R$ 56,00</span>
+                  </div>
+                  <div className="relative max-w-xs">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-stone-400 text-sm">R$</span>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      required
+                      value={(() => {
+                        const val = editingItem.price_single ?? editingItem.price_g ?? editingItem.price_m ?? editingItem.price_p ?? '';
+                        return val === '' ? '' : String(val).replace('.', ',');
+                      })()}
+                      onChange={e => {
+                        const val = e.target.value.replace(/[^0-9.,]/g, '');
+                        setEditingItem({ ...editingItem, price_single: val });
+                      }}
+                      onBlur={e => {
+                        const num = parseFloat(e.target.value.replace(',', '.'));
+                        if (!isNaN(num)) {
+                          setEditingItem({ ...editingItem, price_single: num.toFixed(2).replace('.', ',') });
+                        }
+                      }}
+                      placeholder="56,00"
+                      className="w-full pl-9 pr-3 py-2 bg-white border border-stone-300 rounded-lg text-sm font-black font-mono text-stone-900 focus:border-[#745240] focus:ring-1 focus:ring-[#745240] outline-none shadow-2xs"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-2 flex justify-between items-center border-t border-stone-100">
                 <label className="flex items-center gap-2 text-xs text-[#1C1917] font-bold cursor-pointer">
-                  <input type="checkbox" checked={editingItem.is_bestseller || false} onChange={e => setEditingItem({...editingItem, is_bestseller: e.target.checked})} className="w-4 h-4 accent-[#083d07] rounded cursor-pointer" />
+                  <input type="checkbox" checked={editingItem.is_bestseller || false} onChange={e => setEditingItem({...editingItem, is_bestseller: e.target.checked})} className="w-4 h-4 accent-[#745240] rounded cursor-pointer" />
                   🌟 Destaque
                 </label>
 
@@ -674,7 +598,7 @@ export default function MenuManager() {
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-md font-bold text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer border border-stone-200">
                     Cancelar
                   </button>
-                  <button type="submit" className="px-5 py-2 rounded-md font-bold text-xs bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1.5 border border-[#d5af7a]/60">
+                  <button type="submit" className="px-5 py-2 rounded-md font-bold text-xs bg-[#745240] hover:bg-[#5c3a21] text-[#fdfbf7] shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1.5 border border-[#d5af7a]/60">
                     <Save size={14} /> Salvar
                   </button>
                 </div>

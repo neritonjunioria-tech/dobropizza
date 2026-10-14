@@ -723,6 +723,15 @@ export default function Cart({
                       </>
                     )}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="w-full font-semibold py-2 px-3 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.99] transition-all flex justify-center items-center gap-1.5 text-xs cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-[#083d07]" />
+                    <span>Adicionar mais itens</span>
+                  </button>
                 </div>
               </div>
             )}

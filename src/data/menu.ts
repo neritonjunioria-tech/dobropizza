@@ -148,20 +148,19 @@ export const RESTAURANT_WHATSAPP_PHONE = "5541995984072";
 // Dobro não possui entrega grátis independente do valor do pedido
 export const FREE_DELIVERY_THRESHOLD = Infinity;
 
-// Bairros atendidos até ~5km de São José dos Pinhais (Rua Quirino Zagonel)
+// Taxas por bairro (backup do código; o cardápio usa as taxas do banco, em Configurações > Zonas de entrega)
 export const NEIGHBORHOOD_DELIVERY_FEES: Record<string, number> = {
-  "Itália (Bairro da Casa)": 0,
-  "Braga": 0,
-  "Centro": 5.0,
-  "São Pedro": 5.0,
-  "Aristocrata": 5.0,
-  "Pedro Moro": 5.0,
-  "Cruzeiro": 6.0,
-  "Bom Jesus": 6.0,
-  "Afonso Pena": 7.0,
-  "Colônia Rio Grande": 7.0,
-  "Ouro Fino": 8.0,
-  "Guatupê": 8.0
+  "Braga": 7.9,
+  "Itália": 7.9,
+  "Centro (SJP)": 9.9,
+  "São Pedro": 7.9,
+  "Aristocrata": 9.9,
+  "Pedro Moro": 7.9,
+  "Cruzeiro": 9.9,
+  "Bom Jesus": 9.9,
+  "Afonso Pena": 12.9,
+  "Colônia Rio Grande": 9.9,
+  "Ouro Fino": 9.9
 };
 
 export interface ExtraIngredient {

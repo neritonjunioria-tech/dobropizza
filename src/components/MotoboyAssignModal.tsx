@@ -42,8 +42,11 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
   const [provider, setProvider] = useState<DeliveryProvider>(order.deliveryProvider || 'proprio');
   const [motoboyId, setMotoboyId] = useState<string>(initialMotoboyId);
   const [cost, setCost] = useState<string>(() => {
-    if (order.deliveryCost !== null && order.deliveryCost !== undefined) return Number(order.deliveryCost).toFixed(2);
-    return (order.deliveryProvider || 'proprio') === 'proprio' && initialMotoboyId ? feeOf(initialMotoboyId) : '';
+    if (order.deliveryCost !== null && order.deliveryCost !== undefined && Number(order.deliveryCost) > 0) {
+      return Number(order.deliveryCost).toFixed(2).replace('.', ',');
+    }
+    const motoboyFee = (order.deliveryProvider || 'proprio') === 'proprio' && initialMotoboyId ? feeOf(initialMotoboyId) : '';
+    return motoboyFee ? Number(motoboyFee).toFixed(2).replace('.', ',') : '10,00';
   });
   const [costTouched, setCostTouched] = useState(order.deliveryCost !== null && order.deliveryCost !== undefined);
   const [saving, setSaving] = useState(false);
@@ -54,13 +57,19 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
   const handleSelectProvider = (p: DeliveryProvider) => {
     setProvider(p);
     setError('');
-    if (!costTouched) setCost(p === 'proprio' && motoboyId ? feeOf(motoboyId) : '');
+    if (!costTouched) {
+      const f = p === 'proprio' && motoboyId ? feeOf(motoboyId) : '10.00';
+      setCost(f ? Number(f).toFixed(2).replace('.', ',') : '10,00');
+    }
   };
 
   const handleSelectMotoboy = (id: string) => {
     setMotoboyId(id);
     setError('');
-    if (!costTouched) setCost(id ? feeOf(id) : '');
+    if (!costTouched) {
+      const f = id ? feeOf(id) : '10.00';
+      setCost(f ? Number(f).toFixed(2).replace('.', ',') : '10,00');
+    }
   };
 
   const describeError = (err: any) =>
@@ -173,7 +182,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                   onClick={() => handleSelectProvider(p)}
                   className={`h-10 px-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border disabled:opacity-50 disabled:cursor-not-allowed ${
                     provider === p
-                      ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
+                      ? 'bg-[#745240] text-white border-[#745240] shadow-2xs font-black'
                       : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                   }`}
                 >
@@ -195,7 +204,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                   value={motoboyId}
                   disabled={isLocked}
                   onChange={(e) => handleSelectMotoboy(e.target.value)}
-                  className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none cursor-pointer disabled:opacity-50"
+                  className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#745240] outline-none cursor-pointer disabled:opacity-50"
                 >
                   <option value="">Selecione...</option>
                   {selectableMotoboys.map(m => (
@@ -213,18 +222,30 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
               {provider === 'proprio' ? 'Valor pago ao motoboy (R$) *' : `Valor cobrado pela plataforma ${PROVIDER_LABELS[provider]} (R$) *`}
             </label>
             <div className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">R$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400 font-mono">R$</span>
               <input
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
+                type="text"
+                inputMode="decimal"
+                placeholder="12,50"
                 value={cost}
                 disabled={isLocked}
-                onChange={(e) => { setCost(e.target.value); setCostTouched(true); }}
-                className="w-full h-9 pl-6 pr-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-bold text-stone-900 tabular-nums focus:bg-white focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-all disabled:opacity-50"
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/[^0-9.,]/g, '');
+                  setCost(val);
+                  setCostTouched(true);
+                }}
+                onBlur={() => {
+                  const cleaned = cost.replace(',', '.');
+                  const num = parseFloat(cleaned);
+                  if (!isNaN(num) && num >= 0) {
+                    setCost(num.toFixed(2).replace('.', ','));
+                  }
+                }}
+                className="w-full h-10 pl-10 pr-3 bg-stone-50 border border-stone-200 rounded-lg text-sm font-bold text-stone-900 font-mono focus:bg-white focus:border-[#745240] focus:ring-1 focus:ring-[#745240] outline-none transition-all disabled:opacity-50"
               />
             </div>
+            <p className="text-[10px] text-stone-400 font-mono">Exemplo: R$ 12,50</p>
           </div>
 
           {error && (
@@ -260,7 +281,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
               type="button"
               onClick={handleSave}
               disabled={saving || isLocked}
-              className="h-9 px-3.5 flex items-center gap-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-9 px-3.5 flex items-center gap-1.5 bg-[#745240] hover:bg-[#5c3a21] active:bg-[#44210f] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check size={14} className="stroke-[2.5]" />
               <span>{saving ? 'SALVANDO...' : confirmLabel}</span>
