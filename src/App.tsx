@@ -617,17 +617,17 @@ function App() {
                 </span>
               ) : (
                 <span className="text-stone-600 flex items-center gap-1">
-                  🛵 Falta <strong className="text-[#8b0000]">€{(FREE_DELIVERY_THRESHOLD - totalCartPrice).toFixed(2)}</strong> para <strong>Entrega Grátis</strong>
+                  🛵 Falta <strong className="text-[#083d07]">R$ {(FREE_DELIVERY_THRESHOLD - totalCartPrice).toFixed(2).replace('.', ',')}</strong> para <strong>Entrega Grátis</strong>
                 </span>
               )}
-              <span className="text-stone-400 font-medium text-[10px]">Meta: €{FREE_DELIVERY_THRESHOLD.toFixed(2)}</span>
+              <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {FREE_DELIVERY_THRESHOLD.toFixed(2).replace('.', ',')}</span>
             </div>
             <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200/60">
               <div 
                 className={`h-full transition-all duration-500 rounded-full ${
                   totalCartPrice >= FREE_DELIVERY_THRESHOLD
                     ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                    : "bg-gradient-to-r from-amber-400 to-[#d4af37]"
+                    : "bg-gradient-to-r from-[#d5af7a] to-[#083d07]"
                 }`}
                 style={{ width: `${Math.min(100, Math.round((totalCartPrice / FREE_DELIVERY_THRESHOLD) * 100))}%` }}
               />
@@ -639,7 +639,7 @@ function App() {
               hapticMedium();
               setIsCartOpen(true);
             }}
-            className="w-full bg-[#8b0000] text-white font-extrabold text-[15px] py-3.5 px-4 rounded-xl flex items-center justify-between shadow-xl active:scale-[0.98] transition-all hover:bg-[#660000]"
+            className="w-full bg-[#083d07] text-[#fdfbf7] font-bold text-[15px] py-3.5 px-4 rounded-xl flex items-center justify-between shadow-xl active:scale-[0.98] transition-all hover:bg-[#052904]"
           >
             <div className="flex items-center gap-2">
               <div className={`relative transition-transform duration-300 ${cartBounce ? 'scale-125 rotate-6' : 'scale-100'}`}>
@@ -671,11 +671,11 @@ function App() {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
-          className="fixed bottom-24 lg:bottom-8 left-4 sm:left-6 w-12 h-12 bg-white/95 backdrop-blur-md text-[#8b0000] rounded-full flex items-center justify-center shadow-lg border border-stone-200 hover:bg-[#8b0000] hover:text-white transition-all active:scale-95 z-30 group"
+          className="fixed bottom-24 lg:bottom-10 left-4 sm:left-6 w-11 h-11 bg-white/95 backdrop-blur-md text-[#083d07] rounded-full flex items-center justify-center shadow-lg border border-[#e8d8d1] hover:bg-[#083d07] hover:text-[#fdfbf7] transition-all active:scale-95 z-30 group"
           title="Voltar ao topo do cardápio"
           aria-label="Voltar ao topo do cardápio"
         >
-          <ArrowUp className="w-5 h-5 transition-transform group-hover:-translate-y-0.5" />
+          <ArrowUp className="w-4 h-4 transition-transform group-hover:-translate-y-0.5" />
         </button>
       )}
 

@@ -1,53 +1,91 @@
-
 import React from 'react';
-import { Instagram, ShieldCheck } from "lucide-react";
-
+import { Instagram, MapPin, Clock, ExternalLink } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1b140e] text-[#e8d8d1] py-12 px-4 mt-8 lg:mt-12 border-t-4 border-[#083d07]">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-        <div className="text-center md:text-left">
-          <div className="font-extrabold text-white text-2xl flex items-center gap-2 justify-center md:justify-start">
-            <div className="w-9 h-9 bg-[#e8d8d1] rounded-full border border-[#d5af7a] flex items-center justify-center flex-shrink-0 p-1">
-              <img
-                src="/dobro/logo-dobro.png"
-                alt="DOBRO Pizzas"
-                className="w-full h-full object-contain"
-              />
+    <footer className="bg-[#141b14] text-[#e8d8d1] border-t border-[#233124] pt-12 pb-8 px-4 mt-12">
+      <div className="max-w-7xl mx-auto">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[#233124]">
+          {/* Coluna 1: Marca & Conceito */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-[#fdfbf7] p-1 flex items-center justify-center shrink-0">
+                <img
+                  src="/dobro/logo-dobro.png"
+                  alt="DOBRO Pizzas"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="font-semibold text-lg text-white tracking-tight font-sans">
+                DOBRO <span className="text-[#d5af7a] font-normal">Pizzas</span>
+              </span>
             </div>
-            <span className="text-[#fdfbf7] font-sans">DOBRO <span className="text-[#d5af7a] font-light">Pizzas</span></span>
+            <p className="text-xs text-[#a89284] leading-relaxed pr-2">
+              Pizzas e sanduíches autorais assados no forno artesanal, com massa de fermentação lenta e ingredientes nobres.
+            </p>
           </div>
-          <p className="text-sm text-[#e4c5b9] mt-2">
-            © 2026 DOBRO Pizzas · Fermentação Natural & Receitas Autorais
-          </p>
-          <div className="flex items-center gap-1.5 text-sm font-medium text-[#d5af7a] mt-2 justify-center md:justify-start">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>Cardápio Digital Oficial</span>
+
+          {/* Coluna 2: Localização */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#d5af7a]">
+              Localização
+            </h4>
+            <div className="flex items-start gap-2 text-xs text-[#c4b5aa] leading-relaxed">
+              <MapPin className="w-3.5 h-3.5 text-[#d5af7a] shrink-0 mt-0.5" />
+              <span>
+                Rua Querino Zagonel, 500<br />
+                São José dos Pinhais — PR
+              </span>
+            </div>
+            <p className="text-[11px] text-[#8a7569]">
+              Atendimento exclusivo para Delivery
+            </p>
           </div>
-          <a
-            href="https://www.instagram.com/dobropizza/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#d5af7a] mt-2 hover:text-white transition-colors"
-          >
-            <Instagram className="w-5 h-5" />
-            @dobropizza
-          </a>
+
+          {/* Coluna 3: Horários Oficiais */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#d5af7a]">
+              Horário de Funcionamento
+            </h4>
+            <div className="flex items-start gap-2 text-xs text-[#c4b5aa] leading-relaxed">
+              <Clock className="w-3.5 h-3.5 text-[#d5af7a] shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <p><span className="text-white font-medium">Qua e Qui:</span> 18:30 às 23:00</p>
+                <p><span className="text-white font-medium">Sex e Sáb:</span> 18:30 às 00:00</p>
+                <p className="text-[11px] text-[#8a7569] pt-0.5">Dom, Seg e Ter: Fechado</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Coluna 4: Contato & Redes */}
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-[#d5af7a]">
+              Redes & Contato
+            </h4>
+            <div className="space-y-2">
+              <a
+                href="https://www.instagram.com/dobropizza/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-xs text-[#c4b5aa] hover:text-white transition-colors group"
+              >
+                <Instagram className="w-3.5 h-3.5 text-[#d5af7a] group-hover:scale-110 transition-transform" />
+                <span>@dobropizza</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
+              </a>
+            </div>
+            <p className="text-[11px] text-[#8a7569] leading-relaxed">
+              Cardápio digital oficial com pedidos diretos e confirmação instantânea via WhatsApp.
+            </p>
+          </div>
         </div>
-        <div className="text-center">
-          <p className="text-lg md:text-xl font-bold text-[#d5af7a] uppercase tracking-widest font-serif">
-            O Dobro de Sabor • O Dobro de Afeto
-          </p>
-          <p className="text-xs text-[#e4c5b9] mt-1">Massa de fermentação lenta com farinhas selecionadas</p>
-        </div>
-        <div className="text-center md:text-right space-y-1.5 text-sm text-[#e8d8d1]">
-          <p className="font-semibold text-white text-base">
-            Forno Artesanal & Delivery Especial
-          </p>
-          <p className="text-xs text-[#d5af7a]">Ingredientes frescos e selecionados todos os dias</p>
-          <p className="text-xs text-[#a89284] pt-1">
-            Pedidos online pelo cardápio com confirmação ágil
+
+        {/* Linha Inferior Minimalista */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#8a7569]">
+          <p>© {new Date().getFullYear()} DOBRO Pizzas. Todos os direitos reservados.</p>
+          <p className="tracking-wide">
+            São José dos Pinhais · Paraná
           </p>
         </div>
       </div>
