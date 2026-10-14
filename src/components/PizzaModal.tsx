@@ -450,7 +450,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
            <div className="flex flex-col gap-3">
              <button 
                onClick={() => handleAdd(true)}
-               disabled={(isHalf && !secondFlavorId) || (isMondayPromoPizza && !promoFlavor) || (isTuesdayPromoPizza && (!promoFlavor || !promoFlavor2)) || isEsfirrasIncomplete}
+               disabled={(isMondayPromoPizza && !promoFlavor) || (isTuesdayPromoPizza && (!promoFlavor || !promoFlavor2)) || isEsfirrasIncomplete}
                className="w-full bg-[#083d07] hover:bg-[#052904] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl transition-transform active:scale-[0.98] shadow-md flex justify-center items-center gap-2"
              >
                <ShoppingBag className="w-5 h-5" />
@@ -458,7 +458,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
              </button>
              <button 
                onClick={() => handleAdd(false)}
-               disabled={(isHalf && !secondFlavorId) || (isMondayPromoPizza && !promoFlavor) || (isTuesdayPromoPizza && (!promoFlavor || !promoFlavor2)) || isEsfirrasIncomplete}
+               disabled={(isMondayPromoPizza && !promoFlavor) || (isTuesdayPromoPizza && (!promoFlavor || !promoFlavor2)) || isEsfirrasIncomplete}
                className="w-full bg-white text-[#083d07] border-2 border-[#083d07] disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed font-bold py-3.5 px-4 rounded-xl transition-transform active:scale-[0.98] flex justify-center items-center gap-2"
              >
                Adicionar e continuar comprando
