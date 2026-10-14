@@ -47,6 +47,15 @@ export const menuData: MenuItem[] = [
     imageUrl: '/dobro/calabresa-cream-cheese.jpeg',
     isBestseller: true
   },
+  {
+    id: 'p-dobro-4queijos',
+    name: '4 Queijos',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, gorgonzola, cream cheese, parmesão, orégano.',
+    priceSingle: 42.0,
+    category: 'mais-pedidos',
+    imageUrl: '/dobro/4-queijos.jpeg',
+    isBestseller: true
+  },
 
   // --- PIZZAS PREMIUM DOBRO ---
   {
