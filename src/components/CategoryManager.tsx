@@ -135,7 +135,7 @@ export default function CategoryManager() {
               )}
             </span>
           )}
-          <button onClick={() => { setEditingCat({ id: '', name: '', order_index: categories.length + 1 }); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold rounded-lg text-sm transition-all duration-200 active:scale-95 shadow-sm cursor-pointer border border-[#d8ba39]">
+          <button onClick={() => { setEditingCat({ id: '', name: '', order_index: categories.length + 1 }); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-lg text-sm transition-all duration-200 active:scale-95 shadow-sm cursor-pointer border border-[#d5af7a]/60">
             <Plus size={16}/> Nova Categoria
           </button>
         </div>
@@ -156,7 +156,7 @@ export default function CategoryManager() {
           </div>
           <p className="font-bold text-[#1C1917]">Nenhuma categoria ainda</p>
           <p className="text-xs text-[#78716C] mt-1 mb-4 max-w-xs">Crie a primeira seção do cardápio para começar a organizar seus produtos.</p>
-          <button onClick={() => { setEditingCat({ id: '', name: '', order_index: 1 }); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold rounded-lg text-sm transition-all duration-200 active:scale-95 shadow-sm cursor-pointer border border-[#d8ba39]">
+          <button onClick={() => { setEditingCat({ id: '', name: '', order_index: 1 }); setIsModalOpen(true); }} className="flex items-center gap-2 px-4 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-lg text-sm transition-all duration-200 active:scale-95 shadow-sm cursor-pointer border border-[#d5af7a]/60">
             <Plus size={16}/> Criar Categoria
           </button>
         </div>
@@ -192,35 +192,35 @@ export default function CategoryManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">ID da Categoria (sem espaços)</label>
-              <input required type="text" value={editingCat.id} onChange={e => setEditingCat({...editingCat, id: e.target.value.toLowerCase().replace(/\s+/g, '-')})} disabled={!!categories.find(c=>c.id === editingCat.id)} className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg font-mono text-sm focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20" placeholder="ex: doces"/>
+              <input required type="text" value={editingCat.id} onChange={e => setEditingCat({...editingCat, id: e.target.value.toLowerCase().replace(/\s+/g, '-')})} disabled={!!categories.find(c=>c.id === editingCat.id)} className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg font-mono text-sm focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20" placeholder="ex: doces"/>
               <p className="text-xs text-[#78716C]">Este ID é usado pelo sistema. Não pode ser alterado depois.</p>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">Nome Interno</label>
-              <input required type="text" value={editingCat.name} onChange={e => setEditingCat({...editingCat, name: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20" placeholder="ex: Doces Finos"/>
+              <input required type="text" value={editingCat.name} onChange={e => setEditingCat({...editingCat, name: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20" placeholder="ex: Doces Finos"/>
               <p className="text-xs text-[#78716C]">Usado internamente no painel. Pode ser simples.</p>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">Ícone (emoji, opcional)</label>
-              <input type="text" value={editingCat.icon || ''} onChange={e => setEditingCat({...editingCat, icon: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20" placeholder="🍕"/>
+              <input type="text" value={editingCat.icon || ''} onChange={e => setEditingCat({...editingCat, icon: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20" placeholder="🍕"/>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">Rótulo Exibido no Cardápio</label>
-              <input type="text" value={editingCat.display_label || ''} onChange={e => setEditingCat({...editingCat, display_label: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20" placeholder="ex: TRADICIONAIS 🍕"/>
+              <input type="text" value={editingCat.display_label || ''} onChange={e => setEditingCat({...editingCat, display_label: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20" placeholder="ex: TRADICIONAIS 🍕"/>
               <p className="text-xs text-[#78716C]">Se vazio, usa o Nome Interno.</p>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">Subtítulo</label>
-              <input type="text" value={editingCat.display_sub || ''} onChange={e => setEditingCat({...editingCat, display_sub: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20" placeholder="ex: Clássicas de sempre"/>
+              <input type="text" value={editingCat.display_sub || ''} onChange={e => setEditingCat({...editingCat, display_sub: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20" placeholder="ex: Clássicas de sempre"/>
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">Agrupar sob outra aba</label>
-              <select value={editingCat.display_group || ''} onChange={e => setEditingCat({...editingCat, display_group: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20">
+              <select value={editingCat.display_group || ''} onChange={e => setEditingCat({...editingCat, display_group: e.target.value})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20">
                 <option value="">— Aba própria —</option>
                 {categories.filter(c => c.id !== editingCat.id).map(c => (
                   <option key={c.id} value={c.id}>{c.display_label || c.name}</option>
@@ -231,17 +231,17 @@ export default function CategoryManager() {
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E]">Ordem de Exibição</label>
-              <input required type="number" value={editingCat.order_index} onChange={e => setEditingCat({...editingCat, order_index: parseInt(e.target.value)})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg font-mono text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20" />
+              <input required type="number" value={editingCat.order_index} onChange={e => setEditingCat({...editingCat, order_index: parseInt(e.target.value)})} className="w-full p-2.5 bg-white border border-[#E7E5E1] rounded-lg font-mono text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20" />
               <p className="text-xs text-[#78716C]">Dica: use o arrastar-e-soltar da listagem para definir a ordem de forma visual.</p>
             </div>
 
             <label className="flex items-center gap-2 text-sm text-[#1C1917] font-medium">
-              <input type="checkbox" checked={editingCat.is_active !== false} onChange={e => setEditingCat({...editingCat, is_active: e.target.checked})} className="w-4 h-4 accent-[#d8ba39] rounded" />
+              <input type="checkbox" checked={editingCat.is_active !== false} onChange={e => setEditingCat({...editingCat, is_active: e.target.checked})} className="w-4 h-4 accent-[#083d07] rounded" />
               Categoria ativa (visível no cardápio)
             </label>
 
             <div className="pt-2">
-              <button type="submit" className="w-full bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 py-2.5 rounded-lg font-bold transition-colors shadow-sm border border-[#d8ba39] cursor-pointer">Salvar Categoria</button>
+              <button type="submit" className="w-full bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] py-2.5 rounded-lg font-bold transition-colors shadow-sm border border-[#d5af7a]/60 cursor-pointer">Salvar Categoria</button>
             </div>
           </form>
         </div>
@@ -275,7 +275,7 @@ function CategoryRow({ cat, position, itemCount, onEdit, onDelete }: {
     >
       <button
         onPointerDown={(e) => controls.start(e)}
-        className="cursor-grab active:cursor-grabbing p-1.5 -m-1.5 rounded-lg text-[#A8A29E] hover:text-[#C81E3A] hover:bg-[#FDEEF0] transition-colors touch-none"
+        className="cursor-grab active:cursor-grabbing p-1.5 -m-1.5 rounded-lg text-[#A8A29E] hover:text-[#083d07] hover:bg-[#FDEEF0] transition-colors touch-none"
         title="Arraste para reordenar"
         aria-label={`Reordenar ${cat.name}`}
       >

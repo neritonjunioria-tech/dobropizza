@@ -6,6 +6,7 @@ import { hapticLight, hapticMedium, hapticSuccess } from "../utils/haptics";
 import {
   RESTAURANT_WHATSAPP_PHONE,
   ALL_MENU_ITEMS,
+  NEIGHBORHOOD_DELIVERY_FEES,
 } from "../data/menu";
 import { useBusinessHours } from '../hooks/useBusinessHours';
 import { 
@@ -70,7 +71,7 @@ export default function Cart({
   const [zona, setZona] = useState("");
   const [nif, setNif] = useState("");
   const [orderType, setOrderType] = useState<"Delivery" | "Takeaway">("Delivery");
-  const [pagamento, setPagamento] = useState("MB Way");
+  const [pagamento, setPagamento] = useState("Pix");
   const [trocoPara, setTrocoPara] = useState("");
 
   const [hasShownParty, setHasShownParty] = useState(false);
@@ -82,11 +83,11 @@ export default function Cart({
   const [savedOrderId, setSavedOrderId] = useState<number | null>(null);
   const [savedTrackingCode, setSavedTrackingCode] = useState<string | null>(null);
 
-  const [zonesFees, setZonesFees] = useState<Record<string, number>>({});
-  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(35);
+  const [zonesFees, setZonesFees] = useState<Record<string, number>>(NEIGHBORHOOD_DELIVERY_FEES);
+  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(90);
   const [minDeliveryOrder, setMinDeliveryOrder] = useState(10);
-  const [deliveryTimeEstimate, setDeliveryTimeEstimate] = useState('70 a 80 min');
-  const [pickupTimeEstimate, setPickupTimeEstimate] = useState('35 a 40 min');
+  const [deliveryTimeEstimate, setDeliveryTimeEstimate] = useState('40 a 50 min');
+  const [pickupTimeEstimate, setPickupTimeEstimate] = useState('25 a 35 min');
 
   // Load saved customer checkout details from localStorage (Memory for fast re-orders)
   useEffect(() => {
@@ -389,18 +390,18 @@ export default function Cart({
         desc = `1/2 ${item.menuItem.name} e 1/2 ${item.halfAndHalfFlavor.name}`;
       }
       if (item.size)
-        desc += ` (${item.size === "G" ? "Gr" : item.size === "M" ? "Md" : "Pq"})`;
+        desc += ` (${item.size})`;
       
       const extrasTotalPrice = (item.extras || []).reduce((sum, e) => sum + e.price, 0);
       const basePrice = item.priceCalculated - extrasTotalPrice;
-      const priceStr = `€ ${(basePrice * item.quantity).toFixed(2)}`;
+      const priceStr = `R$ ${(basePrice * item.quantity).toFixed(2)}`;
       text += `*${item.quantity}x* ${desc} (${priceStr})\n`;
       
       if (item.extras && item.extras.length > 0) {
         item.extras.forEach((extra) => {
-          text += `   + ${extra.name} (+ € ${(extra.price * item.quantity).toFixed(2)})\n`;
+          text += `   + ${extra.name} (+ R$ ${(extra.price * item.quantity).toFixed(2)})\n`;
         });
-        text += `   *Subtotal item: € ${(item.priceCalculated * item.quantity).toFixed(2)}*\n`;
+        text += `   *Subtotal item: R$ ${(item.priceCalculated * item.quantity).toFixed(2)}*\n`;
       }
       if (item.notes) {
         text += `   📝 Obs: ${item.notes}\n`;
@@ -409,21 +410,18 @@ export default function Cart({
     });
 
     text += `-----------------------------------\n`;
-    text += `*Subtotal: € ${subtotal.toFixed(2)}*\n`;
+    text += `*Subtotal: R$ ${subtotal.toFixed(2)}*\n`;
     if (orderType === "Delivery") {
       if (subtotal >= freeDeliveryThreshold) {
-        text += `Taxa Entrega: € 0.00\n`;
+        text += `Taxa Entrega: R$ 0.00 (Grátis)\n`;
       } else {
-        text += `Taxa Entrega: € ${deliveryFee.toFixed(2)}\n`;
+        text += `Taxa Entrega: R$ ${deliveryFee.toFixed(2)}\n`;
       }
     }
-    text += `*TOTAL: € ${total.toFixed(2)}*\n`;
+    text += `*TOTAL: R$ ${total.toFixed(2)}*\n`;
     text += `-----------------------------------\n`;
     text += `[PAGAMENTO]\n`;
     text += `Forma: ${pagamento}\n`;
-    if (pagamento === "Numerário" && trocoPara) {
-      text += `Troco para: € ${trocoPara}\n`;
-    }
     text += `-----------------------------------`;
 
     // Envio automático oficial do resumo para a pizzaria e cliente (impossibilita alteração pelo cliente)
@@ -437,8 +435,8 @@ export default function Cart({
       })
     }).catch(err => console.warn('[Cart] Aviso no envio automático WhatsApp:', err));
 
-    const contactText = `Olá! Gostaria de falar sobre o meu pedido #${newOrderId || orderNumber}.`;
-    const contactWappUrl = `https://api.whatsapp.com/send?phone=351938360931&text=${encodeURIComponent(contactText)}`;
+    const contactText = `Olá DOBRO Pizzas! Gostaria de falar sobre o meu pedido #${newOrderId || orderNumber}.`;
+    const contactWappUrl = `https://wa.me/${RESTAURANT_WHATSAPP_PHONE}?text=${encodeURIComponent(contactText)}`;
 
     trackEvent('purchase', { total_value: total, order_id: newOrderId || orderNumber });
 
@@ -670,7 +668,7 @@ export default function Cart({
                           {/* Extras */}
                           {item.extras && item.extras.length > 0 && (
                             <div className="text-[10px] text-gray-500 mt-0.5">
-                              {item.extras.map((ex) => `+ ${ex.name} (€${ex.price.toFixed(2)})`).join(', ')}
+                              {item.extras.map((ex) => `+ ${ex.name} (R$ ${ex.price.toFixed(2)})`).join(', ')}
                             </div>
                           )}
 
@@ -683,8 +681,8 @@ export default function Cart({
                         </div>
 
                         {/* Price */}
-                        <span className="font-black text-[#8b0000] shrink-0 text-xs">
-                          € {(item.priceCalculated * item.quantity).toFixed(2)}
+                        <span className="font-black text-[#083d07] shrink-0 text-xs">
+                          R$ {(item.priceCalculated * item.quantity).toFixed(2)}
                         </span>
                       </div>
 
@@ -693,7 +691,7 @@ export default function Cart({
                         <div className="flex items-center border border-gray-200 rounded-md bg-white overflow-hidden">
                           <button
                             onClick={() => onUpdateQuantity(item.id, -1)}
-                            className="px-1.5 py-0.5 text-gray-500 hover:text-[#8b0000] hover:bg-gray-50 transition-colors cursor-pointer"
+                            className="px-1.5 py-0.5 text-gray-500 hover:text-[#083d07] hover:bg-gray-50 transition-colors cursor-pointer"
                           >
                             <Minus className="w-2.5 h-2.5" />
                           </button>
@@ -702,7 +700,7 @@ export default function Cart({
                           </span>
                           <button
                             onClick={() => onUpdateQuantity(item.id, 1)}
-                            className="px-1.5 py-0.5 text-gray-500 hover:text-[#8b0000] hover:bg-gray-50 transition-colors cursor-pointer"
+                            className="px-1.5 py-0.5 text-gray-500 hover:text-[#083d07] hover:bg-gray-50 transition-colors cursor-pointer"
                           >
                             <Plus className="w-2.5 h-2.5" />
                           </button>
@@ -730,16 +728,16 @@ export default function Cart({
                     <div className="bg-amber-50/60 border border-amber-200/70 p-2 rounded-lg space-y-1">
                       <div className="flex justify-between text-[11px] font-semibold text-gray-700">
                         <span>🛵 Entrega Grátis</span>
-                        <span className="text-[#8b0000] font-black">Meta: €{freeDeliveryThreshold.toFixed(2)}</span>
+                        <span className="text-[#083d07] font-black">Meta: R$ {freeDeliveryThreshold.toFixed(2)}</span>
                       </div>
                       <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-[#8b0000] h-1.5 rounded-full transition-all duration-300"
+                          className="bg-[#083d07] h-1.5 rounded-full transition-all duration-300"
                           style={{ width: `${Math.min(100, (subtotal / freeDeliveryThreshold) * 100)}%` }}
                         />
                       </div>
                       <div className="text-[10px] text-gray-500 text-center font-medium">
-                        Adicione <strong className="text-[#8b0000]">€{(freeDeliveryThreshold - subtotal).toFixed(2)}</strong> e ganhe a entrega!
+                        Adicione <strong className="text-[#083d07]">R$ {(freeDeliveryThreshold - subtotal).toFixed(2)}</strong> e ganhe a entrega!
                       </div>
                     </div>
                   )}
@@ -754,7 +752,7 @@ export default function Cart({
                       return (
                         <div className="bg-gray-50 border border-gray-200/80 rounded-lg px-2 py-1.5 flex items-center justify-between text-[11px]">
                           <span className="text-gray-600 truncate">
-                            🥤 Coca-Cola por <strong>€{(sug.priceSingle || 0).toFixed(2)}</strong>?
+                            🥤 Coca-Cola por <strong>R$ {(sug.priceSingle || 0).toFixed(2)}</strong>?
                           </span>
                           <button
                             onClick={() =>
@@ -780,7 +778,7 @@ export default function Cart({
                 <div className="pt-2 border-t border-gray-100 space-y-2">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-500 font-medium">Subtotal dos itens:</span>
-                    <span className="font-black text-[#8b0000] text-sm">€ {subtotal.toFixed(2)}</span>
+                    <span className="font-black text-[#083d07] text-sm">R$ {subtotal.toFixed(2)}</span>
                   </div>
 
                   <button
@@ -793,7 +791,7 @@ export default function Cart({
                     className={`w-full font-bold py-2.5 px-3 rounded-xl transition-all flex justify-center items-center gap-1.5 text-xs shadow-xs cursor-pointer ${
                       !businessStatus.isOpen
                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-[#8b0000] hover:bg-[#6b0000] active:scale-[0.99] text-white'
+                        : 'bg-[#083d07] hover:bg-[#145a13] active:scale-[0.99] text-white'
                     }`}
                   >
                     {!businessStatus.isOpen ? (
@@ -823,13 +821,13 @@ export default function Cart({
                   <button
                     type="button"
                     onClick={() => setCurrentStep('items')}
-                    className="font-bold text-[#8b0000] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="font-bold text-[#083d07] hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <ArrowLeft className="w-3 h-3" />
                     <span>Editar itens</span>
                   </button>
                   <span className="text-gray-500 font-medium">
-                    {totalItemCount} {totalItemCount === 1 ? 'item' : 'itens'} • Subtotal: €{subtotal.toFixed(2)}
+                    {totalItemCount} {totalItemCount === 1 ? 'item' : 'itens'} • Subtotal: R$ {subtotal.toFixed(2)}
                   </span>
                 </div>
 
@@ -843,7 +841,7 @@ export default function Cart({
                     }}
                     className={`py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
                       orderType === "Delivery"
-                        ? "bg-[#8b0000] text-white border-[#8b0000] shadow-xs"
+                        ? "bg-[#083d07] text-white border-[#083d07] shadow-xs"
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                     }`}
                   >
@@ -858,7 +856,7 @@ export default function Cart({
                     }}
                     className={`py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
                       orderType === "Takeaway"
-                        ? "bg-[#8b0000] text-white border-[#8b0000] shadow-xs"
+                        ? "bg-[#083d07] text-white border-[#083d07] shadow-xs"
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                     }`}
                   >
@@ -872,7 +870,7 @@ export default function Cart({
                   <div className="grid grid-cols-2 gap-1.5">
                     <div>
                       <label className="block text-[10px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase">
-                        <User className="w-2.5 h-2.5 text-[#8b0000]" />
+                        <User className="w-2.5 h-2.5 text-[#083d07]" />
                         <span>Nome *</span>
                       </label>
                       <input
@@ -883,51 +881,51 @@ export default function Cart({
                           setName(e.target.value);
                           saveCustomerData({ name: e.target.value });
                         }}
-                        className="w-full h-8 bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-[#8b0000] rounded-lg px-2 text-xs outline-none transition-colors"
+                        className="w-full h-8 bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
                       />
                     </div>
 
                     <div>
                       <label className="block text-[10px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase">
-                        <Phone className="w-2.5 h-2.5 text-[#8b0000]" />
-                        <span>Telemóvel *</span>
+                        <Phone className="w-2.5 h-2.5 text-[#083d07]" />
+                        <span>WhatsApp *</span>
                       </label>
                       <input
                         type="tel"
-                        placeholder="9xx xxx xxx"
+                        placeholder="(41) 9xxxx-xxxx"
                         value={telefone}
                         onChange={(e) => {
                           setTelefone(e.target.value);
                           saveCustomerData({ telefone: e.target.value });
                         }}
-                        className="w-full h-8 bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-[#8b0000] rounded-lg px-2 text-xs outline-none transition-colors"
+                        className="w-full h-8 bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
                       />
                     </div>
                   </div>
 
-                  {/* Se Entrega: Morada & Zona */}
+                  {/* Se Entrega: Endereço & Bairro */}
                   {orderType === "Delivery" && (
-                    <div className="space-y-1.5 bg-red-50/30 p-2 rounded-lg border border-red-100">
+                    <div className="space-y-1.5 bg-emerald-50/30 p-2 rounded-lg border border-emerald-100">
                       <div>
                         <label className="block text-[10px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase">
-                          <MapPin className="w-2.5 h-2.5 text-[#8b0000]" />
-                          <span>Morada Completa *</span>
+                          <MapPin className="w-2.5 h-2.5 text-[#083d07]" />
+                          <span>Endereço Completo *</span>
                         </label>
                         <input
                           type="text"
-                          placeholder="Rua, número, andar / apto"
+                          placeholder="Rua, número, complemento / apto"
                           value={morada}
                           onChange={(e) => {
                             setMorada(e.target.value);
                             saveCustomerData({ morada: e.target.value });
                           }}
-                          className="w-full h-8 bg-white border border-gray-200 focus:border-[#8b0000] rounded-lg px-2 text-xs outline-none transition-colors"
+                          className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
                         />
                       </div>
 
                       <div>
                         <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
-                          Zona / Freguesia *
+                          Bairro de Entrega (São José dos Pinhais) *
                         </label>
                         <select
                           value={zona}
@@ -935,75 +933,73 @@ export default function Cart({
                             setZona(e.target.value);
                             saveCustomerData({ zona: e.target.value });
                           }}
-                          className="w-full h-8 bg-white border border-gray-200 focus:border-[#8b0000] rounded-lg px-2 text-xs outline-none font-medium transition-colors"
+                          className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none font-medium transition-colors"
                         >
-                          <option value="">Selecione a freguesia...</option>
+                          <option value="">Selecione o bairro...</option>
                           {Object.keys(zonesFees).map((z) => (
                             <option key={z} value={z}>
-                              {z} ({zonesFees[z] === 0 || subtotal >= freeDeliveryThreshold ? "Grátis" : `+€${zonesFees[z].toFixed(2)}`})
+                              {z} ({zonesFees[z] === 0 || subtotal >= freeDeliveryThreshold ? "Entrega Grátis" : `+R$ ${zonesFees[z].toFixed(2)}`})
                             </option>
                           ))}
-                          <option value="disabled" disabled>Brejos de Azeitão (Fora da área)</option>
-                          <option value="disabled-vendas" disabled>Vendas de Azeitão (Fora da área)</option>
                         </select>
                       </div>
                     </div>
                   )}
 
-                  {/* Pagamento em botões diretos de 26px */}
+                  {/* Pagamento: Débito, Crédito e Pix */}
                   <div>
                     <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase">
-                      Pagamento
+                      Pagamento *
                     </label>
-                    <div className="grid grid-cols-2 gap-1.5">
+                    <div className="grid grid-cols-3 gap-1.5">
                       <button
                         type="button"
                         onClick={() => {
-                          setPagamento("MB Way");
-                          saveCustomerData({ pagamento: "MB Way" });
+                          setPagamento("Pix");
+                          saveCustomerData({ pagamento: "Pix" });
                         }}
-                        className={`h-7 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
-                          pagamento === "MB Way"
-                            ? "bg-gray-900 text-white border-gray-900 shadow-2xs"
+                        className={`h-7 px-1.5 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                          pagamento === "Pix"
+                            ? "bg-[#083d07] text-white border-[#083d07] shadow-2xs"
                             : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                         }`}
                       >
-                        <span>📱 MB Way</span>
+                        <span>📱 Pix</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={() => {
-                          setPagamento("Numerário");
-                          saveCustomerData({ pagamento: "Numerário" });
+                          setPagamento("Cartão de Crédito");
+                          saveCustomerData({ pagamento: "Cartão de Crédito" });
                         }}
-                        className={`h-7 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
-                          pagamento === "Numerário"
-                            ? "bg-gray-900 text-white border-gray-900 shadow-2xs"
+                        className={`h-7 px-1.5 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                          pagamento === "Cartão de Crédito"
+                            ? "bg-[#083d07] text-white border-[#083d07] shadow-2xs"
                             : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
                         }`}
                       >
-                        <span>💵 Dinheiro</span>
+                        <span>💳 Crédito</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPagamento("Cartão de Débito");
+                          saveCustomerData({ pagamento: "Cartão de Débito" });
+                        }}
+                        className={`h-7 px-1.5 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                          pagamento === "Cartão de Débito"
+                            ? "bg-[#083d07] text-white border-[#083d07] shadow-2xs"
+                            : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
+                        }`}
+                      >
+                        <span>💳 Débito</span>
                       </button>
                     </div>
-
-                    {pagamento === "Numerário" && (
-                      <div className="mt-1.5 flex items-center gap-1.5">
-                        <span className="text-[10px] font-semibold text-gray-600">Troco para quanto?</span>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          placeholder="Ex: 50"
-                          value={trocoPara}
-                          onChange={(e) => setTrocoPara(e.target.value)}
-                          className="h-7 w-24 bg-white border border-gray-200 focus:border-[#8b0000] rounded-lg px-2 text-xs outline-none"
-                        />
-                      </div>
-                    )}
                   </div>
 
-                  {/* NIF opcional (expansível para economizar espaço) */}
+                  {/* CPF opcional */}
                   <div className="pt-0.5">
                     {!showNifInput && !nif ? (
                       <button
@@ -1012,19 +1008,19 @@ export default function Cart({
                         className="text-[10px] text-gray-400 hover:text-gray-700 flex items-center gap-0.5 cursor-pointer"
                       >
                         <FileText className="w-2.5 h-2.5" />
-                        <span>+ Adicionar NIF no recibo (opcional)</span>
+                        <span>+ Adicionar CPF na nota (opcional)</span>
                       </button>
                     ) : (
                       <div className="flex items-center gap-1.5">
                         <input
                           type="text"
-                          placeholder="NIF no recibo (opcional)"
+                          placeholder="CPF na nota (opcional)"
                           value={nif}
                           onChange={(e) => {
                             setNif(e.target.value);
                             saveCustomerData({ nif: e.target.value });
                           }}
-                          className="h-7 w-full bg-white border border-gray-200 focus:border-[#8b0000] rounded-lg px-2 text-xs outline-none"
+                          className="h-7 w-full bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none"
                         />
                         <button
                           type="button"
@@ -1047,14 +1043,14 @@ export default function Cart({
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-500">
                       {orderType === "Delivery" ? (
-                        <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `€${deliveryFee.toFixed(2)}`}</strong></>
+                        <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${deliveryFee.toFixed(2)}`}</strong></>
                       ) : (
                         'Retirada no balcão'
                       )}
                     </span>
                     <div className="flex items-center gap-1">
                       <span className="text-gray-500 font-medium">Total:</span>
-                      <span className="font-black text-[#083d07] text-base">€ {total.toFixed(2)}</span>
+                      <span className="font-black text-[#083d07] text-base">R$ {total.toFixed(2)}</span>
                     </div>
                   </div>
 

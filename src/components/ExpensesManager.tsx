@@ -539,32 +539,32 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
           {/* KPIs Grid */}
           <div className="grid grid-cols-2 gap-3 shrink-0">
             {/* Total */}
-            <div className="bg-stone-950 text-white rounded-xl p-4 shadow-xs flex flex-col justify-between col-span-2">
+            <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-4 shadow-xs flex flex-col justify-between col-span-2">
               <div className="flex items-start justify-between">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Total</span>
-                <span className="text-[10px] text-stone-500">{filteredExpenses.length} {filteredExpenses.length === 1 ? 'saída' : 'saídas'}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#745240]">Total</span>
+                <span className="text-[10px] text-[#8a6f5c]">{filteredExpenses.length} {filteredExpenses.length === 1 ? 'saída' : 'saídas'}</span>
               </div>
-              <p className="text-2xl font-bold tracking-tight text-white mt-1 tabular-nums">
+              <p className="text-2xl font-bold tracking-tight text-[#44210f] mt-1 tabular-nums">
                 € {filteredTotalAmount.toFixed(2)}
               </p>
             </div>
             
             {/* Maior Categoria */}
-            <div className="bg-stone-900 text-stone-100 rounded-xl p-3 border border-stone-800 shadow-2xs flex flex-col justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">Maior Cat.</span>
-              <p className="text-sm font-bold tracking-tight truncate text-stone-200" title={topCategory.name}>
+            <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-3 border border-[#d3c8bb] shadow-2xs flex flex-col justify-between">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8a6f5c] mb-1">Maior Cat.</span>
+              <p className="text-sm font-bold tracking-tight truncate text-[#44210f]" title={topCategory.name}>
                 {topCategory.name}
               </p>
-              <span className="text-[10px] text-amber-400/90 font-medium tabular-nums mt-1">€ {topCategory.amount.toFixed(2)}</span>
+              <span className="text-[10px] text-amber-700 font-medium tabular-nums mt-1">€ {topCategory.amount.toFixed(2)}</span>
             </div>
 
             {/* Média */}
-            <div className="bg-stone-900 text-stone-100 rounded-xl p-3 border border-stone-800 shadow-2xs flex flex-col justify-between">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-500 mb-1">Ticket Médio</span>
-              <p className="text-sm font-bold tracking-tight text-stone-200 tabular-nums">
+            <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-3 border border-[#d3c8bb] shadow-2xs flex flex-col justify-between">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8a6f5c] mb-1">Ticket Médio</span>
+              <p className="text-sm font-bold tracking-tight text-[#44210f] tabular-nums">
                 € {averageExpense.toFixed(2)}
               </p>
-              <span className="text-[10px] text-stone-500 font-medium tabular-nums mt-1">por despesa</span>
+              <span className="text-[10px] text-[#8a6f5c] font-medium tabular-nums mt-1">por despesa</span>
             </div>
           </div>
 
@@ -609,7 +609,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                   placeholder="Ex: Fornecedor de Queijo"
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className="w-full h-9 px-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none transition-all"
+                  className="w-full h-9 px-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-all"
                 />
               </div>
 
@@ -627,7 +627,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                       placeholder="0.00"
                       value={amount}
                       onChange={e => setAmount(e.target.value)}
-                      className="w-full h-9 pl-6 pr-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-bold text-stone-900 tabular-nums focus:bg-white focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none transition-all"
+                      className="w-full h-9 pl-6 pr-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-bold text-stone-900 tabular-nums focus:bg-white focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -638,7 +638,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                     required
                     value={expenseDate}
                     onChange={e => setExpenseDate(e.target.value)}
-                    className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none transition-all"
+                    className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -662,13 +662,13 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                     placeholder="Nova categoria..."
                     value={newCategoryName}
                     onChange={e => setNewCategoryName(e.target.value)}
-                    className="w-full h-9 px-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-stone-900 outline-none"
+                    className="w-full h-9 px-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
                   />
                 ) : (
                   <select
                     value={category}
                     onChange={e => setCategory(e.target.value)}
-                    className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-stone-900 outline-none"
+                    className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
                   >
                     {allCategories.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -691,7 +691,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                         onClick={() => setPaymentMethod(pm.id)}
                         className={`h-8 flex items-center justify-center gap-1.5 rounded text-[11px] font-semibold transition-all border ${
                           isSelected 
-                            ? 'bg-stone-900 text-white border-stone-900' 
+                            ? 'bg-[#083d07] text-white border-[#083d07]' 
                             : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
                         }`}
                       >
@@ -730,7 +730,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full h-10 bg-[#fdde58] hover:bg-[#e2c23f] disabled:opacity-50 text-stone-950 font-bold text-xs rounded-lg transition-all shadow-xs border border-[#d8ba39] flex items-center justify-center gap-1.5"
+                  className="w-full h-10 bg-[#083d07] hover:bg-[#0b520a] disabled:opacity-50 text-[#fdfbf7] font-bold text-xs rounded-lg transition-all shadow-xs border border-[#d5af7a]/60 flex items-center justify-center gap-1.5"
                 >
                   <Plus size={14} className="stroke-[2.5]" />
                   <span>{submitting ? 'Salvando...' : 'Confirmar Lançamento'}</span>
@@ -754,7 +754,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                 placeholder="Buscar descrição ou fornecedor..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full h-8 pl-8 pr-7 bg-stone-50 border border-stone-200 focus:bg-white rounded text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none transition-colors"
+                className="w-full h-8 pl-8 pr-7 bg-stone-50 border border-stone-200 focus:bg-white rounded text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-colors"
               />
               {searchQuery && (
                 <button 
@@ -771,7 +771,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
               <select
                 value={selectedCategory}
                 onChange={e => setSelectedCategory(e.target.value)}
-                className={`w-full h-8 px-2.5 border rounded text-[11px] font-medium focus:border-stone-900 outline-none transition-colors appearance-none pr-6 ${
+                className={`w-full h-8 px-2.5 border rounded text-[11px] font-medium focus:border-[#083d07] outline-none transition-colors appearance-none pr-6 ${
                   selectedCategory !== 'all' ? 'border-amber-400 bg-amber-50 text-stone-900' : 'bg-white border-stone-200'
                 }`}
               >

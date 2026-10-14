@@ -64,7 +64,7 @@ export const BillingManager: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
       
       {/* Bloco de Fatura Atual */}
-      <div className="bg-stone-900 border border-stone-800 rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#083d07] border border-[#0b520a] rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[11px] font-mono text-stone-400 uppercase tracking-wider block mb-1">
             Fatura Atual • Vencimento todo dia 16
@@ -97,27 +97,27 @@ export const BillingManager: React.FC = () => {
         <button
           onClick={handleRefresh}
           disabled={isRefreshing || loading}
-          className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-medium border border-stone-700 transition-colors cursor-pointer disabled:opacity-50"
+          className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#0b520a] hover:bg-stone-700 text-stone-200 text-xs font-medium border border-stone-700 transition-colors cursor-pointer disabled:opacity-50"
         >
-          <RefreshCw size={13} className={isRefreshing ? 'animate-spin text-[#fdde58]' : ''} />
+          <RefreshCw size={13} className={isRefreshing ? 'animate-spin text-[#d5af7a]' : ''} />
           <span>{isRefreshing ? 'Consultando...' : 'Verificar Status'}</span>
         </button>
       </div>
 
       {/* Caixa de Pagamento */}
-      <div className="bg-stone-900 border border-stone-800 rounded-xl overflow-hidden">
+      <div className="bg-[#083d07] border border-[#0b520a] rounded-xl overflow-hidden">
         
         {/* Seletor Segmentado PIX / Cartão */}
-        <div className="flex border-b border-stone-800 bg-stone-950/60 p-1.5 gap-1.5">
+        <div className="flex border-b border-[#0b520a] bg-[#062b06]/60 p-1.5 gap-1.5">
           <button
             onClick={() => setPaymentMethod('pix')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
               paymentMethod === 'pix'
-                ? 'bg-stone-800 text-stone-100 shadow-xs'
+                ? 'bg-[#0b520a] text-stone-100 shadow-xs'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            <QrCode size={14} className={paymentMethod === 'pix' ? 'text-[#fdde58]' : ''} />
+            <QrCode size={14} className={paymentMethod === 'pix' ? 'text-[#d5af7a]' : ''} />
             <span>PIX Direto</span>
           </button>
 
@@ -125,11 +125,11 @@ export const BillingManager: React.FC = () => {
             onClick={() => setPaymentMethod('card')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
               paymentMethod === 'card'
-                ? 'bg-stone-800 text-stone-100 shadow-xs'
+                ? 'bg-[#0b520a] text-stone-100 shadow-xs'
                 : 'text-stone-400 hover:text-stone-200'
             }`}
           >
-            <CreditCard size={14} className={paymentMethod === 'card' ? 'text-[#fdde58]' : ''} />
+            <CreditCard size={14} className={paymentMethod === 'card' ? 'text-[#d5af7a]' : ''} />
             <span>Cartão de Crédito (Stripe)</span>
           </button>
         </div>
@@ -165,11 +165,11 @@ export const BillingManager: React.FC = () => {
                       type="text" 
                       readOnly 
                       value={PIX_PHONE_DISPLAY}
-                      className="flex-1 bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-xs text-stone-200 font-mono select-all focus:outline-none"
+                      className="flex-1 bg-[#062b06] border border-[#0b520a] rounded-lg px-3 py-2 text-xs text-stone-200 font-mono select-all focus:outline-none"
                     />
                     <button
                       onClick={handleCopyKey}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-medium rounded-lg transition-colors cursor-pointer shrink-0"
+                      className="flex items-center gap-1.5 px-3 py-2 bg-[#0b520a] hover:bg-stone-700 text-stone-200 text-xs font-medium rounded-lg transition-colors cursor-pointer shrink-0"
                     >
                       {copiedKey ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
                       <span>{copiedKey ? 'Copiado' : 'Copiar'}</span>
@@ -186,11 +186,11 @@ export const BillingManager: React.FC = () => {
                       type="text"
                       readOnly
                       value={PIX_BRCODE}
-                      className="flex-1 bg-stone-950 border border-stone-800 rounded-lg px-3 py-2 text-xs text-stone-400 font-mono select-all truncate focus:outline-none"
+                      className="flex-1 bg-[#062b06] border border-[#0b520a] rounded-lg px-3 py-2 text-xs text-stone-400 font-mono select-all truncate focus:outline-none"
                     />
                     <button
                       onClick={handleCopyCode}
-                      className="flex items-center gap-1.5 px-4 py-2 bg-[#fdde58] hover:bg-[#e6c94f] text-stone-950 text-xs font-bold rounded-lg transition-colors cursor-pointer shrink-0"
+                      className="flex items-center gap-1.5 px-4 py-2 bg-[#083d07] hover:bg-[#e6c94f] text-[#fdfbf7] text-xs font-bold rounded-lg transition-colors cursor-pointer shrink-0"
                     >
                       {copiedCode ? <Check size={13} /> : <Copy size={13} />}
                       <span>{copiedCode ? 'Copiado' : 'Copiar PIX'}</span>
@@ -226,7 +226,7 @@ export const BillingManager: React.FC = () => {
       </div>
 
       {/* Histórico Simples */}
-      <div className="bg-stone-900 border border-stone-800 rounded-xl p-5 space-y-3">
+      <div className="bg-[#083d07] border border-[#0b520a] rounded-xl p-5 space-y-3">
         <h3 className="text-xs font-mono text-stone-400 uppercase tracking-wider">
           Histórico de Pagamentos
         </h3>
@@ -234,7 +234,7 @@ export const BillingManager: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-stone-800 text-[11px] font-mono text-stone-400 uppercase">
+              <tr className="border-b border-[#0b520a] text-[11px] font-mono text-stone-400 uppercase">
                 <th className="py-2.5 px-3">Competência</th>
                 <th className="py-2.5 px-3">Valor</th>
                 <th className="py-2.5 px-3">Forma</th>
@@ -247,7 +247,7 @@ export const BillingManager: React.FC = () => {
                 <td className="py-2.5 px-3 font-mono">R$ 490,00</td>
                 <td className="py-2.5 px-3 text-stone-400">PIX Direto</td>
                 <td className="py-2.5 px-3">
-                  <span className="text-stone-300 font-medium bg-stone-800 px-2 py-0.5 rounded text-[11px]">
+                  <span className="text-stone-300 font-medium bg-[#0b520a] px-2 py-0.5 rounded text-[11px]">
                     A vencer (16/10)
                   </span>
                 </td>

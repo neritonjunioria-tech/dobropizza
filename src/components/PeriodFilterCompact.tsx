@@ -159,7 +159,7 @@ export const PeriodFilterCompact: React.FC<PeriodFilterCompactProps> = ({
                     type="date"
                     value={tempStart}
                     onChange={e => setTempStart(e.target.value)}
-                    className="w-full h-8 px-2 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-800 outline-none focus:border-stone-900"
+                    className="w-full h-8 px-2 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-800 outline-none focus:border-[#083d07]"
                   />
                 </div>
                 <div>
@@ -168,7 +168,7 @@ export const PeriodFilterCompact: React.FC<PeriodFilterCompactProps> = ({
                     type="date"
                     value={tempEnd}
                     onChange={e => setTempEnd(e.target.value)}
-                    className="w-full h-8 px-2 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-800 outline-none focus:border-stone-900"
+                    className="w-full h-8 px-2 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-800 outline-none focus:border-[#083d07]"
                   />
                 </div>
               </div>
@@ -186,7 +186,7 @@ export const PeriodFilterCompact: React.FC<PeriodFilterCompactProps> = ({
                   onChange({ period: 'customizado', startDate: tempStart, endDate: tempEnd });
                   setIsOpen(false);
                 }}
-                className="w-full h-8 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white text-xs font-bold font-mono rounded-lg transition-colors cursor-pointer shadow-xs"
+                className="w-full h-8 bg-[#083d07] hover:bg-[#0b520a] disabled:opacity-40 text-white text-xs font-bold font-mono rounded-lg transition-colors cursor-pointer shadow-xs"
               >
                 Aplicar Intervalo
               </button>

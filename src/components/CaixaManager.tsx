@@ -556,7 +556,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
             <div className="flex items-center gap-2 w-full md:w-auto">
               <button
                 onClick={() => setShowOpenModal(true)}
-                className="bg-[#fdde58] hover:bg-[#f3ce37] active:scale-[0.98] text-slate-950 font-bold px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wide transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer shrink-0 border border-[#d8ba39]/60 shadow-sm"
+                className="bg-[#083d07] hover:bg-[#f3ce37] active:scale-[0.98] text-slate-950 font-bold px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wide transition-all flex items-center gap-1.5 whitespace-nowrap cursor-pointer shrink-0 border border-[#d5af7a]/60 shadow-sm"
               >
                 <Unlock className="w-3.5 h-3.5 text-slate-950" />
                 <span>Abrir Caixa</span>
@@ -714,14 +714,14 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
 
             <div className="bg-slate-950 border border-slate-800 p-3 rounded-xl shadow-2xs text-white flex flex-col justify-between col-span-2 sm:col-span-1">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-mono font-medium uppercase tracking-wide text-[#fdde58]/80">
+                <span className="text-[10px] font-mono font-medium uppercase tracking-wide text-[#d5af7a]/80">
                   Gaveta (Esperado)
                 </span>
-                <div className="w-5 h-5 rounded-md bg-slate-900 border border-slate-800 text-[#fdde58] flex items-center justify-center shrink-0">
+                <div className="w-5 h-5 rounded-md bg-slate-900 border border-slate-800 text-[#d5af7a] flex items-center justify-center shrink-0">
                   <Wallet size={11} strokeWidth={1.5} />
                 </div>
               </div>
-              <p className="text-lg font-semibold font-mono tabular-nums text-[#fdde58] tracking-tight mt-0.5">
+              <p className="text-lg font-semibold font-mono tabular-nums text-[#d5af7a] tracking-tight mt-0.5">
                 € {currentExpected.toFixed(2)}
               </p>
             </div>
@@ -893,7 +893,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                     value={closingAmount}
                     onChange={(e) => setClosingAmount(e.target.value)}
                     placeholder="0.00"
-                    className="w-full text-center text-3xl font-mono font-bold py-3 bg-white border-2 border-slate-300 rounded-lg focus:border-[#fdde58] focus:ring-1 focus:ring-[#fdde58]/40 focus:outline-none transition-colors tracking-tight text-slate-900"
+                    className="w-full text-center text-3xl font-mono font-bold py-3 bg-white border-2 border-slate-300 rounded-lg focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/40 focus:outline-none transition-colors tracking-tight text-slate-900"
                     autoFocus
                   />
                 </div>
@@ -978,7 +978,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                     value={movementAmount}
                     onChange={(e) => setMovementAmount(e.target.value)}
                     placeholder="0.00"
-                    className="w-full text-xl font-mono font-bold pl-8 pr-4 py-2.5 bg-white border-2 border-slate-300 rounded-lg focus:border-[#fdde58] focus:ring-1 focus:ring-[#fdde58]/40 focus:outline-none transition-colors tracking-tight text-slate-900 placeholder-slate-400"
+                    className="w-full text-xl font-mono font-bold pl-8 pr-4 py-2.5 bg-white border-2 border-slate-300 rounded-lg focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/40 focus:outline-none transition-colors tracking-tight text-slate-900 placeholder-slate-400"
                     autoFocus
                   />
                 </div>
@@ -994,7 +994,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                   value={movementReason}
                   onChange={(e) => setMovementReason(e.target.value)}
                   placeholder={movementType === 'sangria' ? 'Ex: Pagamento fornecedor hortifrúti' : 'Ex: Troco inicial extra'}
-                  className="w-full text-xs font-sans py-2.5 px-3 bg-white border border-slate-300 rounded-lg focus:border-[#fdde58] focus:ring-1 focus:ring-[#fdde58]/40 focus:outline-none transition-colors placeholder-slate-400"
+                  className="w-full text-xs font-sans py-2.5 px-3 bg-white border border-slate-300 rounded-lg focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/40 focus:outline-none transition-colors placeholder-slate-400"
                 />
               </div>
             </div>
@@ -1042,7 +1042,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
             <div className="p-4 border-b border-slate-200 bg-slate-800 text-white flex justify-between items-center">
               <div>
                 <h3 className="text-base font-bold flex items-center gap-2 tracking-tight">
-                  <Unlock className="w-4 h-4 text-[#fdde58]" />
+                  <Unlock className="w-4 h-4 text-[#d5af7a]" />
                   Abertura de Caixa
                 </h3>
                 <p className="text-xs text-slate-400 font-mono mt-0.5">Informe o valor em dinheiro na gaveta</p>
@@ -1063,7 +1063,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                     value={openingAmount}
                     onChange={(e) => setOpeningAmount(e.target.value)}
                     placeholder="0.00"
-                    className="w-full text-center text-3xl font-mono font-bold py-3 bg-white border-2 border-slate-300 rounded-lg focus:border-[#fdde58] focus:ring-1 focus:ring-[#fdde58]/40 focus:outline-none transition-colors tracking-tight text-slate-900"
+                    className="w-full text-center text-3xl font-mono font-bold py-3 bg-white border-2 border-slate-300 rounded-lg focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/40 focus:outline-none transition-colors tracking-tight text-slate-900"
                     autoFocus
                   />
                 </div>
@@ -1080,7 +1080,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
               <button
                 onClick={handleOpen}
                 disabled={isOpening || (openingAmount !== '' && parseFloat(openingAmount) < 0)}
-                className="flex-1 px-4 py-2.5 bg-[#fdde58] hover:bg-[#f3ce37] text-slate-950 font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 text-xs font-mono tracking-wide border border-[#d8ba39]/60"
+                className="flex-1 px-4 py-2.5 bg-[#083d07] hover:bg-[#f3ce37] text-slate-950 font-bold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 text-xs font-mono tracking-wide border border-[#d5af7a]/60"
               >
                 {isOpening ? (
                   <>

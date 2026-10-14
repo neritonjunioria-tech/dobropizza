@@ -84,6 +84,9 @@ import MotoboyAssignModal from '../components/MotoboyAssignModal';
 import { Motoboy, isDeliveryOrderType, getDeliveryResponsibleLabel } from '../utils/motoboys';
 import { SubscriptionLockoutOverlay } from '../components/SubscriptionLockoutOverlay';
 import { useSubscription } from '../hooks/useSubscription';
+
+// Aba de Cobrança oculta neste projeto por enquanto. Mudar para true reativa a aba e o bloqueio por atraso.
+const BILLING_ENABLED = false;
 import { startOfDay, endOfDay } from 'date-fns';
 
 
@@ -117,7 +120,7 @@ const safeParseItems = (items: any): any[] => {
   return [];
 };
 
-const CHART_COLORS = ["#18181b", "#fdde58", "#3b82f6", "#10b981", "#f97316", "#a855f7"];
+const CHART_COLORS = ["#083d07", "#d5af7a", "#745240", "#5f8f3e", "#b88a44", "#a89284"];
 
 
 const playNotificationSound = () => {
@@ -1270,15 +1273,13 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 font-sans">
+      <div className="min-h-screen bg-[#fdfbf7] flex items-center justify-center p-4 font-sans">
         <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 w-full max-w-md">
           <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center border border-gray-100">
-              <Lock className="text-gray-400" size={24} />
-            </div>
+            <img src="/dobro/logo-dobro.svg" alt="DOBRO Pizzas" className="h-14 w-auto" />
           </div>
           <h1 className="text-2xl font-black text-center text-gray-900 mb-2">Acesso Restrito</h1>
-          <p className="text-center text-gray-500 mb-8 text-sm">Insira suas credenciais para acessar o painel.</p>
+          <p className="text-center text-gray-500 mb-8 text-sm">Gestor DOBRO Pizzas. Insira suas credenciais para continuar.</p>
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -1287,7 +1288,7 @@ export default function AdminDashboard() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#C81E3A] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-all"
                 placeholder="Ex: admin"
                 required
               />
@@ -1298,19 +1299,16 @@ export default function AdminDashboard() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#C81E3A] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-all"
                 placeholder="Ex: admin"
                 required
               />
             </div>
-            
-            <p className="text-xs text-gray-400 text-center">Credenciais padrão: admin / admin</p>
-            
             {loginError && <p className="text-red-500 text-sm font-medium text-center bg-red-50 p-2 rounded-lg">{loginError}</p>}
             
             <button
               type="submit"
-              className="w-full bg-[#C81E3A] text-white font-bold py-3 rounded-xl hover:bg-[#A8172F] transition-colors mt-2"
+              className="w-full bg-[#083d07] text-white font-bold py-3 rounded-xl hover:bg-[#0b520a] transition-colors mt-2"
             >
               Entrar no Dashboard
             </button>
@@ -1404,18 +1402,18 @@ export default function AdminDashboard() {
   return (
     <>
       {/* Mobile Top Header */}
-      <header className="bg-stone-950 border-b border-stone-800 px-4 py-3 flex items-center justify-between sticky top-0 z-40 md:hidden w-full no-print">
+      <header className="bg-[#e5ddd4] border-b border-[#d3c8bb] px-4 py-3 flex items-center justify-between sticky top-0 z-40 md:hidden w-full no-print">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
-            className="p-2 rounded-lg bg-stone-900 text-stone-300 hover:bg-stone-800 transition-colors border border-stone-800"
+            className="p-2 rounded-lg bg-[#083d07] text-stone-300 hover:bg-[#0b520a] transition-colors border border-[#0b520a]"
             aria-label="Abrir Menu Admin"
           >
             <Menu size={20} />
           </button>
           <div>
-            <h2 className="text-sm font-bold text-white tracking-tight leading-none">DOBRO Pizzas</h2>
-            <span className="text-[10px] text-stone-400 font-mono uppercase tracking-wider">
+            <h2 className="text-sm font-bold text-[#44210f] tracking-tight leading-none">DOBRO Pizzas</h2>
+            <span className="text-[10px] text-[#745240] font-mono uppercase tracking-wider">
               {activeTab === 'visao-geral' && 'Visão Geral'}
               {activeTab === 'pedidos' && 'Pedidos'}
               {activeTab === 'caixa' && 'Caixa'}
@@ -1463,7 +1461,7 @@ export default function AdminDashboard() {
                     className="h-7 px-2 rounded-lg border border-stone-200 bg-white text-stone-600 hover:text-stone-950 hover:bg-stone-50 transition-colors cursor-pointer shadow-2xs flex items-center gap-1 text-[11px] font-mono font-medium"
                     title="Recarregar dados"
                   >
-                    <RefreshCw size={11} className={isLoading ? 'animate-spin text-rose-600' : 'text-stone-400'} />
+                    <RefreshCw size={11} className={isLoading ? 'animate-spin text-rose-600' : 'text-[#745240]'} />
                     <span className="hidden sm:inline">Atualizar</span>
                   </button>
                 </div>
@@ -1576,7 +1574,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="flex items-center gap-2">
-          <label className="flex items-center gap-1.5 cursor-pointer bg-stone-900 px-2.5 py-1.5 rounded-lg border border-stone-700 text-xs font-mono font-semibold text-stone-300">
+          <label className="flex items-center gap-1.5 cursor-pointer bg-[#083d07] px-2.5 py-1.5 rounded-lg border border-stone-700 text-xs font-mono font-semibold text-stone-300">
             <input 
               type="checkbox" 
               className="w-3.5 h-3.5 accent-emerald-500 rounded cursor-pointer"
@@ -1599,16 +1597,16 @@ export default function AdminDashboard() {
           />
           
           {/* Drawer Content */}
-          <div className="relative bg-stone-950 w-72 max-w-[85vw] h-full shadow-2xl p-5 flex flex-col justify-between overflow-y-auto z-10">
+          <div className="relative bg-[#e5ddd4] w-72 max-w-[85vw] h-full shadow-2xl p-5 flex flex-col justify-between overflow-y-auto z-10">
             <div>
-              <div className="flex justify-between items-center pb-4 mb-4 border-b border-stone-800">
+              <div className="flex justify-between items-center pb-4 mb-4 border-b border-[#d3c8bb]">
                 <div>
-                  <h2 className="text-sm font-bold text-white tracking-tight">DOBRO Pizzas</h2>
-                  <p className="text-[10px] text-stone-400 uppercase tracking-wider font-mono mt-0.5">Pizzas e Esfirras</p>
+                  <h2 className="text-sm font-bold text-[#44210f] tracking-tight">DOBRO Pizzas</h2>
+                  <p className="text-[10px] text-[#745240] uppercase tracking-wider font-mono mt-0.5">Pizzas Artesanais</p>
                 </div>
                 <button 
                   onClick={() => setIsMobileMenuOpen(false)} 
-                  className="p-2 text-stone-500 hover:text-white hover:bg-stone-800 rounded-lg transition-colors"
+                  className="p-2 text-[#8a6f5c] hover:text-[#083d07] hover:bg-[#d9cfc3] rounded-lg transition-colors"
                 >
                   <X size={18} />
                 </button>
@@ -1618,39 +1616,39 @@ export default function AdminDashboard() {
                 {isOwner && (
                   <button 
                     onClick={() => { setActiveTab("visao-geral"); setIsMobileMenuOpen(false); }} 
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'visao-geral' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'visao-geral' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                   >
                     Visão Geral
                   </button>
                 )}
                 <button 
                   onClick={() => { setActiveTab("pedidos"); setIsMobileMenuOpen(false); }} 
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'pedidos' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'pedidos' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
                   Pedidos
                 </button>
                 <button 
                   onClick={() => { setActiveTab("caixa"); setIsMobileMenuOpen(false); }} 
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'caixa' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'caixa' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
                   Caixa
                 </button>
                 <button 
                   onClick={() => { setActiveTab("despesas"); setIsMobileMenuOpen(false); }} 
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'despesas' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'despesas' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
                   Despesas
                 </button>
                 <button
                   onClick={() => { setActiveTab("motoboys"); setIsMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'motoboys' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'motoboys' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
                   Motoboys
                 </button>
                 {isOwner && (
                   <button 
                     onClick={() => { setActiveTab("relatorios"); setIsMobileMenuOpen(false); }} 
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'relatorios' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'relatorios' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                   >
                     Relatórios
                   </button>
@@ -1658,7 +1656,7 @@ export default function AdminDashboard() {
                 {isOwner && (
                   <button 
                     onClick={() => { setActiveTab("funil"); setIsMobileMenuOpen(false); }} 
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'funil' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'funil' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                   >
                     Funil de Vendas
                   </button>
@@ -1666,36 +1664,36 @@ export default function AdminDashboard() {
                 {isOwner && (
                   <button 
                     onClick={() => { setActiveTab("clientes"); setIsMobileMenuOpen(false); }} 
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'clientes' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'clientes' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                   >
                     Clientes
                   </button>
                 )}
 
                 {isOwner && (
-                  <div className="pt-3 mt-3 border-t border-stone-800">
-                    <p className="px-3 text-[10px] font-mono font-bold text-stone-500 uppercase tracking-wider mb-1">Cardápio</p>
+                  <div className="pt-3 mt-3 border-t border-[#d3c8bb]">
+                    <p className="px-3 text-[10px] font-mono font-bold text-[#8a6f5c] uppercase tracking-wider mb-1">Cardápio</p>
                     <button 
                       onClick={() => { setActiveTab("cardapio-digital"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'cardapio-digital' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'cardapio-digital' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Cardápio Digital
                     </button>
                     <button 
                       onClick={() => { setActiveTab("gestao-cardapio"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'gestao-cardapio' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'gestao-cardapio' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Produtos
                     </button>
                     <button 
                       onClick={() => { setActiveTab("categorias"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'categorias' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'categorias' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Categorias
                     </button>
                     <button 
                       onClick={() => { setActiveTab("banner-promocional"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'banner-promocional' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'banner-promocional' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Banner Promocional
                     </button>
@@ -1703,23 +1701,25 @@ export default function AdminDashboard() {
                 )}
 
                 {isOwner && (
-                  <div className="pt-3 mt-3 border-t border-stone-800">
-                    <p className="px-3 text-[10px] font-mono font-bold text-stone-500 uppercase tracking-wider mb-1">Sistema</p>
+                  <div className="pt-3 mt-3 border-t border-[#d3c8bb]">
+                    <p className="px-3 text-[10px] font-mono font-bold text-[#8a6f5c] uppercase tracking-wider mb-1">Sistema</p>
                     <button 
                       onClick={() => { setActiveTab("configuracoes"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'configuracoes' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'configuracoes' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Configurações
                     </button>
+                    {BILLING_ENABLED && (
                     <button 
                       onClick={() => { setActiveTab("cobranca"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'cobranca' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'cobranca' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Cobrança & Assinatura
                     </button>
+                    )}
                     <button 
                       onClick={() => { setActiveTab("usuarios"); setIsMobileMenuOpen(false); }} 
-                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'usuarios' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'usuarios' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
                       Usuários
                     </button>
@@ -1748,25 +1748,25 @@ export default function AdminDashboard() {
 
       <div className="min-h-screen bg-stone-50 flex flex-col md:flex-row font-sans no-print">
       {/* Sidebar */}
-      <aside className="w-60 bg-stone-950 text-stone-300 border-r border-stone-800/80 flex-col hidden md:flex sticky top-0 h-screen overflow-hidden shrink-0 select-none">
+      <aside className="w-60 bg-[#e5ddd4] text-[#5c4433] border-r border-[#d3c8bb] flex-col hidden md:flex sticky top-0 h-screen overflow-hidden shrink-0 select-none">
         {/* Terminal Header */}
-        <div className="py-3 px-3.5 border-b border-stone-800/80 bg-stone-950 shrink-0">
+        <div className="py-3 px-3.5 border-b border-[#d3c8bb]/80 bg-[#e5ddd4] shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-black border border-stone-800 shrink-0 flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-black border border-[#0b520a] shrink-0 flex items-center justify-center shadow-sm">
               <img src={adminLogoUrl || "/dobro/logo-dobro.png"} alt="DOBRO Pizzas" className="w-full h-full object-cover rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = "/dobro/logo-dobro.png"; }} />
             </div>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-extrabold text-white tracking-tight leading-tight truncate">DOBRO Pizzas</h2>
+                <h2 className="text-sm font-extrabold text-[#44210f] tracking-tight leading-tight truncate">DOBRO Pizzas</h2>
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 leading-none">Online</span>
               </div>
-              <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mt-1 leading-none">Pizzas e Esfirras</span>
+              <span className="text-[10px] font-mono text-[#745240] uppercase tracking-wider block mt-1 leading-none">Pizzas Artesanais</span>
             </div>
           </div>
         </div>
 
         {/* Status Loja */}
-        <div className="p-1 border-b border-stone-800/80 relative shrink-0">
+        <div className="p-1 border-b border-[#d3c8bb] relative shrink-0">
           <button
             onClick={() => setShowStoreMenu(!showStoreMenu)}
             className={`w-full flex items-center justify-center gap-1 px-2 py-0.5 rounded font-mono text-[10px] font-bold transition-colors cursor-pointer border ${
@@ -1785,11 +1785,11 @@ export default function AdminDashboard() {
           </button>
 
           {showStoreMenu && (
-            <div className="absolute top-full left-1 right-1 mt-1 bg-stone-900 border border-stone-700 rounded-lg shadow-xl z-50 overflow-hidden divide-y divide-stone-800 font-sans">
+            <div className="absolute top-full left-1 right-1 mt-1 bg-[#083d07] border border-stone-700 rounded-lg shadow-xl z-50 overflow-hidden divide-y divide-stone-800 font-sans">
               {(storeStatus === 'closed' || manualClosed || storeStatus === 'paused') ? (
                 <button
                   onClick={() => handleStoreAction('open')}
-                  className="w-full text-left px-3 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-stone-800 transition-colors cursor-pointer"
+                  className="w-full text-left px-3 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-[#0b520a] transition-colors cursor-pointer"
                 >
                   Abrir Loja Agora
                 </button>
@@ -1797,11 +1797,11 @@ export default function AdminDashboard() {
                 <>
                   <div className="p-1">
                     <p className="px-1 text-[8.5px] font-mono font-bold text-stone-500 uppercase tracking-wider">Pausa Temporária</p>
-                    <button onClick={() => handleStoreAction('pause_30m')} className="w-full text-left px-2 py-0.5 text-xs text-stone-300 hover:bg-stone-800 hover:text-white rounded transition-colors cursor-pointer">Pausar por 30 min</button>
-                    <button onClick={() => handleStoreAction('pause_1h')} className="w-full text-left px-2 py-0.5 text-xs text-stone-300 hover:bg-stone-800 hover:text-white rounded transition-colors cursor-pointer">Pausar por 1 hora</button>
-                    <button onClick={() => handleStoreAction('pause_2h')} className="w-full text-left px-2 py-0.5 text-xs text-stone-300 hover:bg-stone-800 hover:text-white rounded transition-colors cursor-pointer">Pausar por 2 horas</button>
+                    <button onClick={() => handleStoreAction('pause_30m')} className="w-full text-left px-2 py-0.5 text-xs text-stone-300 hover:bg-[#0b520a] hover:text-white rounded transition-colors cursor-pointer">Pausar por 30 min</button>
+                    <button onClick={() => handleStoreAction('pause_1h')} className="w-full text-left px-2 py-0.5 text-xs text-stone-300 hover:bg-[#0b520a] hover:text-white rounded transition-colors cursor-pointer">Pausar por 1 hora</button>
+                    <button onClick={() => handleStoreAction('pause_2h')} className="w-full text-left px-2 py-0.5 text-xs text-stone-300 hover:bg-[#0b520a] hover:text-white rounded transition-colors cursor-pointer">Pausar por 2 horas</button>
                   </div>
-                  <div className="p-1 bg-stone-950/50">
+                  <div className="p-1 bg-[#d9cfc3]/50">
                     <button 
                       onClick={() => handleStoreAction('close')}
                       className="w-full text-left px-2 py-1 text-xs font-bold text-rose-500 hover:bg-rose-950/50 hover:text-rose-400 rounded transition-colors cursor-pointer"
@@ -1820,150 +1820,150 @@ export default function AdminDashboard() {
           {hasPermission('ver_relatorios') && (
             <button 
               onClick={() => setActiveTab("visao-geral")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'visao-geral' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'visao-geral' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <LayoutDashboard size={12} className={activeTab === 'visao-geral' ? 'text-stone-950' : 'text-stone-400'} />
+              <LayoutDashboard size={12} className={activeTab === 'visao-geral' ? 'text-stone-950' : 'text-[#745240]'} />
               Visão Geral
             </button>
           )}
           {hasPermission('ver_pedidos') && (
             <button 
               onClick={() => setActiveTab("pedidos")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'pedidos' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'pedidos' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <ShoppingBag size={12} className={activeTab === 'pedidos' ? 'text-stone-950' : 'text-stone-400'} />
+              <ShoppingBag size={12} className={activeTab === 'pedidos' ? 'text-stone-950' : 'text-[#745240]'} />
               Pedidos
             </button>
           )}
           {hasPermission('gerenciar_caixa') && (
             <button 
               onClick={() => setActiveTab("caixa")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'caixa' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'caixa' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <CreditCard size={12} className={activeTab === 'caixa' ? 'text-stone-950' : 'text-stone-400'} />
+              <CreditCard size={12} className={activeTab === 'caixa' ? 'text-stone-950' : 'text-[#745240]'} />
               Caixa
             </button>
           )}
           {hasPermission('gerenciar_caixa') && (
             <button 
               onClick={() => setActiveTab("despesas")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'despesas' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'despesas' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <TrendingDown size={12} className={activeTab === 'despesas' ? 'text-stone-950' : 'text-stone-400'} />
+              <TrendingDown size={12} className={activeTab === 'despesas' ? 'text-stone-950' : 'text-[#745240]'} />
               Despesas
             </button>
           )}
           {hasPermission('gerenciar_caixa') && (
             <button
               onClick={() => setActiveTab("motoboys")}
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'motoboys' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'motoboys' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <Bike size={12} className={activeTab === 'motoboys' ? 'text-stone-950' : 'text-stone-400'} />
+              <Bike size={12} className={activeTab === 'motoboys' ? 'text-stone-950' : 'text-[#745240]'} />
               Motoboys
             </button>
           )}
           {hasPermission('ver_relatorios') && (
             <button 
               onClick={() => setActiveTab("relatorios")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'relatorios' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'relatorios' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <BarChart3 size={12} className={activeTab === 'relatorios' ? 'text-stone-950' : 'text-stone-400'} />
+              <BarChart3 size={12} className={activeTab === 'relatorios' ? 'text-stone-950' : 'text-[#745240]'} />
               Relatórios
             </button>
           )}
           {hasPermission('ver_relatorios') && (
             <button 
               onClick={() => setActiveTab("funil")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'funil' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'funil' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <Filter size={12} className={activeTab === 'funil' ? 'text-stone-950' : 'text-stone-400'} />
+              <Filter size={12} className={activeTab === 'funil' ? 'text-stone-950' : 'text-[#745240]'} />
               Funil de Vendas
             </button>
           )}
           {hasPermission('ver_clientes') && (
             <button 
               onClick={() => setActiveTab("clientes")} 
-              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'clientes' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'clientes' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
             >
-              <Users size={12} className={activeTab === 'clientes' ? 'text-stone-950' : 'text-stone-400'} />
+              <Users size={12} className={activeTab === 'clientes' ? 'text-stone-950' : 'text-[#745240]'} />
               Clientes
             </button>
           )}
           
           {(hasPermission('gerenciar_produtos') || hasPermission('gerenciar_categorias')) && (
-            <div className="pt-1 mt-1 border-t border-stone-800/80 space-y-[2px]">
-              <p className="px-2 text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider mb-0.5 leading-none">Cardápio</p>
+            <div className="pt-1 mt-1 border-t border-[#d3c8bb] space-y-[2px]">
+              <p className="px-2 text-[8px] font-mono font-bold text-[#8a6f5c] uppercase tracking-wider mb-0.5 leading-none">Cardápio</p>
               <button 
                 onClick={() => setActiveTab("cardapio-digital")} 
-                className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'cardapio-digital' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+                className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'cardapio-digital' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
               >
-                <UtensilsCrossed size={12} className={activeTab === 'cardapio-digital' ? 'text-stone-950' : 'text-stone-400'} />
+                <UtensilsCrossed size={12} className={activeTab === 'cardapio-digital' ? 'text-stone-950' : 'text-[#745240]'} />
                 Cardápio Digital
               </button>
               {hasPermission('gerenciar_produtos') && (
                 <button 
                   onClick={() => setActiveTab("gestao-cardapio")} 
-                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'gestao-cardapio' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'gestao-cardapio' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
-                  <Package size={12} className={activeTab === 'gestao-cardapio' ? 'text-stone-950' : 'text-stone-400'} />
+                  <Package size={12} className={activeTab === 'gestao-cardapio' ? 'text-stone-950' : 'text-[#745240]'} />
                   Produtos
                 </button>
               )}
               {hasPermission('gerenciar_categorias') && (
                 <button 
                   onClick={() => setActiveTab("categorias")} 
-                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'categorias' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'categorias' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
-                  <FolderTree size={12} className={activeTab === 'categorias' ? 'text-stone-950' : 'text-stone-400'} />
+                  <FolderTree size={12} className={activeTab === 'categorias' ? 'text-stone-950' : 'text-[#745240]'} />
                   Categorias
                 </button>
               )}
               <button 
                 onClick={() => setActiveTab("banner-promocional")} 
-                className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'banner-promocional' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+                className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'banner-promocional' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
               >
-                <Megaphone size={12} className={activeTab === 'banner-promocional' ? 'text-stone-950' : 'text-stone-400'} />
+                <Megaphone size={12} className={activeTab === 'banner-promocional' ? 'text-stone-950' : 'text-[#745240]'} />
                 Banner Promocional
               </button>
             </div>
           )}
 
           {(hasPermission('gerenciar_configuracoes') || hasPermission('gerenciar_usuarios')) && (
-            <div className="pt-1 mt-1 border-t border-stone-800/80 space-y-[2px]">
-              <p className="px-2 text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider mb-0.5 leading-none">Sistema</p>
+            <div className="pt-1 mt-1 border-t border-[#d3c8bb] space-y-[2px]">
+              <p className="px-2 text-[8px] font-mono font-bold text-[#8a6f5c] uppercase tracking-wider mb-0.5 leading-none">Sistema</p>
               {hasPermission('gerenciar_configuracoes') && (
                 <button 
                   onClick={() => setActiveTab("configuracoes")} 
-                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'configuracoes' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-400 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'configuracoes' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#745240] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
-                  <Settings size={12} className={activeTab === 'configuracoes' ? 'text-stone-950' : 'text-stone-500'} />
+                  <Settings size={12} className={activeTab === 'configuracoes' ? 'text-stone-950' : 'text-[#8a6f5c]'} />
                   Configurações
                 </button>
               )}
-              {(hasPermission('gerenciar_configuracoes') || isOwner) && (
+              {BILLING_ENABLED && (hasPermission('gerenciar_configuracoes') || isOwner) && (
                 <button 
                   onClick={() => setActiveTab("cobranca")} 
-                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'cobranca' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-400 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'cobranca' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#745240] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
-                  <CreditCard size={12} className={activeTab === 'cobranca' ? 'text-stone-950' : 'text-stone-500'} />
+                  <CreditCard size={12} className={activeTab === 'cobranca' ? 'text-stone-950' : 'text-[#8a6f5c]'} />
                   Cobrança & Assinatura
                 </button>
               )}
               {hasPermission('gerenciar_configuracoes') && (
                 <button 
                   onClick={() => setActiveTab("agente-ia")} 
-                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'agente-ia' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-400 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'agente-ia' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#745240] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
-                  <BotMessageSquare size={12} className={activeTab === 'agente-ia' ? 'text-stone-950' : 'text-stone-500'} />
+                  <BotMessageSquare size={12} className={activeTab === 'agente-ia' ? 'text-stone-950' : 'text-[#8a6f5c]'} />
                   Agente IA
                 </button>
               )}
               {hasPermission('gerenciar_usuarios') && (
                 <button 
                   onClick={() => setActiveTab("usuarios")} 
-                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'usuarios' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-400 hover:text-white hover:bg-stone-900'}`}
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'usuarios' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#745240] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                 >
-                  <Shield size={12} className={activeTab === 'usuarios' ? 'text-stone-950' : 'text-stone-500'} />
+                  <Shield size={12} className={activeTab === 'usuarios' ? 'text-stone-950' : 'text-[#8a6f5c]'} />
                   Usuários & Acesso
                 </button>
               )}
@@ -1971,7 +1971,7 @@ export default function AdminDashboard() {
           )}
         </div>
         
-        <div className="p-2 mt-auto border-t border-stone-800/80">
+        <div className="p-2 mt-auto border-t border-[#d3c8bb]">
           <button 
             onClick={handleLogout}
             className="w-full flex items-center justify-center gap-1.5 px-2 py-2 rounded font-bold text-rose-500 hover:text-rose-400 hover:bg-rose-950/40 transition-colors text-[11px] cursor-pointer"
@@ -2107,7 +2107,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {activeTab === "cobranca" && (
+        {BILLING_ENABLED && activeTab === "cobranca" && (
           <div className="mt-1">
             <BillingManager />
           </div>
@@ -2152,7 +2152,7 @@ export default function AdminDashboard() {
                     title="Modo Cockpit"
                     className={`h-6 px-2 rounded-md text-[10px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1 ${
                       overviewViewMode === 'cockpit'
-                        ? 'bg-[#fdde58] text-stone-950 shadow-xs border border-[#d8ba39]'
+                        ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
                         : 'text-stone-500 hover:text-stone-800'
                     }`}
                   >
@@ -2164,7 +2164,7 @@ export default function AdminDashboard() {
                     title="Modo Grade"
                     className={`h-6 px-2 rounded-md text-[10px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1 ${
                       overviewViewMode === 'grid'
-                        ? 'bg-[#fdde58] text-stone-950 shadow-xs border border-[#d8ba39]'
+                        ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
                         : 'text-stone-500 hover:text-stone-800'
                     }`}
                   >
@@ -2253,7 +2253,7 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white p-3.5 sm:p-4 rounded-xl border border-stone-200 shadow-2xs flex flex-col justify-between">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 pb-2 border-b border-stone-100">
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-md bg-[#fdde58]/20 border border-[#fdde58] flex items-center justify-center text-stone-900 shrink-0">
+                      <div className="w-6 h-6 rounded-md bg-[#083d07]/20 border border-[#d5af7a] flex items-center justify-center text-stone-900 shrink-0">
                         <Activity size={14} className="text-stone-900" />
                       </div>
                       <div>
@@ -2302,7 +2302,7 @@ export default function AdminDashboard() {
                           <button
                             type="button"
                             onClick={() => { setOverviewChartTab('faturamento'); setIsOverviewChartDropdownOpen(false); }}
-                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'faturamento' ? 'bg-[#fdde58] text-stone-950 font-bold border border-[#d8ba39]' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'faturamento' ? 'bg-[#083d07] text-[#fdfbf7] font-bold border border-[#d5af7a]/60' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
                           >
                             <div className="flex items-center gap-2">
                               <span>📈</span>
@@ -2314,7 +2314,7 @@ export default function AdminDashboard() {
                           <button
                             type="button"
                             onClick={() => { setOverviewChartTab('categorias'); setIsOverviewChartDropdownOpen(false); }}
-                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'categorias' ? 'bg-[#fdde58] text-stone-950 font-bold border border-[#d8ba39]' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'categorias' ? 'bg-[#083d07] text-[#fdfbf7] font-bold border border-[#d5af7a]/60' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
                           >
                             <div className="flex items-center gap-2">
                               <span>🏷️</span>
@@ -2326,7 +2326,7 @@ export default function AdminDashboard() {
                           <button
                             type="button"
                             onClick={() => { setOverviewChartTab('produtos'); setIsOverviewChartDropdownOpen(false); }}
-                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'produtos' ? 'bg-[#fdde58] text-stone-950 font-bold border border-[#d8ba39]' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'produtos' ? 'bg-[#083d07] text-[#fdfbf7] font-bold border border-[#d5af7a]/60' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
                           >
                             <div className="flex items-center gap-2">
                               <span>🏆</span>
@@ -2338,7 +2338,7 @@ export default function AdminDashboard() {
                           <button
                             type="button"
                             onClick={() => { setOverviewChartTab('pagamentos'); setIsOverviewChartDropdownOpen(false); }}
-                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'pagamentos' ? 'bg-[#fdde58] text-stone-950 font-bold border border-[#d8ba39]' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
+                            className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left cursor-pointer ${overviewChartTab === 'pagamentos' ? 'bg-[#083d07] text-[#fdfbf7] font-bold border border-[#d5af7a]/60' : 'text-stone-600 hover:bg-stone-50 hover:text-stone-900'}`}
                           >
                             <div className="flex items-center gap-2">
                               <span>💳</span>
@@ -2888,7 +2888,7 @@ export default function AdminDashboard() {
                           title="Visualização em Tabela (Principal)"
                           className={`h-7 px-2.5 rounded-md text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                             ordersViewMode === 'table'
-                              ? 'bg-[#fdde58] text-stone-950 shadow-xs border border-[#d8ba39]'
+                              ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
                               : 'text-stone-500 hover:text-stone-800'
                           }`}
                         >
@@ -2901,7 +2901,7 @@ export default function AdminDashboard() {
                           title="Visualização em Comandas (Cards)"
                           className={`h-7 px-2.5 rounded-md text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                             ordersViewMode === 'cards'
-                              ? 'bg-[#fdde58] text-stone-950 shadow-xs border border-[#d8ba39]'
+                              ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
                               : 'text-stone-500 hover:text-stone-800'
                           }`}
                         >
@@ -2913,7 +2913,7 @@ export default function AdminDashboard() {
                       {/* Botão Novo Pedido PDV */}
                       <button
                         onClick={() => setShowPDVModal(true)}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d8ba39]"
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60"
                       >
                         <Plus size={15} className="stroke-[2.5]" />
                         <span>NOVO PEDIDO (PDV)</span>
@@ -2930,7 +2930,7 @@ export default function AdminDashboard() {
                         onClick={() => setOrdersStatusFilter('todos')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
                           ordersStatusFilter === 'todos'
-                            ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                             : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
@@ -2943,7 +2943,7 @@ export default function AdminDashboard() {
                         onClick={() => setOrdersStatusFilter('Pendente')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
                           ordersStatusFilter === 'Pendente'
-                            ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                             : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
@@ -2957,7 +2957,7 @@ export default function AdminDashboard() {
                         onClick={() => setOrdersStatusFilter('Em Preparo')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
                           ordersStatusFilter === 'Em Preparo'
-                            ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                             : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
@@ -2971,7 +2971,7 @@ export default function AdminDashboard() {
                         onClick={() => setOrdersStatusFilter('Saiu para Entrega')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
                           ordersStatusFilter === 'Saiu para Entrega'
-                            ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                             : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
@@ -2985,7 +2985,7 @@ export default function AdminDashboard() {
                         onClick={() => setOrdersStatusFilter('Finalizado')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
                           ordersStatusFilter === 'Finalizado'
-                            ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                             : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
@@ -2999,7 +2999,7 @@ export default function AdminDashboard() {
                         onClick={() => setOrdersStatusFilter('Cancelado')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
                           ordersStatusFilter === 'Cancelado'
-                            ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                             : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
@@ -3158,7 +3158,7 @@ export default function AdminDashboard() {
                                     isPending
                                       ? 'bg-amber-100 text-amber-900 border-amber-300'
                                       : isInPrep
-                                      ? 'bg-stone-900 text-[#fdde58] border-stone-800'
+                                      ? 'bg-[#083d07] text-[#d5af7a] border-[#0b520a]'
                                       : isInRoute
                                       ? 'bg-sky-100 text-sky-900 border-sky-300'
                                       : isDone
@@ -3171,7 +3171,7 @@ export default function AdminDashboard() {
                                       isPending
                                         ? 'bg-amber-500'
                                         : isInPrep
-                                        ? 'bg-[#fdde58]'
+                                        ? 'bg-[#083d07]'
                                         : isInRoute
                                         ? 'bg-sky-500'
                                         : isDone
@@ -3251,7 +3251,7 @@ export default function AdminDashboard() {
                                       <div className="flex items-start justify-between gap-2">
                                         <div className="flex items-start gap-2 min-w-0">
                                           {/* Quantidade em Destaque Real de Cozinha */}
-                                          <span className="font-mono font-black text-stone-950 bg-[#fdde58] px-1.5 py-0.5 rounded text-xs shrink-0 border border-[#d8ba39] shadow-2xs">
+                                          <span className="font-mono font-black text-[#fdfbf7] bg-[#083d07] px-1.5 py-0.5 rounded text-xs shrink-0 border border-[#d5af7a]/60 shadow-2xs">
                                             {qty}x
                                           </span>
                                           <div className="min-w-0">
@@ -3317,7 +3317,7 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => changeOrderStatus(order, 'Em Preparo')}
-                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#d8ba39]"
+                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#d5af7a]/60"
                                 >
                                   <Flame size={14} />
                                   <span>INICIAR PREPARO</span>
@@ -3329,7 +3329,7 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
-                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-950 active:bg-black text-[#fdde58] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-stone-800"
+                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#062b06] active:bg-black text-[#d5af7a] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#0b520a]"
                                 >
                                   {isDelivery ? <Bike size={14} /> : <Check size={14} />}
                                   <span>{isDelivery ? 'DESPACHAR (MOTOBOY)' : 'FINALIZAR PEDIDO'}</span>
@@ -3341,9 +3341,9 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => changeOrderStatus(order, 'Finalizado')}
-                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-950 active:bg-black text-white font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-stone-800"
+                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#062b06] active:bg-black text-white font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#0b520a]"
                                 >
-                                  <Check size={14} className="text-[#fdde58]" />
+                                  <Check size={14} className="text-[#d5af7a]" />
                                   <span>CONCLUIR ENTREGA</span>
                                 </button>
                               )}
@@ -3560,7 +3560,7 @@ export default function AdminDashboard() {
                                     {order.status === 'Pendente' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, 'Em Preparo')}
-                                        className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 transition-colors cursor-pointer border border-[#d8ba39] shadow-2xs"
+                                        className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] transition-colors cursor-pointer border border-[#d5af7a]/60 shadow-2xs"
                                         title="Iniciar Preparo"
                                       >
                                         PREPARAR
@@ -3569,7 +3569,7 @@ export default function AdminDashboard() {
                                     {order.status === 'Em Preparo' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
-                                        className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-stone-900 hover:bg-stone-950 text-[#fdde58] transition-colors cursor-pointer border border-stone-800 shadow-2xs"
+                                        className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-[#083d07] hover:bg-[#062b06] text-[#d5af7a] transition-colors cursor-pointer border border-[#0b520a] shadow-2xs"
                                         title={isDelivery ? 'Despachar Motoboy' : 'Finalizar Pedido'}
                                       >
                                         {isDelivery ? 'DESPACHAR' : 'FINALIZAR'}
@@ -3578,7 +3578,7 @@ export default function AdminDashboard() {
                                     {order.status === 'Saiu para Entrega' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, 'Finalizado')}
-                                        className="text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-stone-900 hover:bg-stone-950 text-white transition-colors cursor-pointer border border-stone-800 shadow-2xs"
+                                        className="text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-[#083d07] hover:bg-[#062b06] text-white transition-colors cursor-pointer border border-[#0b520a] shadow-2xs"
                                         title="Concluir Pedido"
                                       >
                                         CONCLUIR
@@ -3800,7 +3800,7 @@ export default function AdminDashboard() {
                   }}
                   className={`py-1 px-3 rounded-full text-xs whitespace-nowrap font-bold transition-all duration-150 active:scale-95 cursor-pointer border ${
                     !activeCategory
-                      ? "bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs"
+                      ? "bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs"
                       : "bg-white text-stone-600 border-stone-200 hover:bg-stone-100"
                   }`}
                 >
@@ -3832,9 +3832,9 @@ export default function AdminDashboard() {
                     }}
                     className={`py-1 px-3 rounded-full text-xs whitespace-nowrap font-bold transition-all duration-150 active:scale-95 cursor-pointer border ${
                       activeCategory === cat.id
-                        ? "bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs"
+                        ? "bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs"
                         : "bg-white text-stone-600 border-stone-200 hover:bg-stone-100"
-                    } ${cat.id === "promocoes" && activeCategory !== cat.id ? "animate-pulse text-[#fdde58] border-stone-800" : ""}`}
+                    } ${cat.id === "promocoes" && activeCategory !== cat.id ? "animate-pulse text-[#d5af7a] border-[#0b520a]" : ""}`}
                   >
                     {cat.label}
                   </button>
@@ -3956,7 +3956,7 @@ export default function AdminDashboard() {
     </div>
     
       {/* Subscription Lockout Overlay (quando o acesso estiver bloqueado após carência) */}
-      {subscriptionStatusInfo.isBlocked && (
+      {BILLING_ENABLED && subscriptionStatusInfo.isBlocked && (
         <SubscriptionLockoutOverlay
           subscription={subscription}
           statusInfo={subscriptionStatusInfo}
@@ -3988,7 +3988,7 @@ export default function AdminDashboard() {
               <X size={24} />
             </button>
             <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Key size={24} className="text-[#C81E3A]" />
+              <Key size={24} className="text-[#083d07]" />
               Alterar Senha
             </h2>
             <form onSubmit={handleChangePassword} className="space-y-4">
@@ -3998,7 +3998,7 @@ export default function AdminDashboard() {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#C81E3A] focus:border-transparent outline-none transition-shadow"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-shadow"
                   required
                 />
               </div>
@@ -4008,7 +4008,7 @@ export default function AdminDashboard() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#C81E3A] focus:border-transparent outline-none transition-shadow"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-shadow"
                   required
                 />
               </div>
@@ -4021,7 +4021,7 @@ export default function AdminDashboard() {
               
               <button
                 type="submit"
-                className="w-full py-3 bg-[#C81E3A] text-white font-bold rounded-xl hover:bg-[#A8172F] transition-colors"
+                className="w-full py-3 bg-[#083d07] text-white font-bold rounded-xl hover:bg-[#0b520a] transition-colors"
               >
                 Salvar Nova Senha
               </button>
@@ -4033,7 +4033,7 @@ export default function AdminDashboard() {
       {/* Modal Popup para Relatórios */}
       {reportModal.isOpen && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm animate-fadeIn"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#083d07]/60 backdrop-blur-sm animate-fadeIn"
           onClick={() => setReportModal({isOpen: false, type: '', title: ''})}
         >
           <div 
@@ -4126,7 +4126,7 @@ export default function AdminDashboard() {
                                 <td className="py-3 px-4 text-right">
                                   <button
                                     onClick={() => setSelectedSessionForDetails(sess)}
-                                    className="px-3 py-1.5 bg-stone-900 text-white hover:bg-stone-800 rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-sm"
+                                    className="px-3 py-1.5 bg-[#083d07] text-white hover:bg-[#0b520a] rounded-lg text-xs font-bold transition-colors cursor-pointer shadow-sm"
                                   >
                                     Ver Detalhes
                                   </button>
@@ -4259,7 +4259,7 @@ export default function AdminDashboard() {
                               onClick={() => setTicketMedioTab(seg.id as any)}
                               className={`p-3 rounded-xl text-left transition-all cursor-pointer border ${
                                 isSelected
-                                  ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                                  ? 'bg-[#083d07] text-white border-[#083d07] shadow-sm'
                                   : 'bg-white text-stone-900 border-stone-200 hover:border-stone-300 hover:bg-stone-50/50'
                               }`}
                             >
@@ -4271,7 +4271,7 @@ export default function AdminDashboard() {
                                   </span>
                                 </div>
                                 <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-medium ${
-                                  isSelected ? 'bg-stone-800 text-stone-300' : 'bg-stone-100 text-stone-600'
+                                  isSelected ? 'bg-[#0b520a] text-stone-300' : 'bg-stone-100 text-stone-600'
                                 }`}>
                                   {seg.count} {seg.count === 1 ? 'ped' : 'peds'}
                                 </span>
@@ -4482,7 +4482,7 @@ export default function AdminDashboard() {
             <div className="p-4 border-t border-stone-200 bg-stone-50 flex justify-end">
               <button
                 onClick={() => setReportModal({isOpen: false, type: '', title: ''})}
-                className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                className="px-5 py-2 bg-[#083d07] hover:bg-[#0b520a] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
               >
                 Fechar Relatório
               </button>
@@ -4640,7 +4640,7 @@ export default function AdminDashboard() {
             <div style={{ padding: '12px 20px', borderTop: '1px solid #e5e7eb', display: 'flex', gap: '10px', flexShrink: 0 }}>
               <button
                 onClick={handleConfirmPrint}
-                style={{ flex: 1, backgroundColor: '#C81E3A', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                style={{ flex: 1, backgroundColor: '#083d07', color: '#fff', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: 'bold', fontSize: '14px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
               >
                 <Printer size={16} /> Imprimir
               </button>
@@ -5480,31 +5480,31 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
       onClick={onClose}
     >
       <div 
-        className="bg-stone-100 rounded-xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-stone-800"
+        className="bg-stone-100 rounded-xl w-full max-w-xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden border border-[#0b520a]"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header Compacto */}
-        <div className="px-3.5 py-2 bg-stone-950 text-white flex justify-between items-center shrink-0">
+        <div className="px-3.5 py-2 bg-[#e5ddd4] text-[#44210f] flex justify-between items-center shrink-0">
           <div className="flex items-center gap-2">
-            <div className="p-1 bg-stone-800 text-rose-500 rounded border border-stone-700">
+            <div className="p-1 bg-[#0b520a] text-rose-500 rounded border border-stone-700">
               <Edit3 size={14} />
             </div>
             <div>
-              <h3 className="font-extrabold text-xs leading-tight text-white tracking-tight">Editar Pedido #{order.id}</h3>
-              <p className="text-[9px] text-stone-400 font-medium leading-none mt-0.5">Altere produtos, valores e forma de pagamento</p>
+              <h3 className="font-extrabold text-xs leading-tight text-[#44210f] tracking-tight">Editar Pedido #{order.id}</h3>
+              <p className="text-[9px] text-[#745240] font-medium leading-none mt-0.5">Altere produtos, valores e forma de pagamento</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-stone-400 hover:text-white bg-stone-900 hover:bg-rose-600 rounded transition-colors cursor-pointer border border-stone-800 hover:border-rose-500"
+            className="p-1 text-stone-400 hover:text-white bg-[#083d07] hover:bg-rose-600 rounded transition-colors cursor-pointer border border-[#0b520a] hover:border-rose-500"
           >
             <X size={14} />
           </button>
         </div>
 
         {/* Real-time total summary bar Compacto */}
-        <div className="bg-stone-900 px-3.5 py-1.5 border-b border-stone-800 flex items-center justify-between text-xs shrink-0">
+        <div className="bg-[#083d07] px-3.5 py-1.5 border-b border-[#0b520a] flex items-center justify-between text-xs shrink-0">
           <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
             <span className="text-stone-300">
               Subtotal: <strong className="text-white font-bold">€ {subtotal.toFixed(2)}</strong>
@@ -5555,7 +5555,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                     type="text"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors"
+                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors"
                     required
                   />
                 </div>
@@ -5565,7 +5565,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                     type="text"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors"
+                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -5575,7 +5575,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                     value={customerNif}
                     onChange={(e) => setCustomerNif(e.target.value)}
                     placeholder="Ex: 123456789"
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors font-mono"
+                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors font-mono"
                   />
                 </div>
                 <div className="space-y-0.5">
@@ -5583,7 +5583,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors cursor-pointer"
+                    className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors cursor-pointer"
                   >
                     <option value="MB Way">MB Way</option>
                     <option value="Dinheiro">Dinheiro (Numerário)</option>
@@ -5615,7 +5615,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                           isSelected
                             ? btn.key === 'entrega'
                               ? 'bg-sky-600 text-white font-black border-sky-700 shadow-xs ring-2 ring-sky-300'
-                              : 'bg-stone-900 text-white font-black border-stone-950 shadow-xs ring-2 ring-stone-300'
+                              : 'bg-[#083d07] text-white font-black border-[#062b06] shadow-xs ring-2 ring-stone-300'
                             : 'bg-stone-50 text-stone-700 font-bold border-stone-200 hover:bg-stone-100'
                         }`}
                       >
@@ -5708,7 +5708,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                       min="0"
                       value={cashProvided || ''}
                       onChange={(e) => setCashProvided(parseFloat(e.target.value) || 0)}
-                      className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-xs font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors"
+                      className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-xs font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors"
                       placeholder="Ex: 50.00"
                     />
                   </div>
@@ -5848,7 +5848,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                       onClick={() => setCategoryFilter(cat.id as any)}
                       className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all shrink-0 cursor-pointer border ${
                         categoryFilter === cat.id
-                          ? 'bg-stone-900 text-white border-stone-900 shadow-xs'
+                          ? 'bg-[#083d07] text-white border-[#083d07] shadow-xs'
                           : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-100'
                       }`}
                     >
@@ -5873,7 +5873,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                         }
                       }}
                       placeholder={categoryFilter === 'pizzas' ? "Buscar pizza por nome ou número..." : categoryFilter === 'extras' ? "Pesquisar adicional extra (bacon, queijo...)" : "Pesquisar sabor, produto ou adicional extra..."}
-                      className="w-full pl-7 pr-7 py-1.5 bg-white rounded-lg border border-stone-200 text-xs font-bold text-stone-900 outline-none focus:border-stone-900 focus:ring-1 focus:ring-stone-900 transition-all"
+                      className="w-full pl-7 pr-7 py-1.5 bg-white rounded-lg border border-stone-200 text-xs font-bold text-stone-900 outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] transition-all"
                     />
                     {selectedProductSearch && (
                       <button
@@ -6268,7 +6268,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                   className={`w-full py-2 px-3 rounded-lg text-xs font-extrabold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer ${
                     editingItemIndex !== null
                       ? 'bg-amber-500 hover:bg-amber-600 text-stone-950'
-                      : 'bg-stone-950 hover:bg-stone-900 text-white'
+                      : 'bg-[#062b06] hover:bg-[#0b520a] text-white'
                   } disabled:opacity-40 disabled:cursor-not-allowed`}
                 >
                   <Check size={14} className="stroke-[2.5]" />
@@ -6331,9 +6331,9 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
           </div>
 
           {/* Section 4: Live Total Calculation & Actions Bar Integrada */}
-          <div className="mt-1 pt-1.5 border-t border-stone-200/80 flex items-center justify-between gap-2 bg-stone-950 text-white p-2 rounded-lg shadow-sm shrink-0">
+          <div className="mt-1 pt-1.5 border-t border-stone-200/80 flex items-center justify-between gap-2 bg-[#e5ddd4] text-[#44210f] p-2 rounded-lg shadow-sm shrink-0">
             <div>
-              <span className="block text-[8px] font-mono text-stone-400 uppercase">Total Recalculado</span>
+              <span className="block text-[8px] font-mono text-[#745240] uppercase">Total Recalculado</span>
               <div className="flex items-baseline gap-2">
                 <span className="text-xl font-black text-rose-500 leading-none font-mono">€ {finalTotal.toFixed(2)}</span>
                 {orderType === 'entrega' && activeDeliveryFee > 0 && (
@@ -6346,7 +6346,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 rounded font-bold text-xs bg-stone-800 hover:bg-stone-700 text-stone-300 transition-colors cursor-pointer border border-stone-700"
+                className="px-3 py-1.5 rounded font-bold text-xs bg-[#0b520a] hover:bg-stone-700 text-stone-300 transition-colors cursor-pointer border border-stone-700"
               >
                 Cancelar
               </button>

@@ -27,7 +27,7 @@ export default async (req: Request) => {
     const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://funnyeagle-evolution.cloudfy.live';
     const evolutionApiKey = process.env.EVOLUTION_API_KEY || '1E0FE7D2CCFB-4757-B948-F350F94E227F';
     const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agentedobropizza';
-    const pizzeriaPhone = '351938360931';
+    const pizzeriaPhone = '5541995984072';
 
     // 1. Enviar para o número da pizzaria (garante que a pizzaria recebe o resumo inalterável)
     let puzzeriaResult = null;
@@ -55,9 +55,9 @@ export default async (req: Request) => {
     let confirmationResult = null;
     let formattedCustomerPhone = customerPhone;
     if (customerPhone) {
-      // Se for número de Portugal com 9 dígitos iniciando em 9 ou 2, adicionar DDI 351
-      if (customerPhone.length === 9 && (customerPhone.startsWith('9') || customerPhone.startsWith('2'))) {
-        formattedCustomerPhone = '351' + customerPhone;
+      // Se for número brasileiro com 10 ou 11 dígitos, adicionar DDI 55
+      if ((customerPhone.length === 10 || customerPhone.length === 11) && !customerPhone.startsWith('55')) {
+        formattedCustomerPhone = '55' + customerPhone;
       }
 
       if (formattedCustomerPhone !== pizzeriaPhone) {

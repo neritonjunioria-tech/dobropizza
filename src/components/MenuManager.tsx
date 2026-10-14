@@ -319,14 +319,14 @@ export default function MenuManager() {
               Puxar Cardápio Inicial (Migrar)
             </button>
           )}
-          <button onClick={openNewModal} className="px-4 py-2.5 bg-[#fdde58] text-stone-950 font-bold rounded-lg text-sm hover:bg-[#e2c23f] transition-colors flex items-center gap-2 border border-[#d8ba39] cursor-pointer shadow-sm">
+          <button onClick={openNewModal} className="px-4 py-2.5 bg-[#083d07] text-[#fdfbf7] font-bold rounded-lg text-sm hover:bg-[#0b520a] transition-colors flex items-center gap-2 border border-[#d5af7a]/60 cursor-pointer shadow-sm">
             <Plus size={16} /> Novo Produto
           </button>
         </div>
       </div>
 
       {feedback && (
-        <div className="fixed bottom-6 right-6 z-50 bg-stone-900 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-stone-700 text-xs font-bold flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-4 duration-200">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#083d07] text-white px-4 py-2.5 rounded-xl shadow-2xl border border-stone-700 text-xs font-bold flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-4 duration-200">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
           <span>{feedback}</span>
         </div>
@@ -360,7 +360,7 @@ export default function MenuManager() {
             placeholder="Buscar produto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 bg-white text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#fdde58] focus:border-[#fdde58] shadow-sm transition-all"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-300 bg-white text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#083d07] focus:border-[#083d07] shadow-sm transition-all"
           />
         </div>
       </div>
@@ -478,14 +478,14 @@ export default function MenuManager() {
           onClick={() => setIsModalOpen(false)}
         >
           <div 
-            className="bg-stone-50 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-800"
+            className="bg-stone-50 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-[#0b520a]"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-stone-950 p-4 sm:p-5 flex justify-between items-center z-10 border-b border-stone-800">
-              <h2 className="text-lg font-extrabold text-white tracking-tight">
+            <div className="sticky top-0 bg-[#e5ddd4] p-4 sm:p-5 flex justify-between items-center z-10 border-b border-[#d3c8bb]">
+              <h2 className="text-lg font-extrabold text-[#44210f] tracking-tight">
                 {editingItem.id.startsWith('item-') && !editingItem.name ? 'Novo Produto' : 'Editar Produto'}
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 text-stone-400 hover:text-white bg-stone-900 hover:bg-rose-600 rounded-md transition-colors border border-stone-800 hover:border-rose-500">
+              <button onClick={() => setIsModalOpen(false)} className="p-2 text-stone-400 hover:text-white bg-[#083d07] hover:bg-rose-600 rounded-md transition-colors border border-[#0b520a] hover:border-rose-500">
                 <X size={18} />
               </button>
             </div>
@@ -494,7 +494,7 @@ export default function MenuManager() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
                 <div className="space-y-1 md:col-span-2">
                   <label className="block text-[10px] font-mono font-bold text-stone-600 uppercase tracking-wider">Nome do Produto</label>
-                  <input required type="text" value={editingItem.name} onChange={e => setEditingItem({...editingItem, name: e.target.value})} className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-md text-sm font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors" placeholder="Ex: 61 - Bacon" />
+                  <input required type="text" value={editingItem.name} onChange={e => setEditingItem({...editingItem, name: e.target.value})} className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-md text-sm font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors" placeholder="Ex: 61 - Bacon" />
                 </div>
 
                 <div ref={catDropdownRef} className="space-y-1 md:col-span-1 relative">
@@ -538,7 +538,7 @@ export default function MenuManager() {
 
               <div className="space-y-1">
                 <label className="block text-[10px] font-mono font-bold text-stone-600 uppercase tracking-wider">Ingredientes / Descrição</label>
-                <textarea rows={1} value={editingItem.ingredients} onChange={e => setEditingItem({...editingItem, ingredients: e.target.value})} className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-md text-sm font-bold text-stone-900 outline-none focus:border-stone-900 focus:bg-white transition-colors resize-y min-h-[40px]" placeholder="Lista de ingredientes..."></textarea>
+                <textarea rows={1} value={editingItem.ingredients} onChange={e => setEditingItem({...editingItem, ingredients: e.target.value})} className="w-full px-3 py-1.5 bg-stone-50 border border-stone-200 rounded-md text-sm font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors resize-y min-h-[40px]" placeholder="Lista de ingredientes..."></textarea>
               </div>
 
               
@@ -556,12 +556,12 @@ export default function MenuManager() {
                 )}
 
                 <div className="flex gap-2 items-center">
-                  <input type="text" value={editingItem.image_url || ''} onChange={e => setEditingItem({...editingItem, image_url: e.target.value})} className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-md text-sm font-bold text-stone-900 outline-none focus:border-stone-900 transition-colors" placeholder="URL da imagem (Ex: /pizza.png)" />
+                  <input type="text" value={editingItem.image_url || ''} onChange={e => setEditingItem({...editingItem, image_url: e.target.value})} className="w-full px-3 py-1.5 bg-white border border-stone-200 rounded-md text-sm font-bold text-stone-900 outline-none focus:border-[#083d07] transition-colors" placeholder="URL da imagem (Ex: /pizza.png)" />
                 </div>
 
                 <div className="pt-2 border-t border-stone-200 mt-2 flex items-center justify-between">
                   <span className="block text-[10px] font-mono font-bold text-stone-500 uppercase tracking-wider">Enviar do PC:</span>
-                  <label className="cursor-pointer bg-stone-900 hover:bg-stone-950 text-white px-3 py-1 rounded text-[10px] font-bold uppercase transition-colors shadow-sm">
+                  <label className="cursor-pointer bg-[#083d07] hover:bg-[#062b06] text-white px-3 py-1 rounded text-[10px] font-bold uppercase transition-colors shadow-sm">
                     {uploadingImage ? 'Enviando...' : 'Escolher Arquivo'}
                     <input 
                       type="file" 
@@ -655,7 +655,7 @@ export default function MenuManager() {
 
               <div className="pt-2 flex justify-between items-center border-t border-stone-100">
                 <label className="flex items-center gap-2 text-xs text-[#1C1917] font-bold cursor-pointer">
-                  <input type="checkbox" checked={editingItem.is_bestseller || false} onChange={e => setEditingItem({...editingItem, is_bestseller: e.target.checked})} className="w-4 h-4 accent-[#d8ba39] rounded cursor-pointer" />
+                  <input type="checkbox" checked={editingItem.is_bestseller || false} onChange={e => setEditingItem({...editingItem, is_bestseller: e.target.checked})} className="w-4 h-4 accent-[#083d07] rounded cursor-pointer" />
                   🌟 Destaque
                 </label>
 
@@ -663,7 +663,7 @@ export default function MenuManager() {
                   <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 rounded-md font-bold text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 transition-colors cursor-pointer border border-stone-200">
                     Cancelar
                   </button>
-                  <button type="submit" className="px-5 py-2 rounded-md font-bold text-xs bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1.5 border border-[#d8ba39]">
+                  <button type="submit" className="px-5 py-2 rounded-md font-bold text-xs bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] shadow-sm transition-all active:translate-y-px cursor-pointer flex items-center gap-1.5 border border-[#d5af7a]/60">
                     <Save size={14} /> Salvar
                   </button>
                 </div>

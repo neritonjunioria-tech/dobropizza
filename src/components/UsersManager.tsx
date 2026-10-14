@@ -185,7 +185,7 @@ export default function UsersManager() {
       <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-center">
         <div>
           <h2 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-            <Shield className="text-[#d8ba39]" size={22} />
+            <Shield className="text-[#b88a44]" size={22} />
             Gestão de Usuários & Permissões Granulares
           </h2>
           <p className="text-sm text-gray-500 mt-1 font-medium">
@@ -196,7 +196,7 @@ export default function UsersManager() {
 
       <div className="bg-white p-6 rounded-xl border border-[#E7E5E1] shadow-[0_1px_2px_rgba(28,25,23,0.04),0_1px_8px_rgba(28,25,23,0.04)]">
         <h3 className="text-lg font-bold text-[#1C1917] flex items-center gap-2 mb-1">
-          <UserPlus className="text-[#d8ba39]" size={20} />
+          <UserPlus className="text-[#b88a44]" size={20} />
           Criar Novo Acesso
         </h3>
         <p className="text-sm text-[#78716C] mb-5">Crie um usuário e senha para um novo funcionário — sem precisar de e-mail de verdade.</p>
@@ -254,7 +254,7 @@ export default function UsersManager() {
           )}
 
           <button type="submit" disabled={creatingUser}
-            className="px-6 py-2.5 bg-[#fdde58] text-stone-950 font-bold rounded-lg text-sm hover:bg-[#e2c23f] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm border border-[#d8ba39] cursor-pointer">
+            className="px-6 py-2.5 bg-[#083d07] text-[#fdfbf7] font-bold rounded-lg text-sm hover:bg-[#0b520a] transition-colors flex items-center gap-2 disabled:opacity-50 shadow-sm border border-[#d5af7a]/60 cursor-pointer">
             <UserPlus size={18} /> Criar Acesso
           </button>
         </form>

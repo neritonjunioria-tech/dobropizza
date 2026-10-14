@@ -216,7 +216,7 @@ export default function SettingsManager({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-stone-900 text-[#fdde58] flex items-center justify-center border border-stone-800 shadow-2xs">
+            <div className="w-8 h-8 rounded-lg bg-[#083d07] text-[#d5af7a] flex items-center justify-center border border-[#0b520a] shadow-2xs">
               <Sliders size={16} />
             </div>
             <h1 className="text-xl font-bold text-stone-900 tracking-tight">Configurações do Sistema</h1>
@@ -246,12 +246,12 @@ export default function SettingsManager({
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer ${
                   isActive 
-                    ? 'bg-stone-900 text-white shadow-xs' 
+                    ? 'bg-[#083d07] text-white shadow-xs' 
                     : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
                 }`}
               >
                 <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                  isActive ? 'bg-stone-800 text-[#fdde58]' : 'bg-stone-100 text-stone-500'
+                  isActive ? 'bg-[#0b520a] text-[#d5af7a]' : 'bg-stone-100 text-stone-500'
                 }`}>
                   <Icon size={15} />
                 </div>
@@ -299,7 +299,7 @@ export default function SettingsManager({
                       <p className="text-[11px] text-stone-500 mt-0.5">Formato quadrado recomendado (PNG ou JPG). Aparece no topo do menu lateral.</p>
                       
                       <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                        <label className="px-3 py-1.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold text-xs rounded-lg border border-[#d8ba39] cursor-pointer shadow-xs transition-all flex items-center gap-1.5">
+                        <label className="px-3 py-1.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold text-xs rounded-lg border border-[#d5af7a]/60 cursor-pointer shadow-xs transition-all flex items-center gap-1.5">
                           <Upload size={13} />
                           <span>{uploadingAdminLogo ? 'Enviando...' : 'Fazer Upload de Logo'}</span>
                           <input 
@@ -332,7 +332,7 @@ export default function SettingsManager({
                       type="text" 
                       value={companyInfo.name} 
                       onChange={e => setCompanyInfo({...companyInfo, name: e.target.value})} 
-                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#fdde58] focus:ring-2 focus:ring-[#fdde58]/30 outline-none transition-all" 
+                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
                     />
                   </div>
 
@@ -343,7 +343,7 @@ export default function SettingsManager({
                         type="text" 
                         value={companyInfo.nif} 
                         onChange={e => setCompanyInfo({...companyInfo, nif: e.target.value})} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-semibold text-stone-900 focus:bg-white focus:border-[#fdde58] focus:ring-2 focus:ring-[#fdde58]/30 outline-none transition-all" 
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
                         placeholder="Ex: 517000000"
                       />
                     </div>
@@ -353,7 +353,7 @@ export default function SettingsManager({
                         type="text" 
                         value={companyInfo.address} 
                         onChange={e => setCompanyInfo({...companyInfo, address: e.target.value})} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#fdde58] focus:ring-2 focus:ring-[#fdde58]/30 outline-none transition-all" 
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
                         placeholder="Ex: Rua das Flores, 41"
                       />
                     </div>
@@ -364,7 +364,7 @@ export default function SettingsManager({
                   <button 
                     onClick={handleSaveCompany} 
                     disabled={savingCompany}
-                    className="px-5 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d8ba39] cursor-pointer"
+                    className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
                     <Save size={14} />
                     <span>{savingCompany ? 'Salvando...' : 'Salvar Dados da Empresa'}</span>
@@ -426,14 +426,14 @@ export default function SettingsManager({
                             type="time"
                             value={h.opens_at ? h.opens_at.slice(0,5) : ''}
                             onChange={(e) => updateDay(h.day_of_week, 'opens_at', e.target.value)}
-                            className="p-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:border-[#fdde58]"
+                            className="p-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:border-[#083d07]"
                           />
                           <span className="text-stone-300">→</span>
                           <input
                             type="time"
                             value={h.closes_at ? h.closes_at.slice(0,5) : ''}
                             onChange={(e) => updateDay(h.day_of_week, 'closes_at', e.target.value)}
-                            className="p-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:border-[#fdde58]"
+                            className="p-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:border-[#083d07]"
                           />
                         </div>
                       ) : (
@@ -447,7 +447,7 @@ export default function SettingsManager({
                   <button 
                     onClick={handleSaveHours} 
                     disabled={savingHours}
-                    className="px-5 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d8ba39] cursor-pointer"
+                    className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
                     <Save size={14} />
                     <span>{savingHours ? 'Salvando...' : 'Salvar Grade de Horários'}</span>
@@ -502,7 +502,7 @@ export default function SettingsManager({
                       type="number"
                       value={printDelay}
                       onChange={e => setPrintDelay(e.target.value)}
-                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#fdde58] outline-none"
+                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
                     />
                     <span className="text-xs font-mono text-stone-500">ms</span>
                   </div>
@@ -520,7 +520,7 @@ export default function SettingsManager({
                   <button 
                     onClick={handleSavePrintDelay} 
                     disabled={savingPrint}
-                    className="px-5 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d8ba39] cursor-pointer"
+                    className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
                     <Save size={14} />
                     <span>{savingPrint ? 'Salvando...' : 'Salvar Impressão'}</span>
@@ -554,7 +554,7 @@ export default function SettingsManager({
                         step="0.50" 
                         value={freeDeliveryThreshold} 
                         onChange={e => setFreeDeliveryThreshold(e.target.value)} 
-                        className="w-full pl-7 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#fdde58] outline-none" 
+                        className="w-full pl-7 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#083d07] outline-none" 
                       />
                     </div>
                   </div>
@@ -566,7 +566,7 @@ export default function SettingsManager({
                         type="text" 
                         value={deliveryTime} 
                         onChange={e => setDeliveryTime(e.target.value)} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#fdde58] outline-none" 
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none" 
                         placeholder="Ex: 40 a 50 min"
                       />
                     </div>
@@ -576,7 +576,7 @@ export default function SettingsManager({
                         type="text" 
                         value={pickupTime} 
                         onChange={e => setPickupTime(e.target.value)} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#fdde58] outline-none" 
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none" 
                         placeholder="Ex: 20 a 30 min"
                       />
                     </div>
@@ -587,7 +587,7 @@ export default function SettingsManager({
                   <button 
                     onClick={handleSaveTimes} 
                     disabled={savingTimes}
-                    className="px-5 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d8ba39] cursor-pointer"
+                    className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
                     <Save size={14} />
                     <span>{savingTimes ? 'Salvando...' : 'Salvar Prazos & Frete'}</span>
@@ -639,7 +639,7 @@ export default function SettingsManager({
                     <button
                       type="button"
                       onClick={onTestSound}
-                      className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-[#fdde58] text-xs font-bold rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs self-start sm:self-auto"
+                      className="px-3.5 py-2 bg-[#083d07] hover:bg-[#0b520a] text-[#d5af7a] text-xs font-bold rounded-xl transition-colors inline-flex items-center gap-1.5 cursor-pointer shadow-xs self-start sm:self-auto"
                     >
                       <Volume2 size={14} />
                       <span>Testar Toque</span>
@@ -670,7 +670,7 @@ export default function SettingsManager({
                     </div>
                     <button 
                       onClick={onChangePassword} 
-                      className="mt-4 w-full py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                      className="mt-4 w-full py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <Key size={13} />
                       <span>Alterar Senha</span>

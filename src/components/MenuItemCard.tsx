@@ -23,31 +23,21 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onClick,
   onZoom,
 }) => {
-  const prices = [];
-  if (item.priceM) prices.push(`M R$ ${item.priceM.toFixed(2).replace('.', ',')}`);
-  if (item.priceG) prices.push(`G R$ ${item.priceG.toFixed(2).replace('.', ',')}`);
-  if (item.priceP && !item.priceM && !item.priceG) prices.push(`P R$ ${item.priceP.toFixed(2).replace('.', ',')}`);
+  const isPizza = item.category === 'tradicionais' || item.category === 'mais-pedidos' || item.id.startsWith('p-');
+  const priceVal = (item.priceSingle || item.priceM || item.priceG || item.priceP || 0);
 
-  let priceDisplay: React.ReactNode = null;
-  if (prices.length > 2) {
-    priceDisplay = (
-      <span className="font-semibold text-[#083d07] text-[15px]">
-        A partir de R$ {(item.priceP || item.priceM || item.priceG || 0).toFixed(2).replace('.', ',')}
+  const priceDisplay = (
+    <div className="flex items-center gap-1.5">
+      <span className="font-extrabold text-[#083d07] text-[15px]">
+        R$ {priceVal.toFixed(2).replace('.', ',')}
       </span>
-    );
-  } else if (prices.length > 0) {
-    priceDisplay = (
-      <span className="font-semibold text-[#083d07] text-[14px] tracking-tight">
-        {prices.join(" · ")}
-      </span>
-    );
-  } else {
-    priceDisplay = (
-      <span className="font-bold text-[#083d07] text-[15px]">
-        R$ {(item.priceSingle || 0).toFixed(2).replace('.', ',')}
-      </span>
-    );
-  }
+      {isPizza && (
+        <span className="text-[10px] font-bold text-[#745240] bg-[#e8d8d1]/70 px-1.5 py-0.5 rounded tracking-tight">
+          28cm
+        </span>
+      )}
+    </div>
+  );
 
   const [imgAttempt, setImgAttempt] = React.useState(0);
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -144,9 +134,9 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
           🔥 HOJE
         </div>
       )}
-      {item.isMaisPedido && catId === "mais-pedidos" && (
+      {(item.isBestseller || catId === "mais-pedidos" || item.category === "mais-pedidos") && (
         <div className="absolute top-0 right-0 bg-[#083d07] text-[#fdfbf7] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-xs">
-          🔥 Mais Pedido
+          🔥 Mais Vendida
         </div>
       )}
       <div className={`flex-1 flex flex-col justify-between h-full ${hasPhoto ? "min-h-[92px] sm:min-h-[112px]" : "min-h-[76px] sm:min-h-[88px]"}`}>

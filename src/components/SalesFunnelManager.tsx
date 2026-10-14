@@ -297,7 +297,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-stone-900 text-white flex items-center justify-center shadow-2xs border border-stone-800">
+            <div className="w-10 h-10 rounded-xl bg-[#083d07] text-white flex items-center justify-center shadow-2xs border border-[#0b520a]">
               <Filter size={18} className="transform rotate-180 text-rose-500" />
             </div>
             <div>
@@ -404,10 +404,10 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
         </div>
 
         {/* Card 4: Pedidos Concluídos */}
-        <div className="bg-stone-950 text-white rounded-2xl border border-stone-850 p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
+        <div className="bg-[#e5ddd4] text-[#44210f] rounded-2xl border border-[#d3c8bb] p-4 sm:p-5 shadow-2xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between text-stone-400 mb-1">
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-stone-400">
+            <div className="flex items-center justify-between text-[#745240] mb-1">
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#745240]">
                 4. Pedidos Concluídos
               </span>
               <CheckCircle2 size={14} className="text-emerald-400" />
@@ -416,7 +416,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               {data.purchases.toLocaleString('pt-PT')}
             </p>
           </div>
-          <div className="mt-3 pt-2.5 border-t border-stone-850 flex items-center justify-between text-[11px] text-stone-400 font-mono">
+          <div className="mt-3 pt-2.5 border-t border-[#d3c8bb] flex items-center justify-between text-[11px] text-[#745240] font-mono">
             <span>Conversão Total:</span>
             <span className="font-bold text-emerald-400">{data.conversionRate.toFixed(1)}%</span>
           </div>
@@ -427,19 +427,19 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         {/* COLUNA ESQUERDA (7 colunas): ILUSTRAÇÃO 3D ISOMÉTRICA DA MARCA */}
-        <div className="lg:col-span-7 bg-stone-900 rounded-2xl border border-stone-800 p-3 sm:p-4 shadow-xl relative overflow-hidden flex flex-col items-center justify-center">
+        <div className="lg:col-span-7 bg-[#e5ddd4] rounded-2xl border border-[#d3c8bb] p-3 sm:p-4 shadow-xl relative overflow-hidden flex flex-col items-center justify-center">
           
           {/* Luz de topo suave dourada e ambiente clean sem tons marrons */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(253,222,88,0.08),transparent_70%)] pointer-events-none" />
 
           <div className="w-full flex items-center justify-between mb-3 z-10">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
-                <Layers size={13} className="text-[#fdde58]" />
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#44210f] flex items-center gap-1.5">
+                <Layers size={13} className="text-[#9a7337]" />
                 Funil Tridimensional • DOBRO Pizzas
               </span>
             </div>
-            <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/40">
+            <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Tempo Real
             </span>
@@ -457,18 +457,18 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                   <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.85"/>
                 </filter>
 
-                {/* Nível 1: Amarelo Oficial da Marca DOBRO Pizzas (#fdde58) */}
+                {/* Nível 1: Amarelo Oficial da Marca DOBRO Pizzas (#d5af7a) */}
                 <linearGradient id="brand-l1-left" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#d8ba39"/>
+                  <stop offset="0%" stopColor="#b88a44"/>
                   <stop offset="100%" stopColor="#b49721"/>
                 </linearGradient>
                 <linearGradient id="brand-l1-right" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#fdde58"/>
-                  <stop offset="100%" stopColor="#d8ba39"/>
+                  <stop offset="0%" stopColor="#d5af7a"/>
+                  <stop offset="100%" stopColor="#b88a44"/>
                 </linearGradient>
                 <linearGradient id="brand-l1-top" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="#ffea85"/>
-                  <stop offset="100%" stopColor="#fdde58"/>
+                  <stop offset="100%" stopColor="#d5af7a"/>
                 </linearGradient>
 
                 {/* Nível 2: Âmbar / Laranja Vibrante Quente */}
@@ -698,16 +698,16 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             </svg>
           </div>
 
-          <div className="w-full mt-1 pt-2 border-t border-stone-800 flex items-center justify-between text-xs font-mono text-stone-400 z-10">
+          <div className="w-full mt-1 pt-2 border-t border-[#d3c8bb] flex items-center justify-between text-xs font-mono text-[#745240] z-10">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              Retenção Geral: <strong className="text-white">{data.conversionRate.toFixed(1)}%</strong>
+              Retenção Geral: <strong className="text-[#44210f]">{data.conversionRate.toFixed(1)}%</strong>
             </span>
             <a 
               href="/" 
               target="_blank" 
               rel="noreferrer"
-              className="text-stone-400 hover:text-white flex items-center gap-1 transition-colors"
+              className="text-[#745240] hover:text-[#083d07] flex items-center gap-1 transition-colors"
             >
               <span>Abrir Cardápio</span>
               <ExternalLink size={12} />
@@ -719,7 +719,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
         <div className="lg:col-span-5 space-y-2">
           <div className="flex items-center justify-between px-1 pb-0.5">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-stone-900" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#083d07]" />
               Jornada de Conversão do Cliente
             </h2>
             <span className="text-[10px] font-mono text-stone-400">
@@ -737,7 +737,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                 onClick={() => setSelectedStage(isSelected ? null : stage.id)}
                 className={`bg-white rounded-xl border p-2.5 sm:px-3.5 sm:py-2.5 transition-all cursor-pointer shadow-2xs ${
                   isSelected 
-                    ? 'border-stone-900 ring-2 ring-stone-900/10' 
+                    ? 'border-[#083d07] ring-2 ring-[#083d07]/10' 
                     : 'border-stone-200/80 hover:border-stone-300'
                 }`}
               >
@@ -899,7 +899,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             <div className="pt-2 mt-2 border-t border-stone-200/60">
               <button
                 onClick={() => onNavigateToTab?.('clientes')}
-                className="w-full h-7 px-2 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-[10.5px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-2xs"
+                className="w-full h-7 px-2 rounded-lg bg-[#083d07] hover:bg-[#0b520a] text-white text-[10.5px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-2xs"
               >
                 <span>Acessar Base de Clientes (CRM)</span>
                 <ArrowRight size={12} className="text-stone-300" />

@@ -935,7 +935,7 @@ export default function AgentManager() {
             onClick={() => setShowMetricsDashboard(prev => !prev)}
             className={`min-h-[34px] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer border ${
               showMetricsDashboard
-                ? 'bg-stone-900 text-white border-stone-900 shadow-2xs'
+                ? 'bg-[#083d07] text-white border-[#083d07] shadow-2xs'
                 : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
             }`}
             title="Exibir ou ocultar telemetria de atendimento"
@@ -1660,7 +1660,7 @@ export default function AgentManager() {
               <button
                 type="submit"
                 disabled={!manualMessage.trim() || sendingManual}
-                className="min-h-[42px] px-3.5 sm:px-5 py-2.5 bg-stone-900 hover:bg-amber-600 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all disabled:opacity-40 cursor-pointer shadow-xs shrink-0 active:scale-95"
+                className="min-h-[42px] px-3.5 sm:px-5 py-2.5 bg-[#083d07] hover:bg-amber-600 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 sm:gap-2 transition-all disabled:opacity-40 cursor-pointer shadow-xs shrink-0 active:scale-95"
               >
                 {sendingManual ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 <span>Enviar</span>
@@ -1739,7 +1739,7 @@ export default function AgentManager() {
                   href={selectedImage.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-md bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white transition-colors flex items-center gap-1 text-xs"
+                  className="p-1.5 rounded-md bg-[#0b520a] hover:bg-stone-700 text-stone-200 hover:text-white transition-colors flex items-center gap-1 text-xs"
                   title="Abrir em nova aba"
                 >
                   <ExternalLink size={14} />
@@ -1750,7 +1750,7 @@ export default function AgentManager() {
                 <a
                   href={selectedImage.url}
                   download={`comprovante_${Date.now()}.jpg`}
-                  className="p-1.5 rounded-md bg-stone-800 hover:bg-stone-700 text-stone-200 hover:text-white transition-colors flex items-center gap-1 text-xs"
+                  className="p-1.5 rounded-md bg-[#0b520a] hover:bg-stone-700 text-stone-200 hover:text-white transition-colors flex items-center gap-1 text-xs"
                   title="Baixar imagem"
                 >
                   <Download size={14} />
@@ -1759,7 +1759,7 @@ export default function AgentManager() {
               )}
               <button
                 onClick={() => setSelectedImage(null)}
-                className="p-1.5 rounded-md bg-stone-800 hover:bg-red-900/80 text-stone-300 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-md bg-[#0b520a] hover:bg-red-900/80 text-stone-300 hover:text-white transition-colors cursor-pointer"
                 title="Fechar (Esc)"
               >
                 <X size={18} />
@@ -1769,7 +1769,7 @@ export default function AgentManager() {
 
           {/* Imagem Ampliada */}
           <div 
-            className="relative max-w-4xl max-h-[80vh] flex items-center justify-center overflow-hidden rounded-lg bg-stone-950/60 p-1 border border-stone-800 shadow-2xl"
+            className="relative max-w-4xl max-h-[80vh] flex items-center justify-center overflow-hidden rounded-lg bg-stone-900/45 p-1 border border-[#d3c8bb] shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
             <img
@@ -1782,7 +1782,7 @@ export default function AgentManager() {
           {/* Legenda Inferior */}
           {selectedImage.caption && (
             <div 
-              className="mt-3 px-4 py-1.5 bg-stone-900/90 text-stone-200 text-xs rounded-full max-w-xl text-center truncate border border-stone-800"
+              className="mt-3 px-4 py-1.5 bg-[#083d07]/90 text-stone-200 text-xs rounded-full max-w-xl text-center truncate border border-[#0b520a]"
               onClick={e => e.stopPropagation()}
             >
               {selectedImage.caption}

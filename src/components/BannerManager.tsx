@@ -85,7 +85,7 @@ export default function BannerManager() {
       <div className="bg-white rounded-xl border border-[#E7E5E1] shadow-[0_1px_2px_rgba(28,25,23,0.04),0_1px_8px_rgba(28,25,23,0.04)] p-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-[#FEF2F2] border border-[#FECDD3] text-[#C81E3A] flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-[#FEF2F2] border border-[#FECDD3] text-[#083d07] flex items-center justify-center shrink-0">
               <Megaphone className="w-6 h-6" />
             </div>
             <div>
@@ -122,7 +122,7 @@ export default function BannerManager() {
                     id="promo-active"
                     checked={promoConfig.active}
                     onChange={e => setPromoConfig({...promoConfig, active: e.target.checked})}
-                    className="w-5 h-5 accent-[#C81E3A] rounded border-[#E7E5E1] cursor-pointer"
+                    className="w-5 h-5 accent-[#083d07] rounded border-[#E7E5E1] cursor-pointer"
                   />
                   <div>
                     <span className="font-bold text-sm text-[#1C1917] block">Exibir este Pop-up na entrada do site</span>
@@ -139,7 +139,7 @@ export default function BannerManager() {
                   value={promoConfig.title} 
                   onChange={e => setPromoConfig({...promoConfig, title: e.target.value})}
                   placeholder="Ex: Promoção de Terça-feira!"
-                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] font-semibold focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20"
+                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] font-semibold focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20"
                 />
               </div>
 
@@ -151,7 +151,7 @@ export default function BannerManager() {
                   value={promoConfig.message} 
                   onChange={e => setPromoConfig({...promoConfig, message: e.target.value})}
                   placeholder="Escreva os detalhes da promoção ou mensagem..."
-                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20"
+                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20"
                 />
               </div>
 
@@ -163,7 +163,7 @@ export default function BannerManager() {
                   type="text" 
                   value={promoConfig.image_url} 
                   onChange={e => setPromoConfig({...promoConfig, image_url: e.target.value})}
-                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] font-mono focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20"
+                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] font-mono focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20"
                   placeholder="URL da imagem (http://...)"
                 />
 
@@ -178,8 +178,8 @@ export default function BannerManager() {
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-lg file:border-0
                       file:text-sm file:font-semibold
-                      file:bg-[#C81E3A]/10 file:text-[#C81E3A]
-                      hover:file:bg-[#C81E3A]/20
+                      file:bg-[#083d07]/10 file:text-[#083d07]
+                      hover:file:bg-[#083d07]/20
                       cursor-pointer border border-[#E7E5E1] rounded-lg p-1 bg-white"
                   />
                   {uploadingImage && <p className="text-xs text-[#78716C] mt-1 font-medium">Enviando imagem...</p>}
@@ -194,7 +194,7 @@ export default function BannerManager() {
                   value={promoConfig.button_text} 
                   onChange={e => setPromoConfig({...promoConfig, button_text: e.target.value})}
                   placeholder="Ex: Falar no WhatsApp (deixe vazio para ocultar)"
-                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#C81E3A] focus:ring-1 focus:ring-[#C81E3A]/20"
+                  className="w-full p-2.5 bg-[#FAFAF9] border border-[#E7E5E1] rounded-lg text-sm text-[#1C1917] focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07]/20"
                 />
               </div>
 
@@ -202,7 +202,7 @@ export default function BannerManager() {
               <div className="pt-3">
                 <button 
                   type="submit" 
-                  className="w-full py-3 bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm border border-[#d8ba39] cursor-pointer"
+                  className="w-full py-3 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] rounded-lg font-bold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm border border-[#d5af7a]/60 cursor-pointer"
                 >
                   <Save size={18} /> Salvar Promoção
                 </button>
@@ -215,7 +215,7 @@ export default function BannerManager() {
         <div className="lg:col-span-5 space-y-4">
           <div className="bg-white rounded-xl border border-[#E7E5E1] shadow-[0_1px_2px_rgba(28,25,23,0.04),0_1px_8px_rgba(28,25,23,0.04)] p-6">
             <h3 className="text-xs font-semibold uppercase tracking-wide text-[#A8A29E] mb-3 flex items-center gap-1.5">
-              <Sparkles size={14} className="text-[#d8ba39]" /> Pré-visualização do Pop-up na Loja
+              <Sparkles size={14} className="text-[#b88a44]" /> Pré-visualização do Pop-up na Loja
             </h3>
 
             {/* Mobile / Screen Mockup Frame */}

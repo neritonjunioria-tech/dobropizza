@@ -31,47 +31,16 @@ import MenuDoDiaModal from "./components/MenuDoDiaModal";
 
 export const categoriesUI = [
     {
-      id: "promocoes",
-      label: "PROMOÇÃO DO DIA",
-      sub: "Ofertas imperdíveis",
-      group: ["promocoes"],
-    },
-
-    {
       id: "mais-pedidos",
-      label: "OS MAIS PEDIDOS 🔥",
-      sub: "Os queridinhos dos nossos clientes",
+      label: "MAIS VENDIDAS 🔥",
+      sub: "Os sabores favoritos da Dobro",
       group: ["mais-pedidos"],
     },
     {
       id: "tradicionais",
       label: "TRADICIONAIS 🍕",
-      sub: "Clássicas de sempre",
+      sub: "Massa artesanal 28cm de fermentação lenta",
       group: ["tradicionais"],
-    },
-    {
-      id: "especiais",
-      label: "ESPECIAIS ⭐",
-      sub: "Sabores exclusivos",
-      group: ["especiais"],
-    },
-    {
-      id: "gourmet",
-      label: "GOURMET 👨‍🍳",
-      sub: "Receitas selecionadas",
-      group: ["gourmet"],
-    },
-    {
-      id: "vegetarianas",
-      label: "VEGETARIANA 🥗",
-      sub: "Leves e sem carne",
-      group: ["vegetarianas"],
-    },
-    {
-      id: "doces",
-      label: "DOCES 🍫",
-      sub: "Para fechar com chave de ouro",
-      group: ["doces"],
     },
     {
       id: "sandubas",
@@ -82,7 +51,7 @@ export const categoriesUI = [
     {
       id: "bebidas",
       label: "BEBIDAS 🥤",
-      sub: "Refrigerantes e águas",
+      sub: "Refrigerantes e águas geladas",
       group: ["bebidas"],
     },
   ];
@@ -230,28 +199,10 @@ function App() {
     }
   };
 
-  // Create 'Mais Pedidos' items — agora vem do banco (campo is_bestseller),
-  // não mais de uma lista fixa no código.
-  const maisPedidosIds = useMemo(
-    () => menuItems.filter((item: any) => item.isBestseller).map((item) => item.id),
-    [menuItems]
-  );
-
-  // Aggregated array of all items
+  // Aggregated array of all items (cada item em exatamente uma categoria)
   const allItems = useMemo(() => {
-    const baseItems = menuItems.filter(item => !pausedItems.includes(item.id));
-
-
-    const maisPedidosItems = baseItems
-      .filter((item) => maisPedidosIds.includes(item.id))
-      .map((item) => ({
-        ...item,
-        isMaisPedido: true,
-        groupOverride: "mais-pedidos",
-      }));
-
-    return [...maisPedidosItems, ...baseItems];
-  }, [pausedItems, maisPedidosIds]);
+    return menuItems.filter(item => !pausedItems.includes(item.id));
+  }, [menuItems, pausedItems]);
 
   const handleSelectItem = (item: MenuItem) => {
     setSelectedItem(item);
@@ -286,37 +237,13 @@ function App() {
     });
 
     const dbTabs = Object.values(tabsMap);
-
-    const hasBestsellers = menuItems.some((item: any) => item.isBestseller);
-    const allTabs = hasBestsellers && !tabsMap['mais-pedidos']
-      ? [...dbTabs, { id: "mais-pedidos", label: "OS MAIS PEDIDOS 🔥", sub: "Os queridinhos dos nossos clientes", group: ["mais-pedidos"], order: 2 }]
-      : dbTabs;
-
-    return allTabs.sort((a, b) => a.order - b.order);
-  }, [dbCategories, usingFallback, menuItems]);
+    return dbTabs.sort((a, b) => a.order - b.order);
+  }, [dbCategories, usingFallback]);
 
   const itemsByCategory = useMemo(() => {
-    const map: Record<
-      string,
-      (MenuItem & { isMaisPedido?: boolean; groupOverride?: string })[]
-    > = {};
+    const map: Record<string, MenuItem[]> = {};
     currentCategoriesUI.forEach((cat) => {
-      let matchingItems = allItems.filter((item) => {
-        const itemExt = item as MenuItem & {
-          isMaisPedido?: boolean;
-          groupOverride?: string;
-        };
-        if (itemExt.groupOverride) {
-          return cat.group.includes(itemExt.groupOverride);
-        }
-        // Se for a seção de mais-pedidos, não repete itens comuns aqui (já tratados pelo override)
-        if (cat.id === "mais-pedidos") {
-          return false;
-        }
-        
-        let isMatch = cat.group.includes(item.category);
-        return isMatch;
-      }) as (MenuItem & { isMaisPedido?: boolean; groupOverride?: string })[];
+      let matchingItems = allItems.filter((item) => cat.group.includes(item.category));
       
       if (searchTerm.trim()) {
         const term = searchTerm.toLowerCase();

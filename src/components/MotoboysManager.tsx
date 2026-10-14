@@ -110,7 +110,7 @@ const parseMoneyInput = (val: string): number => {
 };
 
 const inputClass =
-  'w-full h-9 px-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none transition-all';
+  'w-full h-9 px-3 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 placeholder:text-stone-400 focus:bg-white focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-all';
 
 export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
   const [section, setSection] = useState<SectionTab>('entregas');
@@ -453,7 +453,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
   const pillClass = (active: boolean) =>
     `px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
       active
-        ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+        ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
         : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
     }`;
 
@@ -461,7 +461,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
     provider === 'proprio'
       ? 'bg-stone-100 text-stone-800 border-stone-200'
       : provider === 'uber'
-      ? 'bg-stone-900 text-white border-stone-900'
+      ? 'bg-[#083d07] text-white border-[#083d07]'
       : provider === 'ifood'
       ? 'bg-rose-50 text-rose-800 border-rose-200'
       : 'bg-amber-100 text-amber-900 border-amber-300';
@@ -522,7 +522,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
           </button>
           <button
             onClick={() => openMotoboyForm('new')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d8ba39]"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60"
           >
             <Plus size={15} className="stroke-[2.5]" />
             <span>NOVO MOTOBOY</span>
@@ -551,13 +551,13 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
 
       {/* KPIs DO PERÍODO */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
-        <div className="bg-stone-950 text-white rounded-xl p-4 shadow-xs flex flex-col justify-between col-span-2 lg:col-span-1">
+        <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-4 shadow-xs flex flex-col justify-between col-span-2 lg:col-span-1">
           <div className="flex items-start justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Gasto com entregas</span>
-            <span className="text-[10px] text-stone-500">{stats.assignedCount} {stats.assignedCount === 1 ? 'entrega' : 'entregas'}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#745240]">Gasto com entregas</span>
+            <span className="text-[10px] text-[#8a6f5c]">{stats.assignedCount} {stats.assignedCount === 1 ? 'entrega' : 'entregas'}</span>
           </div>
-          <p className="text-2xl font-bold tracking-tight text-white mt-1 tabular-nums">{formatMoney(stats.totalCost)}</p>
-          <span className="text-[10px] text-amber-400/90 font-medium tabular-nums mt-1">
+          <p className="text-2xl font-bold tracking-tight text-[#44210f] mt-1 tabular-nums">{formatMoney(stats.totalCost)}</p>
+          <span className="text-[10px] text-amber-700 font-medium tabular-nums mt-1">
             Média {formatMoney(stats.averageCost)} por entrega
           </span>
         </div>
@@ -696,7 +696,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                               className={`text-[11px] font-mono font-black px-2.5 py-1 rounded transition-colors cursor-pointer border shadow-2xs ${
                                 order.deliveryProvider
                                   ? 'bg-white hover:bg-stone-100 text-stone-800 border-stone-200'
-                                  : 'bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 border-[#d8ba39]'
+                                  : 'bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] border-[#d5af7a]/60'
                               }`}
                             >
                               {order.deliveryProvider ? 'ALTERAR' : 'VINCULAR'}
@@ -794,7 +794,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                       <button
                         type="button"
                         onClick={() => openSettlement(m)}
-                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-950 active:bg-black text-[#fdde58] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-stone-800"
+                        className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#062b06] active:bg-black text-[#d5af7a] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#0b520a]"
                       >
                         <Wallet size={14} />
                         <span>FAZER FECHAMENTO</span>
@@ -929,7 +929,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="h-9 px-3.5 flex items-center gap-1.5 bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d8ba39] disabled:opacity-50"
+                className="h-9 px-3.5 flex items-center gap-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60 disabled:opacity-50"
               >
                 <Check size={14} className="stroke-[2.5]" />
                 <span>{submitting ? 'SALVANDO...' : 'SALVAR'}</span>
@@ -1023,25 +1023,25 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                 <input type="text" placeholder="Ex: Pago em numerário no fim do turno" value={settleNotes} onChange={e => setSettleNotes(e.target.value)} className={inputClass} />
               </div>
 
-              <div className="bg-stone-950 text-white rounded-xl p-4 space-y-1.5 text-xs font-mono">
-                <div className="flex items-center justify-between text-stone-300">
+              <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-4 space-y-1.5 text-xs font-mono">
+                <div className="flex items-center justify-between text-[#5c4433]">
                   <span>{settlementRows.length} {settlementRows.length === 1 ? 'entrega' : 'entregas'}</span>
                   <span className="tabular-nums">{formatMoney(settlementTotals.deliveriesTotal)}</span>
                 </div>
-                <div className="flex items-center justify-between text-stone-300">
+                <div className="flex items-center justify-between text-[#5c4433]">
                   <span>Diária / Extra</span>
                   <span className="tabular-nums">+ {formatMoney(settlementTotals.extra)}</span>
                 </div>
-                <div className="flex items-center justify-between text-stone-300">
+                <div className="flex items-center justify-between text-[#5c4433]">
                   <span>Desconto / Vale</span>
                   <span className="tabular-nums">− {formatMoney(settlementTotals.discount)}</span>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-stone-800 text-sm font-black">
+                <div className="flex items-center justify-between pt-2 border-t border-[#d3c8bb] text-sm font-black">
                   <span>TOTAL A PAGAR</span>
-                  <span className="tabular-nums text-[#fdde58] text-lg">{formatMoney(settlementTotals.total)}</span>
+                  <span className="tabular-nums text-[#9a7337] text-lg">{formatMoney(settlementTotals.total)}</span>
                 </div>
                 {settlementTotals.cashCollected > 0 && (
-                  <div className="flex items-center justify-between pt-2 border-t border-stone-800 text-amber-400/90">
+                  <div className="flex items-center justify-between pt-2 border-t border-[#d3c8bb] text-amber-700">
                     <span>Numerário cobrado nas entregas (a prestar contas)</span>
                     <span className="tabular-nums">{formatMoney(settlementTotals.cashCollected)}</span>
                   </div>
@@ -1061,7 +1061,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                 type="button"
                 onClick={handleConfirmSettlement}
                 disabled={submitting || (settlementRows.length === 0 && settlementTotals.extra === 0)}
-                className="h-9 px-3.5 flex items-center gap-1.5 bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d8ba39] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-9 px-3.5 flex items-center gap-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Check size={14} className="stroke-[2.5]" />
                 <span>{submitting ? 'REGISTRANDO...' : 'CONFIRMAR FECHAMENTO'}</span>

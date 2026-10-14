@@ -173,7 +173,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                   onClick={() => handleSelectProvider(p)}
                   className={`h-10 px-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border disabled:opacity-50 disabled:cursor-not-allowed ${
                     provider === p
-                      ? 'bg-stone-900 text-[#fdde58] border-stone-900 shadow-2xs font-black'
+                      ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
                       : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                   }`}
                 >
@@ -195,7 +195,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                   value={motoboyId}
                   disabled={isLocked}
                   onChange={(e) => handleSelectMotoboy(e.target.value)}
-                  className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-stone-900 outline-none cursor-pointer disabled:opacity-50"
+                  className="w-full h-9 px-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none cursor-pointer disabled:opacity-50"
                 >
                   <option value="">Selecione...</option>
                   {selectableMotoboys.map(m => (
@@ -222,7 +222,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
                 value={cost}
                 disabled={isLocked}
                 onChange={(e) => { setCost(e.target.value); setCostTouched(true); }}
-                className="w-full h-9 pl-6 pr-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-bold text-stone-900 tabular-nums focus:bg-white focus:border-stone-900 focus:ring-1 focus:ring-stone-900 outline-none transition-all disabled:opacity-50"
+                className="w-full h-9 pl-6 pr-2 bg-stone-50 border border-stone-200 rounded-md text-xs font-bold text-stone-900 tabular-nums focus:bg-white focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] outline-none transition-all disabled:opacity-50"
               />
             </div>
           </div>
@@ -260,7 +260,7 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
               type="button"
               onClick={handleSave}
               disabled={saving || isLocked}
-              className="h-9 px-3.5 flex items-center gap-1.5 bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d8ba39] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-9 px-3.5 flex items-center gap-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Check size={14} className="stroke-[2.5]" />
               <span>{saving ? 'SALVANDO...' : confirmLabel}</span>

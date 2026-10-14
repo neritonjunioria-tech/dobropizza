@@ -597,7 +597,7 @@ export default function CustomersManager() {
             onClick={() => setActiveSegment('todos')}
             className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all shrink-0 cursor-pointer ${
               activeSegment === 'todos'
-                ? 'bg-stone-900 text-white shadow-xs'
+                ? 'bg-[#083d07] text-white shadow-xs'
                 : 'bg-stone-100/80 hover:bg-stone-200/70 text-stone-600'
             }`}
           >
@@ -620,7 +620,7 @@ export default function CustomersManager() {
             onClick={() => setActiveSegment('recorrente')}
             className={`min-h-[36px] px-3.5 py-1.5 rounded-lg text-xs font-sans font-semibold transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
               activeSegment === 'recorrente'
-                ? 'bg-stone-900 text-white shadow-xs'
+                ? 'bg-[#083d07] text-white shadow-xs'
                 : 'bg-stone-100/80 hover:bg-stone-200/70 text-stone-700'
             }`}
           >
@@ -675,7 +675,7 @@ export default function CustomersManager() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome, telefone, sabor, rua..."
-              className="h-10 sm:h-9 pl-9 pr-8 bg-stone-50 focus:bg-white border border-stone-200 focus:border-stone-900 rounded-lg text-xs font-sans text-stone-900 focus:outline-none w-full shadow-2xs transition-colors"
+              className="h-10 sm:h-9 pl-9 pr-8 bg-stone-50 focus:bg-white border border-stone-200 focus:border-[#083d07] rounded-lg text-xs font-sans text-stone-900 focus:outline-none w-full shadow-2xs transition-colors"
             />
             {search && (
               <button
@@ -708,7 +708,7 @@ export default function CustomersManager() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="h-10 sm:h-9 pl-3 pr-8 border border-stone-200 hover:border-stone-300 bg-white text-stone-700 rounded-lg text-xs font-sans font-medium appearance-none cursor-pointer shadow-2xs focus:outline-none focus:border-stone-900"
+                className="h-10 sm:h-9 pl-3 pr-8 border border-stone-200 hover:border-stone-300 bg-white text-stone-700 rounded-lg text-xs font-sans font-medium appearance-none cursor-pointer shadow-2xs focus:outline-none focus:border-[#083d07]"
               >
                 <option value="recent">Última Compra</option>
                 <option value="spent">+ Faturamento (€)</option>
@@ -762,7 +762,7 @@ export default function CustomersManager() {
               </p>
               <button
                 onClick={handleClearFilters}
-                className="px-3.5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-sans font-semibold transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
+                className="px-3.5 py-2 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg text-xs font-sans font-semibold transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
               >
                 <RefreshCw size={12} />
                 <span>Limpar filtros e busca</span>
@@ -883,7 +883,7 @@ export default function CustomersManager() {
                       </p>
                       <button
                         onClick={handleClearFilters}
-                        className="px-3.5 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-sans font-semibold transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
+                        className="px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg text-xs font-sans font-semibold transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5"
                       >
                         <RefreshCw size={12} />
                         <span>Limpar filtros e busca</span>
@@ -1058,7 +1058,7 @@ export default function CustomersManager() {
                     setPageSize(val === 'all' ? 'all' : Number(val));
                     setCurrentPage(1);
                   }}
-                  className="h-8 pl-2 pr-6 border border-stone-200 hover:border-stone-300 bg-white text-stone-700 rounded-lg text-xs font-sans font-medium appearance-none cursor-pointer focus:outline-none focus:border-stone-900"
+                  className="h-8 pl-2 pr-6 border border-stone-200 hover:border-stone-300 bg-white text-stone-700 rounded-lg text-xs font-sans font-medium appearance-none cursor-pointer focus:outline-none focus:border-[#083d07]"
                   aria-label="Clientes por página"
                 >
                   <option value={25}>25</option>
@@ -1233,7 +1233,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-950/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-stone-900/45 backdrop-blur-xs animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div 
@@ -1246,7 +1246,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
         {/* Topo / Header da Ficha */}
         <div className="p-3.5 sm:p-5 border-b border-stone-200 bg-stone-50/90 flex flex-wrap justify-between items-center gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-stone-900 text-white flex items-center justify-center font-bold text-base sm:text-lg shadow-xs shrink-0">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#083d07] text-white flex items-center justify-center font-bold text-base sm:text-lg shadow-xs shrink-0">
               {customer.name ? customer.name.charAt(0).toUpperCase() : <User size={20} />}
             </div>
             <div className="min-w-0">
@@ -1377,7 +1377,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
           <button
             onClick={() => setActiveTab('cadastro')}
             className={`flex-1 min-h-[44px] py-2.5 text-xs font-bold font-sans tracking-wide border-b-2 transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-              activeTab === 'cadastro' ? 'border-stone-900 text-stone-950 bg-stone-50' : 'border-transparent text-stone-500 hover:text-stone-900'
+              activeTab === 'cadastro' ? 'border-[#083d07] text-stone-950 bg-stone-50' : 'border-transparent text-stone-500 hover:text-stone-900'
             }`}
           >
             <FileText size={14} className={activeTab === 'cadastro' ? 'text-stone-900' : 'text-stone-400'} />
@@ -1541,7 +1541,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                   type="text"
                   value={formData.name}
                   onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full h-10 px-3 bg-stone-50 border border-stone-200 rounded-lg text-base sm:text-xs font-sans text-stone-900 focus:bg-white focus:border-stone-900 focus:outline-none transition-colors"
+                  className="w-full h-10 px-3 bg-stone-50 border border-stone-200 rounded-lg text-base sm:text-xs font-sans text-stone-900 focus:bg-white focus:border-[#083d07] focus:outline-none transition-colors"
                   placeholder="Nome do cliente"
                 />
               </div>
@@ -1567,7 +1567,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                   type="text"
                   value={formData.address}
                   onChange={e => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full h-10 px-3 bg-stone-50 border border-stone-200 rounded-lg text-base sm:text-xs font-sans text-stone-900 focus:bg-white focus:border-stone-900 focus:outline-none transition-colors"
+                  className="w-full h-10 px-3 bg-stone-50 border border-stone-200 rounded-lg text-base sm:text-xs font-sans text-stone-900 focus:bg-white focus:border-[#083d07] focus:outline-none transition-colors"
                   placeholder="Ex: Rua das Flores, 123 - Apto 4B"
                 />
               </div>
@@ -1580,7 +1580,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                   value={formData.notes}
                   onChange={e => setFormData({ ...formData, notes: e.target.value })}
                   rows={3}
-                  className="w-full p-3 bg-stone-50 border border-stone-200 rounded-lg text-base sm:text-xs font-sans text-stone-900 focus:bg-white focus:border-stone-900 focus:outline-none resize-none transition-colors"
+                  className="w-full p-3 bg-stone-50 border border-stone-200 rounded-lg text-base sm:text-xs font-sans text-stone-900 focus:bg-white focus:border-[#083d07] focus:outline-none resize-none transition-colors"
                   placeholder="Ex: Prefere massa bem assada, não consome cebola, costuma pedir aos sábados, cliente amigo da família..."
                 />
               </div>
@@ -1596,7 +1596,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="w-full min-h-[44px] bg-stone-900 hover:bg-stone-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
+                  className="w-full min-h-[44px] bg-[#083d07] hover:bg-[#0b520a] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm disabled:opacity-50"
                 >
                   {isSaving ? <RefreshCw size={14} className="animate-spin" /> : <Check size={14} />}
                   <span>{isSaving ? 'Salvando...' : 'Salvar Alterações'}</span>

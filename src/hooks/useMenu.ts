@@ -41,32 +41,12 @@ export function useMenu() {
       }
 
       const normalizeItem = (it: any): MenuItem => {
-        let priceBig = it.price_big ?? it.priceBig;
-        let priceSuperBig = it.price_super_big ?? it.priceSuperBig;
-        
-        if (priceBig === undefined || priceBig === null) {
-          if (it.category === 'tradicionais') priceBig = 23.99;
-          else if (it.category === 'especiais') priceBig = 27.99;
-          else if (it.category === 'gourmet') priceBig = 34.99;
-        }
-
-        if (priceSuperBig === undefined || priceSuperBig === null) {
-          if (it.category === 'tradicionais') priceSuperBig = 28.99;
-          else if (it.category === 'especiais') priceSuperBig = 32.99;
-          else if (it.category === 'gourmet') priceSuperBig = 36.99;
-        }
-
         return {
           id: it.id,
           name: it.name,
           ingredients: it.ingredients,
           category: it.category,
-          priceSingle: it.price_single ?? it.priceSingle ?? undefined,
-          priceP: it.price_p ?? it.priceP ?? undefined,
-          priceM: it.price_m ?? it.priceM ?? undefined,
-          priceG: it.price_g ?? it.priceG ?? undefined,
-          priceBig: priceBig ?? undefined,
-          priceSuperBig: priceSuperBig ?? undefined,
+          priceSingle: it.price_single ?? it.priceSingle ?? it.price_g ?? it.price_m ?? 38.0,
           imageUrl: it.image_url ?? it.imageUrl ?? undefined,
           dayOfWeek: it.day_of_week ?? it.dayOfWeek ?? undefined,
           isBestseller: it.is_bestseller ?? it.isBestseller ?? false,
@@ -79,33 +59,8 @@ export function useMenu() {
       setCategories(cats as Category[]);
       setUsingFallback(false);
     } catch (err) {
-      console.warn('[useMenu] Não foi possível carregar dados do Supabase, usando cardápio estático de reserva.', err);
-      // If we fall back to static menu, we also inject the new sizes
-      
-      const normalizeStaticItem = (it: MenuItem): MenuItem => {
-        let priceBig = it.priceBig;
-        let priceSuperBig = it.priceSuperBig;
-        
-        if (priceBig === undefined || priceBig === null) {
-          if (it.category === 'tradicionais') priceBig = 23.99;
-          else if (it.category === 'especiais') priceBig = 27.99;
-          else if (it.category === 'gourmet') priceBig = 34.99;
-        }
-
-        if (priceSuperBig === undefined || priceSuperBig === null) {
-          if (it.category === 'tradicionais') priceSuperBig = 28.99;
-          else if (it.category === 'especiais') priceSuperBig = 32.99;
-          else if (it.category === 'gourmet') priceSuperBig = 36.99;
-        }
-
-        return {
-          ...it,
-          priceBig,
-          priceSuperBig
-        };
-      };
-
-      setMenuItems(ALL_MENU_ITEMS.map(normalizeStaticItem));
+      console.warn('[useMenu] Usando cardápio local de reserva.', err);
+      setMenuItems(ALL_MENU_ITEMS);
       setCategories([]);
       setUsingFallback(true);
     } finally {

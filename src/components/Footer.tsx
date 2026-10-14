@@ -1,5 +1,5 @@
 import React from 'react';
-import { Instagram, MapPin, Clock, ExternalLink } from "lucide-react";
+import { Instagram, MapPin, Clock, ExternalLink, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -65,15 +65,27 @@ export default function Footer() {
             </h4>
             <div className="space-y-2">
               <a
-                href="https://www.instagram.com/dobropizza/"
+                href="https://wa.me/5541995984072"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-xs text-[#c4b5aa] hover:text-white transition-colors group"
               >
-                <Instagram className="w-3.5 h-3.5 text-[#d5af7a] group-hover:scale-110 transition-transform" />
-                <span>@dobropizza</span>
-                <ExternalLink className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
+                <Phone className="w-3.5 h-3.5 text-[#25D366] group-hover:scale-110 transition-transform" />
+                <span className="font-medium text-white/90">(41) 99598-4072</span>
+                <span className="text-[10px] text-[#25D366] bg-[#25D366]/10 px-1.5 py-0.5 rounded font-mono">WhatsApp</span>
               </a>
+              <div>
+                <a
+                  href="https://www.instagram.com/dobropizza/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-xs text-[#c4b5aa] hover:text-white transition-colors group"
+                >
+                  <Instagram className="w-3.5 h-3.5 text-[#d5af7a] group-hover:scale-110 transition-transform" />
+                  <span>@dobropizza</span>
+                  <ExternalLink className="w-2.5 h-2.5 opacity-40 group-hover:opacity-100" />
+                </a>
+              </div>
             </div>
             <p className="text-[11px] text-[#8a7569] leading-relaxed">
               Cardápio digital oficial com pedidos diretos e confirmação instantânea via WhatsApp.

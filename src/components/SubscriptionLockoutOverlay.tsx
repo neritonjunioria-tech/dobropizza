@@ -60,11 +60,11 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
   });
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-stone-950/85 backdrop-blur-md overflow-y-auto animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-stone-900 border border-stone-800 rounded-2xl shadow-2xl overflow-hidden my-6">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-[#062b06]/85 backdrop-blur-md overflow-y-auto animate-fadeIn">
+      <div className="relative w-full max-w-lg bg-[#083d07] border border-[#0b520a] rounded-2xl shadow-2xl overflow-hidden my-6">
         
         {/* Header Sóbrio */}
-        <div className="p-6 border-b border-stone-800 text-center">
+        <div className="p-6 border-b border-[#0b520a] text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10 text-red-400 mb-3 border border-red-500/20">
             <AlertOctagon size={22} />
           </div>
@@ -79,7 +79,7 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
         {/* Resumo Fatura */}
         <div className="p-6 space-y-5">
           
-          <div className="bg-stone-950/70 border border-stone-800 rounded-xl p-3.5 flex items-center justify-between">
+          <div className="bg-[#062b06]/70 border border-[#0b520a] rounded-xl p-3.5 flex items-center justify-between">
             <div>
               <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400 block">
                 Fatura Vencida (Dia 16)
@@ -94,11 +94,11 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
           </div>
 
           {/* Opção PIX Direto */}
-          <div className="bg-stone-950/50 border border-stone-800/90 rounded-xl p-4 space-y-4">
+          <div className="bg-[#062b06]/50 border border-[#0b520a]/90 rounded-xl p-4 space-y-4">
             
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-stone-200 flex items-center gap-1.5">
-                <QrCode size={14} className="text-[#fdde58]" /> Pagamento Instantâneo via PIX
+                <QrCode size={14} className="text-[#d5af7a]" /> Pagamento Instantâneo via PIX
               </span>
               <span className="text-[10px] text-emerald-400 font-mono">Liberação Automática</span>
             </div>
@@ -115,7 +115,7 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
             </div>
 
             {/* Chave Telefone */}
-            <div className="flex items-center justify-between gap-2 bg-stone-900 px-3 py-2 rounded-lg border border-stone-800 text-xs">
+            <div className="flex items-center justify-between gap-2 bg-[#083d07] px-3 py-2 rounded-lg border border-[#0b520a] text-xs">
               <div className="flex items-center gap-2">
                 <Smartphone size={13} className="text-stone-400" />
                 <span className="font-mono text-stone-200 font-bold">{PIX_PHONE_FORMATTED}</span>
@@ -123,7 +123,7 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
               <button
                 type="button"
                 onClick={handleCopyKey}
-                className="px-2.5 py-1 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded text-[11px] font-medium transition-colors cursor-pointer border border-stone-700"
+                className="px-2.5 py-1 bg-[#0b520a] hover:bg-stone-700 text-stone-300 rounded text-[11px] font-medium transition-colors cursor-pointer border border-stone-700"
               >
                 {copiedKey ? 'Copiado!' : 'Copiar Chave'}
               </button>
@@ -135,12 +135,12 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
                 type="text"
                 readOnly
                 value={PIX_BRCODE}
-                className="flex-1 bg-stone-900 border border-stone-800 rounded-lg px-2.5 py-1.5 text-xs text-stone-400 font-mono select-all truncate focus:outline-none"
+                className="flex-1 bg-[#083d07] border border-[#0b520a] rounded-lg px-2.5 py-1.5 text-xs text-stone-400 font-mono select-all truncate focus:outline-none"
               />
               <button
                 type="button"
                 onClick={handleCopyCode}
-                className="px-3 py-1.5 bg-[#fdde58] hover:bg-[#e6c94f] text-stone-950 font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0"
+                className="px-3 py-1.5 bg-[#083d07] hover:bg-[#e6c94f] text-[#fdfbf7] font-bold text-xs rounded-lg transition-colors cursor-pointer shrink-0"
               >
                 {copiedCode ? 'Copiado!' : 'Copiar PIX'}
               </button>
@@ -165,7 +165,7 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
                 href={subscription.stripe_payment_link || 'https://buy.stripe.com/test_gestor_delivery_490'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-2 px-3 rounded-lg bg-stone-800 hover:bg-stone-750 text-stone-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-stone-700"
+                className="py-2 px-3 rounded-lg bg-[#0b520a] hover:bg-stone-750 text-stone-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-stone-700"
               >
                 <CreditCard size={13} />
                 <span>Pagar com Cartão</span>
@@ -176,7 +176,7 @@ export const SubscriptionLockoutOverlay: React.FC<SubscriptionLockoutOverlayProp
                 href="https://wa.me/5541996560080?text=Ol%C3%A1%2C+preciso+de+suporte+com+a+fatura+da+minha+assinatura+do+gestor"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-2 px-3 rounded-lg bg-stone-800 hover:bg-stone-750 text-stone-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-stone-700"
+                className="py-2 px-3 rounded-lg bg-[#0b520a] hover:bg-stone-750 text-stone-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-stone-700"
               >
                 <MessageCircle size={13} className="text-emerald-400" />
                 <span>Suporte WhatsApp</span>

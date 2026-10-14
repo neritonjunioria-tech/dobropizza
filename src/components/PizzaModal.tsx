@@ -77,15 +77,17 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
   
   const isPromoPizza = (item.category === 'promocoes' || (item as any).groupOverride === 'promocoes') && item.name.toLowerCase().includes('pizza');
 
-  const hasSizes = item.priceM !== undefined && item.priceG !== undefined;
-  const calculatedPriceP = item.priceP || (item.priceM ? Math.max(item.priceM - 2, 0) : undefined);
+  const isPizza = item.id.startsWith('p-') || item.category === 'mais-pedidos' || item.category === 'tradicionais';
+  const hasSizes = false;
   
-  // Calculate display price based on size and half-and-half
-  let currentPrice = selectedSize === 'P' ? calculatedPriceP : selectedSize === 'M' ? item.priceM : (item.priceG || item.priceSingle || item.priceM || 0);
+  // Calculate display price based on single size and half-and-half
+  let basePrice = item.priceSingle || item.priceG || item.priceM || 0;
   const selectedSecondFlavor = menuPizzas.find(p => p.id === secondFlavorId);
-  if (selectedSize === 'G' && isHalf && selectedSecondFlavor && selectedSecondFlavor.priceG) {
-       currentPrice = Math.max(item.priceG || 0, selectedSecondFlavor.priceG);
+  if (isPizza && isHalf && selectedSecondFlavor) {
+    const secondPrice = selectedSecondFlavor.priceSingle || selectedSecondFlavor.priceG || 0;
+    basePrice = Math.max(basePrice, secondPrice);
   }
+  let currentPrice = basePrice;
 
   // Add the price of selected extras
   const extrasTotalPrice = selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
@@ -135,8 +137,8 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
       id: crypto.randomUUID(),
       menuItem: item,
       quantity: quantity,
-      size: hasSizes ? selectedSize : undefined,
-      isHalfAndHalf: (selectedSize === 'G' && isHalf && !!selectedSecondFlavor),
+      size: isPizza ? '28cm' : undefined,
+      isHalfAndHalf: (isPizza && isHalf && !!selectedSecondFlavor),
       halfAndHalfFlavor: selectedSecondFlavor,
       extras: finalExtras,
       priceCalculated: currentPrice!,
@@ -297,59 +299,19 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
              </div>
            )}
 
-           {hasSizes && (
-             <div className="mb-6">
-                <h4 className="font-bold mb-3 text-sm uppercase tracking-wide text-gray-800">Escolha o Tamanho:</h4>
-                <div className="flex flex-col gap-3">
-                   {calculatedPriceP !== undefined && <button 
-                     onClick={() => { hapticLight(); setSelectedSize('P'); }}
-                     disabled={pausedItems?.includes(`${item?.id}-P`)}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-P`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'P' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
-                   >
-                      <div className="flex justify-between items-center">
-                         <span className="font-bold text-sm">Pequena (P)</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'P' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
-                            {selectedSize === 'P' && <Check className="w-3 h-3 text-white" />}
-                         </div>
-                      </div>
-                      <span className="text-[11px] text-gray-500 block mt-1">6 fatias | 1 sabor</span>
-                      <span className="text-[#083d07] font-bold mt-2 block text-lg">R$ {calculatedPriceP.toFixed(2)}</span>
-                   </button>}
-
-                   <button 
-                     onClick={() => { hapticLight(); setSelectedSize('M'); setIsHalf(false); }}
-                     disabled={pausedItems?.includes(`${item?.id}-M`)}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-M`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'M' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
-                   >
-                      <div className="flex justify-between items-center">
-                         <span className="font-bold text-sm">Média (M)</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'M' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
-                            {selectedSize === 'M' && <Check className="w-3 h-3 text-white" />}
-                         </div>
-                      </div>
-                      <span className="text-[11px] text-gray-500 block mt-1">8 fatias | 1 sabor</span>
-                      <span className="text-[#083d07] font-bold mt-2 block text-lg">R$ {item.priceM?.toFixed(2)}</span>
-                   </button>
-
-                   <button 
-                     onClick={() => { hapticLight(); setSelectedSize('G'); }}
-                     disabled={pausedItems?.includes(`${item?.id}-G`)}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-G`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'G' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
-                   >
-                      <div className="flex justify-between items-center">
-                         <span className="font-bold text-sm">Grande (G)</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'G' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
-                            {selectedSize === 'G' && <Check className="w-3 h-3 text-white" />}
-                         </div>
-                      </div>
-                      <span className="text-[11px] text-gray-500 block mt-1">10 fatias | até 2 sabores</span>
-                      <span className="text-[#083d07] font-bold mt-2 block text-lg">R$ {item.priceG?.toFixed(2)}</span>
-                   </button>
+           {isPizza && (
+              <div className="mb-6 p-4 rounded-xl border border-[#d5af7a]/40 bg-[#fdfbf7]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-sm text-[#083d07]">Tamanho Único 28cm</span>
+                    <span className="text-[12px] text-[#745240] block">Massa artesanal de fermentação lenta • 6 fatias</span>
+                  </div>
+                  <span className="text-xs px-2.5 py-1 rounded-full bg-[#083d07] text-[#fdfbf7] font-semibold">28cm</span>
                 </div>
-             </div>
+              </div>
            )}
 
-           {hasSizes && selectedSize === 'G' && (
+           {isPizza && (
               <div className="mb-6 p-4 rounded-xl border border-gray-200 bg-gray-50">
                 <label className="flex items-center gap-3 cursor-pointer">
                   <input 
@@ -359,8 +321,8 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                     className="w-5 h-5 accent-[#083d07] rounded"
                   />
                   <div>
-                    <span className="font-bold block text-sm">Adicionar 2º Sabor (Opcional)</span>
-                    <span className="text-xs text-gray-500">Será cobrado pelo sabor mais caro</span>
+                    <span className="font-bold block text-sm text-gray-800">Pizza Meio a Meio (2 Sabores)</span>
+                    <span className="text-xs text-gray-500">Cobrado pelo sabor de maior valor</span>
                   </div>
                 </label>
 
@@ -369,14 +331,19 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                     <select
                       value={secondFlavorId}
                       onChange={(e) => setSecondFlavorId(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm bg-white"
                     >
                       <option value="">Selecione o 2º sabor...</option>
-                      {menuPizzas.filter(p => p.id !== item.id && p.id !== 'p-61' && p.priceG !== undefined).map(p => (
-                        <option key={p.id} value={p.id}>
-                          MEIA {p.name} (Tira-teima: R$ {Math.max(p.priceG || 0, item.priceG || 0).toFixed(2)})
-                        </option>
-                      ))}
+                      {menuPizzas.filter(p => p.id !== item.id).map(p => {
+                        const pPrice = p.priceSingle || p.priceG || 0;
+                        const itemPrice = item.priceSingle || item.priceG || 0;
+                        const finalP = Math.max(pPrice, itemPrice);
+                        return (
+                          <option key={p.id} value={p.id}>
+                            MEIA {p.name} (Total: R$ {finalP.toFixed(2)})
+                          </option>
+                        );
+                      })}
                     </select>
                   </div>
                 )}

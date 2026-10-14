@@ -910,7 +910,7 @@ export default function PDVModal({
         {/* Left: Branding & Order Type Selector */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2.5 pr-3 border-r border-gray-200">
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-black border border-stone-800 shrink-0 flex items-center justify-center p-0.5 shadow-sm">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-black border border-[#0b520a] shrink-0 flex items-center justify-center p-0.5 shadow-sm">
               <img 
                 src={adminLogoUrl || "/dobro/logo-dobro.png"} 
                 alt="DOBRO Pizzas" 
@@ -1007,7 +1007,7 @@ export default function PDVModal({
               }
               onClose();
             }}
-            className="h-8 px-3 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-2xs active:translate-y-px cursor-pointer"
+            className="h-8 px-3 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all shadow-2xs active:translate-y-px cursor-pointer"
             title="Voltar ao Gestor de Pedidos"
           >
             <ArrowLeft size={14} className="stroke-[2.5]" />
@@ -1034,7 +1034,7 @@ export default function PDVModal({
                   ? 'bg-purple-600 text-white border-purple-700 shadow-xs'
                   : 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100 hover:text-purple-900 font-extrabold';
               } else if (isActive) {
-                buttonStyle = 'bg-[var(--pdv-brand)] text-stone-950 border-[#d8ba39] shadow-xs';
+                buttonStyle = 'bg-[var(--pdv-brand)] text-stone-950 border-[#d5af7a]/60 shadow-xs';
               } else {
                 buttonStyle = 'bg-[var(--pdv-surface)] text-[var(--pdv-text-secondary)] border-[var(--pdv-border)] hover:bg-[var(--pdv-surface-hover)] hover:text-[var(--pdv-text-primary)]';
               }
@@ -1345,7 +1345,7 @@ export default function PDVModal({
                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-stone-900">
                   Meu Pedido
                 </span>
-                <span className="bg-stone-900 text-white min-w-4 h-4 px-1 flex items-center justify-center rounded-full text-[9px] font-mono font-bold">
+                <span className="bg-[#083d07] text-white min-w-4 h-4 px-1 flex items-center justify-center rounded-full text-[9px] font-mono font-bold">
                   {cart.reduce((s, i) => s + i.quantity, 0)}
                 </span>
               </div>
@@ -1551,13 +1551,13 @@ export default function PDVModal({
               <div className="flex items-center gap-0.5 bg-white border border-stone-300 rounded p-0.5 shadow-2xs h-5.5">
                 <button 
                   onClick={() => setAdjustmentMode('fixed')} 
-                  className={`px-1 py-0.2 text-[8.5px] font-mono font-bold rounded cursor-pointer ${adjustmentMode === 'fixed' ? 'bg-stone-900 text-white' : 'text-stone-500'}`}
+                  className={`px-1 py-0.2 text-[8.5px] font-mono font-bold rounded cursor-pointer ${adjustmentMode === 'fixed' ? 'bg-[#083d07] text-white' : 'text-stone-500'}`}
                 >
                   €
                 </button>
                 <button 
                   onClick={() => setAdjustmentMode('percent')} 
-                  className={`px-1 py-0.2 text-[8.5px] font-mono font-bold rounded cursor-pointer ${adjustmentMode === 'percent' ? 'bg-stone-900 text-white' : 'text-stone-500'}`}
+                  className={`px-1 py-0.2 text-[8.5px] font-mono font-bold rounded cursor-pointer ${adjustmentMode === 'percent' ? 'bg-[#083d07] text-white' : 'text-stone-500'}`}
                 >
                   %
                 </button>
@@ -1680,7 +1680,7 @@ export default function PDVModal({
             <button
               onClick={handleFinalizeOrder}
               disabled={isSubmitting || cart.length === 0}
-              className="w-full h-11 bg-[#fdde58] hover:bg-[#e2c23f] active:scale-[0.98] disabled:opacity-40 disabled:bg-gray-300 disabled:text-gray-500 text-stone-950 font-black text-sm uppercase tracking-wider rounded-[var(--pdv-radius-lg)] shadow-[var(--pdv-shadow-md)] transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#d8ba39]"
+              className="w-full h-11 bg-[#083d07] hover:bg-[#0b520a] active:scale-[0.98] disabled:opacity-40 disabled:bg-gray-300 disabled:text-gray-500 text-[#fdfbf7] font-black text-sm uppercase tracking-wider rounded-[var(--pdv-radius-lg)] shadow-[var(--pdv-shadow-md)] transition-all flex items-center justify-center gap-2 cursor-pointer border border-[#d5af7a]/60"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-1.5">
@@ -1818,7 +1818,7 @@ export default function PDVModal({
                             onClick={() => setCustomDrinkVariant('Zero')}
                             className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all flex items-center justify-between cursor-pointer ${
                               customDrinkVariant === 'Zero'
-                                ? 'bg-stone-900 text-white border-black shadow-xs'
+                                ? 'bg-[#083d07] text-white border-black shadow-xs'
                                 : 'bg-white border-stone-300 text-stone-900 hover:bg-stone-100'
                             }`}
                           >
@@ -2312,7 +2312,7 @@ export default function PDVModal({
               <button
                 onClick={handleConfirmCustomization}
                 disabled={!isPromoWithPizza(customizingItem) && customAdditionalFlavors.some(f => !f || !f.id)}
-                className="flex-1 py-2.5 bg-[#fdde58] hover:bg-[#e2c23f] disabled:opacity-50 text-stone-950 font-bold rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 border border-[#d8ba39]"
+                className="flex-1 py-2.5 bg-[#083d07] hover:bg-[#0b520a] disabled:opacity-50 text-[#fdfbf7] font-bold rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 border border-[#d5af7a]/60"
               >
                 <Check size={16} className="stroke-[3]" />
                 <span>
