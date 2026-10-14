@@ -201,6 +201,11 @@ export default function PDVModal({
 
   // Order-level observations (Observações Gerais do Pedido no PDV)
   const [orderNotes, setOrderNotes] = useState('');
+  const [motoboys, setMotoboys] = useState<Motoboy[]>([]);
+  const [deliveryProvider, setDeliveryProvider] = useState<'proprio' | 'ifood' | 'uber'>('proprio');
+  const [selectedMotoboyId, setSelectedMotoboyId] = useState<string>('');
+  const [motoboyFee, setMotoboyFee] = useState<string>('');
+  const [motoboyFeeTouched, setMotoboyFeeTouched] = useState(false);
 
   // Promo Pizza Customization specific states
   const [customPromoFlavor, setCustomPromoFlavor] = useState('');
@@ -309,6 +314,10 @@ export default function PDVModal({
   useEffect(() => {
     if (!isOpen) return;
     const loadDeliverySettings = async () => {
+      // carregar motoboys no pdv
+      supabase.from('motoboys').select('*').eq('is_active', true).order('name').then(({ data }) => {
+        if (data) setMotoboys(data.map((m: any) => ({ ...m, default_fee: Number(m.default_fee) || 0 })));
+      });
       try {
         const { data: zonesData } = await supabase
           .from('delivery_zones')
@@ -440,8 +449,8 @@ export default function PDVModal({
   }, [cart]);
 
   const isFreeDelivery = useMemo(() => {
-    return orderType === 'entrega' && freeDeliveryThreshold > 0 && subtotal >= freeDeliveryThreshold;
-  }, [orderType, freeDeliveryThreshold, subtotal]);
+    return false; // Dobro não tem entrega grátis
+  }, []);
 
   const deliveryFee = useMemo(() => {
     if (orderType !== 'entrega') return 0;
@@ -842,6 +851,9 @@ export default function PDVModal({
         notes: orderNotes.trim() || null,
         delivery_address: fullDeliveryAddress,
         delivery_zone: orderType === 'entrega' ? deliveryZone : null,
+        delivery_provider: orderType === 'entrega' ? deliveryProvider : null,
+        motoboy_id: orderType === 'entrega' && deliveryProvider === 'proprio' ? (selectedMotoboyId || null) : null,
+        delivery_cost: orderType === 'entrega' ? (parseFloat(motoboyFee.replace(',', '.')) || 0) : null,
         change_for: paymentMethod === 'Numerário' && !isNaN(changeForNum) && changeForNum > totalAmount ? changeForNum : null
       };
 
@@ -1132,7 +1144,7 @@ export default function PDVModal({
                             € {displayPrice.toFixed(2)}
                           </span>
                         </div>
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[var(--pdv-brand)] text-stone-950 flex items-center justify-center font-black shadow-2xs hover:bg-[var(--pdv-brand-hover)] transition-colors shrink-0">
+                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/60 flex items-center justify-center font-black shadow-2xs hover:bg-[#d5af7a] hover:text-[#083d07] transition-all shrink-0">
                           <Plus size={13} className="stroke-[3]" />
                         </div>
                       </div>
@@ -2191,9 +2203,9 @@ export default function PDVModal({
                           setSearchingFlavorSlot(customAdditionalFlavors.length);
                           setFlavorSearchQuery('');
                         }}
-                        className="w-full py-2.5 px-3 border-2 border-dashed border-amber-300 hover:border-amber-400 bg-amber-50/40 hover:bg-amber-50 text-amber-900 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
+                        className="w-full py-2.5 px-3 border-2 border-dashed border-[#d5af7a] hover:border-[#083d07] bg-[#E8D8D1]/40 hover:bg-[#E8D8D1] text-[#083d07] rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs"
                       >
-                        <Plus size={13} className="text-amber-700 stroke-[3]" />
+                        <Plus size={13} className="text-[#083d07] stroke-[3]" />
                         <span>
                           + Adicionar {customAdditionalFlavors.length === 0 ? (customSize === 'G' ? '2º Sabor (Meio a Meio)' : '2º Sabor') : `${customAdditionalFlavors.length + 2}º Sabor`}
                         </span>

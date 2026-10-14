@@ -48,13 +48,13 @@ export const menuData: MenuItem[] = [
     isBestseller: true
   },
 
-  // --- TRADICIONAIS DOBRO ---
+  // --- PIZZAS PREMIUM DOBRO ---
   {
     id: 'p-dobro-blumenau',
     name: 'Linguiça Blumenau Artesanal',
     ingredients: 'Massa artesanal 28cm de fermentação lenta, autêntica linguiça Blumenau defumada artesanalmente e assada no forno, molho pomodoro fresco, mozzarella derretida, cebola roxa finamente fatiada e alecrim fresco.',
     priceSingle: 42.0,
-    category: 'tradicionais',
+    category: 'premium',
     imageUrl: '/dobro/blumenau.jpeg',
     isBestseller: false
   },
@@ -63,7 +63,7 @@ export const menuData: MenuItem[] = [
     name: 'Jiló Especial',
     ingredients: 'Massa artesanal 28cm de fermentação lenta, lâminas finas de jiló confitadas no azeite extravirgem, mozzarella cremosa, lascas de queijo e raspas aromáticas de limão siciliano.',
     priceSingle: 44.0,
-    category: 'tradicionais',
+    category: 'premium',
     imageUrl: '/dobro/zucchini.jpeg',
     isBestseller: false
   },
@@ -72,7 +72,7 @@ export const menuData: MenuItem[] = [
     name: 'Pera & Mel',
     ingredients: 'Massa artesanal 28cm de fermentação lenta, base aveludada de queijo gorgonzola e mozzarella selecionada, lâminas frescas de pera, nozes crocantes e fio generoso de mel puro de flor de laranjeira.',
     priceSingle: 45.0,
-    category: 'tradicionais',
+    category: 'premium',
     imageUrl: '/dobro/pera-mel.jpeg',
     isBestseller: false
   },
@@ -81,7 +81,7 @@ export const menuData: MenuItem[] = [
     name: 'Avelã, Morango & Amor',
     ingredients: 'Massa doce artesanal 28cm crocante, camada farta do mais puro creme nobre de cacau e avelãs, fatias frescas de morangos suculentos selecionados e lascas tostadas de amêndoas.',
     priceSingle: 42.0,
-    category: 'tradicionais',
+    category: 'premium',
     imageUrl: '/dobro/avela-morango-amor.jpeg',
     isBestseller: false
   },
@@ -109,7 +109,8 @@ export const menuData: MenuItem[] = [
 
 // Telefone oficial Dobro Pizzas
 export const RESTAURANT_WHATSAPP_PHONE = "5541995984072";
-export const FREE_DELIVERY_THRESHOLD = 90;
+// Dobro não possui entrega grátis independente do valor do pedido
+export const FREE_DELIVERY_THRESHOLD = Infinity;
 
 // Bairros atendidos até ~5km de São José dos Pinhais (Rua Querino Zagonel, 500)
 export const NEIGHBORHOOD_DELIVERY_FEES: Record<string, number> = {

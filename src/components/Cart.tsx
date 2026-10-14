@@ -184,35 +184,9 @@ export default function Cart({
   );
   const totalItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
-  useEffect(() => {
-    if (subtotal >= freeDeliveryThreshold && !hasShownParty) {
-      setHasShownParty(true);
-      hapticSuccess();
-      try {
-        const fireConfetti = typeof confetti === 'function' ? confetti : (confetti ? (confetti as any).default : null);
-        if (typeof fireConfetti === 'function') {
-          fireConfetti({
-            particleCount: 100,
-            spread: 50,
-            origin: { y: 0.6 },
-            colors: ['#8b0000', '#ffffff', '#ffd700', '#4CAF50']
-          });
-        }
-      } catch (e) {
-        console.warn('Confetti error:', e);
-      }
-    } else if (subtotal < freeDeliveryThreshold && hasShownParty) {
-      setHasShownParty(false);
-    }
-  }, [subtotal, hasShownParty, freeDeliveryThreshold]);
-
   let deliveryFee = 0;
   if (orderType === "Delivery") {
-    if (subtotal >= freeDeliveryThreshold) {
-      deliveryFee = 0;
-    } else {
-      deliveryFee = zonesFees[zona] || 0;
-    }
+    deliveryFee = zonesFees[zona] || 0;
   }
 
   const total = subtotal + deliveryFee;
@@ -227,9 +201,6 @@ export default function Cart({
       errors.push("Estamos fechados no momento. Poderá finalizar o pedido durante o nosso horário de funcionamento.");
     }
 
-    if (orderType === "Delivery" && subtotal < minDeliveryOrder) {
-      errors.push(`O valor mínimo para entrega é de €${minDeliveryOrder.toFixed(2)}.`);
-    }
     if (!name.trim()) {
       errors.push("Por favor, preencha o seu nome.");
     }
@@ -700,9 +671,10 @@ export default function Cart({
                           </span>
                           <button
                             onClick={() => onUpdateQuantity(item.id, 1)}
-                            className="px-1.5 py-0.5 text-gray-500 hover:text-[#083d07] hover:bg-gray-50 transition-colors cursor-pointer"
+                            className="w-5 h-5 rounded bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/40 hover:bg-[#d5af7a] hover:text-[#083d07] flex items-center justify-center transition-all cursor-pointer shadow-2xs"
+                            title="Aumentar quantidade"
                           >
-                            <Plus className="w-2.5 h-2.5" />
+                            <Plus className="w-2.5 h-2.5 stroke-[2.5]" />
                           </button>
                         </div>
 
@@ -715,32 +687,6 @@ export default function Cart({
                       </div>
                     </div>
                   ))}
-                </div>
-
-                {/* SLIM FREE DELIVERY PROGRESS BAR */}
-                <div className="pt-1">
-                  {subtotal >= freeDeliveryThreshold ? (
-                    <div className="bg-emerald-50 text-emerald-800 text-[11px] font-bold py-1.5 px-2.5 rounded-lg border border-emerald-200 flex items-center justify-center gap-1.5">
-                      <span>🎉</span>
-                      <span>Parabéns! <strong>Entrega Grátis Ganha!</strong></span>
-                    </div>
-                  ) : (
-                    <div className="bg-amber-50/60 border border-amber-200/70 p-2 rounded-lg space-y-1">
-                      <div className="flex justify-between text-[11px] font-semibold text-gray-700">
-                        <span>🛵 Entrega Grátis</span>
-                        <span className="text-[#083d07] font-black">Meta: R$ {freeDeliveryThreshold.toFixed(2)}</span>
-                      </div>
-                      <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div
-                          className="bg-[#083d07] h-1.5 rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min(100, (subtotal / freeDeliveryThreshold) * 100)}%` }}
-                        />
-                      </div>
-                      <div className="text-[10px] text-gray-500 text-center font-medium">
-                        Adicione <strong className="text-[#083d07]">R$ {(freeDeliveryThreshold - subtotal).toFixed(2)}</strong> e ganhe a entrega!
-                      </div>
-                    </div>
-                  )}
                 </div>
 
                 {/* DISCREET UPSELL CHIP */}

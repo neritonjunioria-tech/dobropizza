@@ -37,10 +37,10 @@ export const categoriesUI = [
       group: ["mais-pedidos"],
     },
     {
-      id: "tradicionais",
-      label: "TRADICIONAIS 🍕",
-      sub: "Massa artesanal 28cm de fermentação lenta",
-      group: ["tradicionais"],
+      id: "premium",
+      label: "PREMIUM ⭐",
+      sub: "Massa artesanal 28cm e receitas autorais exclusivas",
+      group: ["premium", "tradicionais"],
     },
     {
       id: "sandubas",
@@ -63,7 +63,7 @@ function App() {
   const { menuItems, categories: dbCategories, loading: menuLoading, usingFallback } = useMenu();
   const businessStatus = useBusinessHours();
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [activeCategory, setActiveCategory] = useState<string>("tradicionais");
+  const [activeCategory, setActiveCategory] = useState<string>("mais-pedidos");
   const [searchTerm, setSearchTerm] = useState<string>("");
   
   const { trackEvent } = useAnalytics();
@@ -169,15 +169,7 @@ function App() {
       price: newItem.priceCalculated 
     });
     
-    const oldSubtotal = cart.reduce((acc, item) => acc + item.priceCalculated * item.quantity, 0);
-    const newSubtotal = oldSubtotal + newItem.priceCalculated * newItem.quantity;
-
-    if (oldSubtotal < FREE_DELIVERY_THRESHOLD && newSubtotal >= FREE_DELIVERY_THRESHOLD) {
-      playVictorySound();
-      hapticSuccess();
-    } else {
-      hapticMedium();
-    }
+    hapticMedium();
 
     setCartBounce(true);
     setTimeout(() => setCartBounce(false), 500);
@@ -510,13 +502,6 @@ function App() {
                   : c
               );
               
-              const oldSubtotal = cart.reduce((acc, item) => acc + item.priceCalculated * item.quantity, 0);
-              const newSubtotal = updatedCart.reduce((acc, item) => acc + item.priceCalculated * item.quantity, 0);
-              
-              if (oldSubtotal < FREE_DELIVERY_THRESHOLD && newSubtotal >= FREE_DELIVERY_THRESHOLD) {
-                playVictorySound();
-              }
-              
               saveCart(updatedCart);
             }}
             onRemoveItem={(id) => saveCart(cart.filter((c) => c.id !== id))}
@@ -535,32 +520,6 @@ function App() {
       {/* Mobile view cart toggle - Only visible when items are in cart */}
       {totalCartQty > 0 && (
         <div className="fixed bottom-0 left-0 w-full p-3 bg-white/95 backdrop-blur-md border-t border-gray-200 lg:hidden z-40 pb-safe shadow-[0_-4px_25px_rgba(0,0,0,0.12)] transition-all animate-in slide-in-from-bottom duration-200">
-          {/* Barra de Progresso de Entrega Grátis */}
-          <div className="mb-2">
-            <div className="flex justify-between items-center text-[11px] font-bold mb-1">
-              {totalCartPrice >= FREE_DELIVERY_THRESHOLD ? (
-                <span className="text-emerald-700 flex items-center gap-1">
-                  🎉 Parabéns! Você ganhou <strong>Entrega Grátis</strong>
-                </span>
-              ) : (
-                <span className="text-stone-600 flex items-center gap-1">
-                  🛵 Falta <strong className="text-[#083d07]">R$ {(FREE_DELIVERY_THRESHOLD - totalCartPrice).toFixed(2).replace('.', ',')}</strong> para <strong>Entrega Grátis</strong>
-                </span>
-              )}
-              <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {FREE_DELIVERY_THRESHOLD.toFixed(2).replace('.', ',')}</span>
-            </div>
-            <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200/60">
-              <div 
-                className={`h-full transition-all duration-500 rounded-full ${
-                  totalCartPrice >= FREE_DELIVERY_THRESHOLD
-                    ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                    : "bg-gradient-to-r from-[#d5af7a] to-[#083d07]"
-                }`}
-                style={{ width: `${Math.min(100, Math.round((totalCartPrice / FREE_DELIVERY_THRESHOLD) * 100))}%` }}
-              />
-            </div>
-          </div>
-
           <button
             onClick={() => {
               hapticMedium();

@@ -210,10 +210,10 @@ export default function MotoboyAssignModal({ order, motoboys, nextStatus, onClos
 
           <div className="space-y-1">
             <label className="block text-[11px] font-semibold text-stone-700">
-              {provider === 'proprio' ? 'Valor pago ao motoboy (€) *' : `Valor cobrado pela plataforma ${PROVIDER_LABELS[provider]} (€) *`}
+              {provider === 'proprio' ? 'Valor pago ao motoboy (R$) *' : `Valor cobrado pela plataforma ${PROVIDER_LABELS[provider]} (R$) *`}
             </label>
             <div className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">€</span>
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">R$</span>
               <input
                 type="number"
                 step="0.01"

@@ -23,7 +23,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onClick,
   onZoom,
 }) => {
-  const isPizza = item.category === 'tradicionais' || item.category === 'mais-pedidos' || item.id.startsWith('p-');
+  const isPizza = item.category === 'tradicionais' || item.category === 'premium' || item.category === 'mais-pedidos' || item.id.startsWith('p-');
   const priceVal = (item.priceSingle || item.priceM || item.priceG || item.priceP || 0);
 
   const priceDisplay = (
@@ -154,8 +154,11 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
         </div>
         <div className="mt-2.5 sm:mt-4 flex justify-between items-center pr-1.5">
           {priceDisplay}
-          <button className="w-6 h-6 sm:w-7 sm:h-7 bg-[#083d07]/10 text-[#083d07] hover:bg-[#083d07] hover:text-[#fdfbf7] rounded-full flex items-center justify-center transition-colors shrink-0">
-            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <button 
+            className="w-6 h-6 sm:w-7 sm:h-7 bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/50 hover:bg-[#d5af7a] hover:text-[#083d07] rounded-full flex items-center justify-center transition-all shrink-0 shadow-2xs"
+            title="Adicionar ao pedido"
+          >
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
           </button>
         </div>
       </div>

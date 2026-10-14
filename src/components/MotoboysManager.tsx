@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   Bike, Plus, X, Check, AlertCircle, CheckCircle2, Edit2, Trash2,
-  RefreshCw, Phone, Wallet, RotateCcw, Lock, Power
+  RefreshCw, Phone, Wallet, RotateCcw, Lock, Power, Printer
 } from 'lucide-react';
 import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { supabase } from '../lib/supabase';
@@ -52,25 +52,25 @@ interface MotoboysManagerProps {
   onChange?: () => void;
 }
 
-type SectionTab = 'entregas' | 'motoboys' | 'fechamentos';
+type SectionTab = 'entregas' | 'motoboys' | 'fechamentos' | 'relatorio';
 type DeliveryFilter = 'todos' | 'sem' | DeliveryProvider;
 
 const ORDER_COLUMNS =
   'id, customer_name, order_type, payment_method, status, total_amount, delivery_address, delivery_zone, created_at, delivery_provider, motoboy_id, delivery_cost, motoboy_settlement_id';
 
-const formatMoney = (val: any): string => `€ ${(Number(val) || 0).toFixed(2)}`;
+const formatMoney = (val: any): string => `R$ ${(Number(val) || 0).toFixed(2).replace('.', ',')}`;
 
 const formatDateTime = (iso?: string | null): string => {
   if (!iso) return '—';
   const d = new Date(iso);
   if (isNaN(d.getTime())) return '—';
-  return `${d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit' })} ${d.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}`;
+  return `${d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
 };
 
 const formatDate = (iso?: string | null): string => {
   if (!iso) return '—';
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-PT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return isNaN(d.getTime()) ? '—' : d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 };
 
 const getPeriodRange = (period: PeriodFilterOption, start: string, end: string): { from: Date | null; to: Date | null } => {
@@ -905,7 +905,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                   <input type="tel" placeholder="Ex: 912 345 678" value={formPhone} onChange={e => setFormPhone(e.target.value)} className={inputClass} />
                 </div>
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-semibold text-stone-700">Valor por entrega (€)</label>
+                  <label className="block text-[11px] font-semibold text-stone-700">Valor por entrega (R$)</label>
                   <input type="number" step="0.01" min="0" placeholder="0.00" value={formFee} onChange={e => setFormFee(e.target.value)} className={`${inputClass} font-bold tabular-nums`} />
                 </div>
               </div>
@@ -1010,11 +1010,11 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-semibold text-stone-700">Diária / Extra (€)</label>
+                  <label className="block text-[11px] font-semibold text-stone-700">Diária / Extra (R$)</label>
                   <input type="number" step="0.01" min="0" placeholder="0.00" value={settleExtra} onChange={e => setSettleExtra(e.target.value)} className={`${inputClass} font-bold tabular-nums`} />
                 </div>
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-semibold text-stone-700">Desconto / Vale (€)</label>
+                  <label className="block text-[11px] font-semibold text-stone-700">Desconto / Vale (R$)</label>
                   <input type="number" step="0.01" min="0" placeholder="0.00" value={settleDiscount} onChange={e => setSettleDiscount(e.target.value)} className={`${inputClass} font-bold tabular-nums`} />
                 </div>
               </div>
