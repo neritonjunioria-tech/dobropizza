@@ -3,7 +3,15 @@
  * tipos de pedidos e filtros financeiros em todo o sistema.
  */
 
-export type CanonicalPaymentMethod = 'Numerário' | 'MB Way' | 'Cartão' | 'Pix' | 'Outros';
+export type CanonicalPaymentMethod = 
+  | 'Numerário' 
+  | 'Dinheiro'
+  | 'MB Way' 
+  | 'Pix' 
+  | 'Cartão de Crédito' 
+  | 'Cartão de Débito' 
+  | 'Cartão' 
+  | 'Outros';
 export type CanonicalOrderType = 'entrega' | 'retirada' | 'mesa' | 'balcao';
 
 /**
@@ -27,9 +35,26 @@ export function normalizePaymentMethod(method?: string | null): CanonicalPayment
   if (
     clean === 'mb way' ||
     clean === 'mbway' ||
-    clean === 'mb_way'
+    clean === 'mb_way' ||
+    clean === 'pix'
   ) {
-    return 'MB Way';
+    return 'Pix';
+  }
+
+  if (
+    clean.includes('crédito') ||
+    clean.includes('credito') ||
+    clean === 'credit'
+  ) {
+    return 'Cartão de Crédito';
+  }
+
+  if (
+    clean.includes('débito') ||
+    clean.includes('debito') ||
+    clean === 'debit'
+  ) {
+    return 'Cartão de Débito';
   }
 
   if (
@@ -37,17 +62,9 @@ export function normalizePaymentMethod(method?: string | null): CanonicalPayment
     clean === 'cartao' ||
     clean === 'multibanco' ||
     clean === 'tpa' ||
-    clean === 'card' ||
-    clean === 'débito' ||
-    clean === 'debito' ||
-    clean === 'crédito' ||
-    clean === 'credito'
+    clean === 'card'
   ) {
     return 'Cartão';
-  }
-
-  if (clean === 'pix') {
-    return 'Pix';
   }
 
   return 'Outros';

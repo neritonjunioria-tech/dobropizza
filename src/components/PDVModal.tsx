@@ -5,6 +5,7 @@ import { useExtras } from '../hooks/useExtras';
 import { MenuItem, ExtraIngredient } from '../data/menu';
 import { findImageForProduct } from '../utils/imageResolver';
 import { categoriesUI } from '../App';
+import { Motoboy } from '../utils/motoboys';
 import { 
   X, ArrowLeft, Search, Plus, Minus, Trash2, ShoppingBag, 
   DollarSign, CreditCard, Smartphone, Check, 
@@ -169,7 +170,7 @@ export default function PDVModal({
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [deliveryReference, setDeliveryReference] = useState('');
   const [deliveryZone, setDeliveryZone] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<'Numerário' | 'MB Way'>('MB Way');
+  const [paymentMethod, setPaymentMethod] = useState<'Pix' | 'Numerário' | 'Cartão de Crédito' | 'Cartão de Débito'>('Pix');
   const [cashAmountGiven, setCashAmountGiven] = useState<string>('');
 
   // Search & Navigation
@@ -841,7 +842,8 @@ export default function PDVModal({
 
       const payload: any = {
         cash_session_id: activeSessionId || null,
-        customer_name: customerNif.trim() ? `${customerName.trim()} (NIF: ${customerNif.trim()})` : customerName.trim(),
+        customer_name: customerNif.trim() ? `${customerName.trim()} (CPF: ${customerNif.trim()})` : customerName.trim(),
+        nif: customerNif.trim() || null,
         customer_phone: customerPhone.trim() || null,
         order_type: dbOrderType,
         payment_method: paymentMethod,
@@ -1213,7 +1215,7 @@ export default function PDVModal({
                   type="text"
                   value={customerNif}
                   onChange={e => setCustomerNif(e.target.value)}
-                  placeholder="NIF (opcional)"
+                  placeholder="CPF na nota (opcional)"
                   className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-red-500 focus:ring-1 focus:ring-red-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
                 />
                 <input
@@ -1239,7 +1241,7 @@ export default function PDVModal({
                   type="text"
                   value={customerNif}
                   onChange={e => setCustomerNif(e.target.value)}
-                  placeholder="NIF (opcional)"
+                  placeholder="CPF na nota (opcional)"
                   className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
                 />
                 <input
@@ -1266,7 +1268,7 @@ export default function PDVModal({
                     type="text"
                     value={customerNif}
                     onChange={e => setCustomerNif(e.target.value)}
-                    placeholder="NIF (opcional)"
+                    placeholder="CPF na nota (opcional)"
                     className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
                   />
                   <input
@@ -1592,7 +1594,7 @@ export default function PDVModal({
               </span>
               {paymentMethod === 'Numerário' && calculatedChange > 0 && (
                 <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-200">
-                  Troco: € {calculatedChange.toFixed(2)}
+                  Troco: R$ {calculatedChange.toFixed(2).replace('.', ',')}
                 </span>
               )}
             </div>
@@ -1627,10 +1629,10 @@ export default function PDVModal({
               <div className="bg-emerald-50/70 p-1.5 rounded border border-emerald-200/80 space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] font-mono font-bold text-emerald-900 uppercase">
-                    Recebido (€):
+                    Recebido (R$):
                   </span>
                   <div className="relative">
-                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-emerald-600 font-bold text-[10px]">€</span>
+                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-emerald-600 font-bold text-[10px]">R$</span>
                     <input
                       type="number" step="0.5"
                       value={cashAmountGiven}
@@ -1641,13 +1643,13 @@ export default function PDVModal({
                   </div>
                 </div>
                 <div className="flex gap-1 overflow-x-auto hide-scrollbar justify-end">
-                  {[5, 10, 20, 50].map(val => (
+                  {[10, 20, 50, 100].map(val => (
                     <button 
                       key={val} 
                       onClick={() => setCashAmountGiven(val.toString())} 
                       className="px-1.5 py-0.2 bg-white text-emerald-800 text-[9px] font-mono font-bold rounded border border-emerald-200 shadow-2xs cursor-pointer hover:bg-emerald-100 shrink-0"
                     >
-                      €{val}
+                      R${val}
                     </button>
                   ))}
                   <button 

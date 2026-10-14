@@ -684,7 +684,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
 
                                   {(order.nif) && (
                                     <div>
-                                      <span className="text-[10px] text-stone-400 block uppercase font-mono">NIF do Cliente:</span>
+                                      <span className="text-[10px] text-stone-400 block uppercase font-mono">CPF na nota:</span>
                                       <span className="font-mono font-bold text-stone-800">{order.nif}</span>
                                     </div>
                                   )}
@@ -901,7 +901,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                   <div><strong>Tel:</strong> {selectedReceiptOrder.customer_phone || selectedReceiptOrder.customerPhone}</div>
                 )}
                 {(selectedReceiptOrder.nif) && (
-                  <div><strong>NIF:</strong> {selectedReceiptOrder.nif}</div>
+                  <div><strong>CPF na nota:</strong> {selectedReceiptOrder.nif}</div>
                 )}
                 {(selectedReceiptOrder.delivery_address || selectedReceiptOrder.deliveryAddress) && (
                   <div className="pt-1">

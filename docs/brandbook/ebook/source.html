@@ -209,10 +209,20 @@ figcaption b { font-weight: 500; color: var(--espresso); }
 .posts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-height: 0; }
 .posts figure img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
 
-.board { aspect-ratio: 8 / 3; width: 100%; background: var(--linho); display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
-.board .t { padding: 5%; display: grid; align-content: space-between; }
-.board .t .h { font-family: var(--serif); color: var(--verde); font-size: 21px; line-height: 1.1; }
-.board img { width: 100%; height: 100%; object-fit: cover; }
+.board { aspect-ratio: 8 / 3; width: 100%; background: var(--linho); display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); overflow: hidden; }
+.board .t { padding: 6% 7%; display: grid; grid-template-rows: auto 1fr auto; gap: 10px; min-height: 0; }
+.board .t .logo { width: 42%; fill: var(--verde); }
+.board .t .h { align-self: center; font-family: var(--serif); color: var(--verde); font-size: 25px; line-height: 1.12; letter-spacing: -.01em; max-width: 15ch; }
+.board .t .cta { font-size: 8px; letter-spacing: .24em; text-transform: uppercase; font-weight: 600; color: var(--terra); padding-top: 9px; border-top: 1px solid rgba(116,82,64,.3); }
+.board img { width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: center 45%; }
+.rows.tri { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 24px; align-items: start; }
+.rows.tri .row { align-content: start; align-items: start; gap: 10px; border-bottom: 0; }
+.ooh { margin: 0; }
+.ooh figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; font-size: 8px; letter-spacing: .22em; text-transform: uppercase; color: var(--terra); }
+.ooh figcaption span:first-child { font-weight: 600; color: var(--verde); }
+.ooh-lead { max-width: 46ch; margin: -6px 0 22px; font-size: 13px; line-height: 1.6; color: var(--terra); }
+.ooh-foot { display: grid; grid-template-columns: 130px 1fr; gap: 40px; align-items: start; margin-top: 30px; }
+.ooh-foot .rows { padding-top: 4px; }
 .totem { width: 130px; aspect-ratio: 1 / 2.6; background: var(--verde); display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
 .totem .logo { fill: var(--linho); margin: 16px 12px; width: auto; }
 .totem img { width: 100%; height: 100%; object-fit: cover; min-height: 0; }
@@ -231,8 +241,15 @@ figcaption b { font-weight: 500; color: var(--espresso); }
 .check li { display: grid; grid-template-columns: 22px 1fr; gap: 6px; font-size: 12px; line-height: 1.5; }
 .check li::before { content: ''; width: 11px; height: 11px; border: 1px solid currentColor; margin-top: 3px; opacity: .8; }
 
-.closing { grid-template-rows: 1fr; place-items: center; text-align: center; }
-.closing .logo { width: 320px; fill: var(--linho); }
+.page.dark.closing { position: relative; display: block; padding: 0; overflow: hidden; background: #050505; color: var(--linho); }
+.closing > .bgimg { position: absolute; left: 0; top: 0; width: 100%; height: auto; }
+.closing .foot { position: absolute; left: 0; right: 0; bottom: 56px; display: grid; justify-items: center; gap: 14px; text-align: center; }
+.closing .foot .logo { width: 230px; fill: var(--linho); margin-bottom: 8px; }
+.closing .foot .tag { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--trigo); }
+.closing .foot .rule { width: 44px; height: 1px; background: var(--trigo); opacity: .7; }
+.closing .foot span { font-size: 10px; letter-spacing: .5em; padding-left: .5em; font-weight: 500; color: var(--linho); }
+.closing .sign { position: absolute; right: 40px; bottom: 24px; font-size: 7.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--linho); opacity: .45; }
+.closing .sign b { font-weight: 600; }
 
 @media screen and (max-width: 700px) {
   :root { --pad-x: 22px; --pad-t: 30px; --pad-b: 26px; }
@@ -541,7 +558,7 @@ figcaption b { font-weight: 500; color: var(--espresso); }
     <div class="scale">
       <div><span class="label">Título</span><span style="font-family:var(--serif);font-size:30px;line-height:1.1;color:var(--verde)">Massa com tempo</span></div>
       <div><span class="label">Assinatura</span><span style="font-family:var(--serif);font-style:italic;font-size:19px;color:var(--terra)">o dobro de sabor.</span></div>
-      <div><span class="label">Produto</span><span style="font-weight:500;font-size:16px">Calabresa Hot Honey <span style="color:var(--verde);font-variant-numeric:tabular-nums">€ 00,00</span></span></div>
+      <div><span class="label">Produto</span><span style="font-weight:500;font-size:16px">Calabresa Hot Honey <span style="color:var(--verde);font-variant-numeric:tabular-nums">R$ 69,90</span></span></div>
       <div><span class="label">Descrição</span><span style="font-family:var(--serif);font-style:italic;font-size:13.5px;color:var(--terra)">Calabresa defumada, mozzarella e mel picante da casa.</span></div>
       <div><span class="label">Rótulo</span><span class="label" style="color:var(--espresso)">Fermentação lenta · 48 a 72 h</span></div>
     </div>
@@ -634,11 +651,11 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   <div class="folio"><span>09 — Sacola de delivery · Proposta</span><span>20</span></div>
   <div class="content fill">
     <h2>A frase certa na chegada.</h2>
-    <div class="two" style="min-height:0;grid-template-columns:1.1fr .9fr;align-items:center">
-      <img src="img/sacola.webp" alt="Sacola de delivery DOBRO, mockup ilustrativo" style="width:100%;height:auto;display:block">
-      <div class="rows">
-        <div class="row" style="grid-template-columns:1fr"><span class="k">Frente</span><p>Logo, ilustração linear da pizza na pá, "Crocante, como deve chegar." e faixa verde com a assinatura.</p></div>
-        <div class="row" style="grid-template-columns:1fr"><span class="k">Lateral</span><p>"Feita com tempo." e "Fermentação lenta · 48 a 72 h".</p></div>
+    <div style="display:grid;gap:26px;min-height:0;align-content:start">
+      <img class="sh" src="img/sacola.webp" alt="Sacola de delivery DOBRO, mockup ilustrativo" style="width:100%;height:auto;display:block">
+      <div class="rows tri">
+        <div class="row" style="grid-template-columns:1fr"><span class="k">Frente</span><p>Logo oficial no topo, ilustração linear da entrega e faixa Verde Floresta com "Crocante, como deve chegar."</p></div>
+        <div class="row" style="grid-template-columns:1fr"><span class="k">Lateral</span><p>"feita com tempo" em Lora itálico na vertical, fio dourado e base verde com @dobropizza.</p></div>
         <div class="row" style="grid-template-columns:1fr"><span class="k">Material <span class="mark">◇</span></span><p>Kraft a partir de 80 g/m², fundo quadrado, flexografia em 1 ou 2 cores. Fecho com lacre.</p></div>
       </div>
     </div>
@@ -699,11 +716,11 @@ figcaption b { font-weight: 500; color: var(--espresso); }
         <svg class="logo" viewBox="0 0 950.4 205" aria-hidden="true"><use href="#lg" width="950.4" height="205"/></svg>
         <div class="sec">Assinaturas da casa</div>
         <div>
-          <div class="mi"><b>Calabresa Hot Honey</b><span>€ 00</span><p>Calabresa defumada tostada, mozzarella e mel picante da casa.</p></div>
-          <div class="mi"><b>Pera &amp; Mel</b><span>€ 00</span><p>Gorgonzola, pera fresca, nozes e mel de laranjeira.</p></div>
-          <div class="mi"><b>Linguiça Blumenau</b><span>€ 00</span><p>Linguiça defumada artesanal, pomodoro, cebola roxa e alecrim.</p></div>
-          <div class="mi"><b>Zucchini Al Forno</b><span>€ 00</span><p>Abobrinha no azeite, parmesão e raspas de limão siciliano.</p></div>
-          <div class="mi"><b>Clássica Dobro</b><span>€ 00</span><p>Tomates pelados, mozzarella, tomatinhos confitados e manjericão.</p></div>
+          <div class="mi"><b>Calabresa Hot Honey</b><span>R$ 69,90</span><p>Calabresa defumada tostada, mozzarella e mel picante da casa.</p></div>
+          <div class="mi"><b>Pera &amp; Mel</b><span>R$ 74,90</span><p>Gorgonzola, pera fresca, nozes e mel de laranjeira.</p></div>
+          <div class="mi"><b>Linguiça Blumenau</b><span>R$ 72,90</span><p>Linguiça defumada artesanal, pomodoro, cebola roxa e alecrim.</p></div>
+          <div class="mi"><b>Zucchini Al Forno</b><span>R$ 64,90</span><p>Abobrinha no azeite, parmesão e raspas de limão siciliano.</p></div>
+          <div class="mi"><b>Clássica Dobro</b><span>R$ 62,90</span><p>Tomates pelados, mozzarella, tomatinhos confitados e manjericão.</p></div>
         </div>
         <span style="text-align:center;font-family:var(--serif);font-style:italic;font-size:8.5px;color:var(--terra)">Massa de fermentação lenta · 48 a 72 h</span>
       </div>
@@ -763,14 +780,18 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   <div class="folio"><span>13 — Publicidade externa · Proposta</span><span>27</span></div>
   <div class="content">
     <h2>Lido em três segundos.</h2>
-    <div class="board sh">
-      <div class="t"><svg class="logo" style="width:46%" viewBox="0 0 950.4 205" aria-hidden="true"><use href="#lg" width="950.4" height="205"/></svg><span class="h">A vida é curta demais para pizza comum.</span><span class="label" style="font-size:7.5px">Peça pelo cardápio digital</span></div>
-      <img src="img/classica.webp" alt="Clássica Dobro">
-    </div>
-    <div class="two" style="grid-template-columns:auto 1fr;align-items:center">
-      <div class="totem sh"><svg class="logo" viewBox="0 0 950.4 205" aria-hidden="true"><use href="#lg" width="950.4" height="205"/></svg><img src="img/hothoney.webp" alt=""><small>FORNO ACESO</small></div>
+    <p class="lead ooh-lead">Uma marca, uma frase, uma pizza. Quem passa de carro precisa entender tudo antes do semáforo abrir.</p>
+    <figure class="ooh">
+      <div class="board sh">
+        <div class="t"><svg class="logo" viewBox="0 0 950.4 205" aria-hidden="true"><use href="#lg" width="950.4" height="205"/></svg><span class="h">A vida é curta demais para pizza comum.</span><span class="cta">Peça pelo cardápio digital</span></div>
+        <img src="img/blumenau.webp" alt="Pizza Blumenau DOBRO na pá de madeira">
+      </div>
+      <figcaption><span>Outdoor</span><span>8 × 3 m</span></figcaption>
+    </figure>
+    <div class="ooh-foot">
+      <figure class="ooh"><div class="totem sh"><svg class="logo" viewBox="0 0 950.4 205" aria-hidden="true"><use href="#lg" width="950.4" height="205"/></svg><img src="img/hothoney.webp" alt=""><small>FORNO ACESO</small></div><figcaption><span>Totem</span><span>0,60 × 1,60 m</span></figcaption></figure>
       <div class="rows">
-        <div class="row" style="grid-template-columns:1fr"><span class="k">Hierarquia</span><p>Marca, frase de até 7 palavras, produto real, chamada. Sem preço, endereço longo ou QR code.</p></div>
+        <div class="row" style="grid-template-columns:1fr"><span class="k">Hierarquia</span><p>1 · Marca &nbsp; 2 · Frase de até 7 palavras &nbsp; 3 · Produto real &nbsp; 4 · Chamada. Sem preço, endereço longo ou QR code.</p></div>
         <div class="row" style="grid-template-columns:1fr"><span class="k">Outdoor <span class="mark">◇</span></span><p>Referência 8 × 3 m; confirmar área útil com a exibidora.</p></div>
         <div class="row" style="grid-template-columns:1fr"><span class="k">Totem <span class="mark">◇</span></span><p>Referência 0,60 × 1,60 m, base verde, logo negativo no topo.</p></div>
       </div>
@@ -874,11 +895,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
 
 <!-- 32 CONTRACAPA -->
 <section class="page dark closing">
-  <div class="stack" style="justify-items:center;gap:22px">
-    <svg class="logo" viewBox="0 0 950.4 205" aria-label="DOBRO Pizzas"><use href="#lg" width="950.4" height="205"/></svg>
-    <p class="lede" style="font-style:italic;color:var(--trigo)">O dobro de sabor.</p>
-    <p class="label" style="color:var(--nude)">Brandbook · Edição 02 · 2026</p>
-  </div>
+  <img class="bgimg" src="img/contracapa.webp" alt="Pizzaiolo DOBRO segurando a pizza Zucchini na tábua">
+  <div class="foot"><svg class="logo" viewBox="0 0 950.4 205" aria-label="DOBRO Pizzas"><use href="#lg" width="950.4" height="205"/></svg><p class="tag">O dobro de sabor.</p><i class="rule"></i><span>BRAND BOOK 2026</span></div>
+  <span class="sign">Criado por <b>WN Digital</b></span>
 </section>
 
 </main>

@@ -267,7 +267,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
       lucideIcon: CreditCard,
       conversionFromPrev: data.addedToCart > 0 ? Math.round((data.initiatedCheckout / data.addedToCart) * 100) : 0,
       dropoff: data.addedToCart > 0 ? Math.max(0, 100 - Math.round((data.initiatedCheckout / data.addedToCart) * 100)) : 0,
-      description: 'Etapa decisiva: clientes revisando valores, frete e escolhendo MBWay, Numerário ou Cartão.',
+      description: 'Etapa decisiva: clientes revisando valores, frete e escolhendo Pix, Dinheiro, Cartão de Crédito ou Débito.',
       actionNote: 'Mantenha taxas de entrega claras e troco facilitado para eliminar desistências no último passo.'
     },
     {
@@ -293,27 +293,12 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
     <div className="space-y-6 max-w-7xl mx-auto pb-12 font-sans">
       
       {/* ────────────────── CABEÇALHO PADRÃO BALCÃO DE COMANDA COM FILTRO UNIFICADO ────────────────── */}
-      <div className="bg-white rounded-2xl border border-stone-200/90 shadow-2xs p-4 sm:p-5">
+      <div className="bg-[#FDFBF7] rounded-2xl border border-[#E8D8D1] shadow-2xs p-4 sm:px-6 sm:py-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#083d07] text-white flex items-center justify-center shadow-2xs border border-[#0b520a]">
-              <Filter size={18} className="transform rotate-180 text-rose-500" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-black text-stone-900 tracking-tight">
-                  Funil de Vendas & Jornada do Cliente
-                </h1>
-                <span className="hidden md:inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-stone-100 text-stone-700 border border-stone-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
-                  Telemetria em Produção
-                </span>
-              </div>
-              <p className="text-xs text-stone-500 font-sans mt-0.5">
-                Acompanhamento da jornada de compra no cardápio digital oficial DOBRO Pizzas
-              </p>
-            </div>
+          <div>
+            <h1 className="text-base sm:text-lg font-bold text-[#44210F] tracking-tight">
+              Funil de Venda
+            </h1>
           </div>
 
           {/* Filtro de Período Compacto Padronizado (Mesmo padrão de Despesas) */}

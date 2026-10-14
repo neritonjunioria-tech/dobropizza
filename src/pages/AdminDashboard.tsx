@@ -3004,7 +3004,7 @@ export default function AdminDashboard() {
                         type="text"
                         value={ordersSearchTerm}
                         onChange={(e) => setOrdersSearchTerm(e.target.value)}
-                        placeholder="Buscar por Nº, cliente, NIF..."
+                        placeholder="Buscar por Nº, cliente, CPF..."
                         className="w-full pl-8 pr-7 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-400 transition-all"
                       />
                       {ordersSearchTerm && (
@@ -3212,7 +3212,7 @@ export default function AdminDashboard() {
                                   <span className="font-bold text-stone-800">{order.paymentMethod || 'Numerário'}</span>
                                   {order.nif && (
                                     <span className="text-[10px] font-bold bg-stone-100 text-stone-600 px-1 rounded border border-stone-200">
-                                      NIF: {order.nif}
+                                      CPF: {order.nif}
                                     </span>
                                   )}
                                 </div>
@@ -3465,7 +3465,7 @@ export default function AdminDashboard() {
                                     )}
                                     {order.nif && (
                                       <span className="px-1 bg-stone-100 rounded text-[10px] font-bold border border-stone-200">
-                                        NIF: {order.nif}
+                                        CPF: {order.nif}
                                       </span>
                                     )}
                                   </div>
@@ -4515,7 +4515,7 @@ export default function AdminDashboard() {
                 {/* Customer Info (Notes / Address) */}
                 <div style={{ marginBottom: '6px' }}>
                   {printOrder.customerPhone && <p style={{ margin: '0 0 1px 0', fontSize: '11px', fontWeight: 'bold' }}>Tel: {printOrder.customerPhone}</p>}
-                  {printOrder.nif && <p style={{ margin: '0 0 1px 0', fontSize: '11px', fontWeight: 'bold' }}>NIF: {printOrder.nif}</p>}
+                  {printOrder.nif && <p style={{ margin: '0 0 1px 0', fontSize: '11px', fontWeight: 'bold' }}>CPF: {printOrder.nif}</p>}
                   {(printOrder.orderType === 'Delivery' || printOrder.orderType === 'entrega') && printOrder.deliveryAddress && (
                     <>
                       <p style={{ margin: '2px 0 1px 0', fontSize: '11px', fontWeight: 'normal' }}>{printOrder.deliveryAddress}</p>
@@ -4664,7 +4664,7 @@ export default function AdminDashboard() {
             {/* Customer Info (Notes / Address) */}
             <div style={{ marginBottom: '8px' }}>
               {printOrder.customerPhone && <p style={{ margin: '0 0 2px 0', fontSize: '11pt', fontWeight: 'bold' }}>Tel: {printOrder.customerPhone}</p>}
-              {printOrder.nif && <p style={{ margin: '0 0 2px 0', fontSize: '11pt', fontWeight: 'bold' }}>NIF: {printOrder.nif}</p>}
+              {printOrder.nif && <p style={{ margin: '0 0 2px 0', fontSize: '11pt', fontWeight: 'bold' }}>CPF: {printOrder.nif}</p>}
               {(printOrder.orderType === 'Delivery' || printOrder.orderType === 'entrega') && printOrder.deliveryAddress && (
                 <>
                   <p style={{ margin: '3px 0 2px 0', fontSize: '10pt', fontWeight: 'normal' }}>{printOrder.deliveryAddress}</p>
@@ -4808,9 +4808,9 @@ export default function AdminDashboard() {
 
 function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, menuItems: any[], onClose: () => void, onSave: (updatedOrder: any) => Promise<void> }) {
   const rawCustomerName = (order.customerName || order.customer_name || '').toString();
-  const nifMatch = rawCustomerName.match(/\(NIF:\s*([^)]+)\)/i);
+  const nifMatch = rawCustomerName.match(/\((?:NIF|CPF):\s*([^)]+)\)/i);
   const initialNif = (order.nif || (nifMatch ? nifMatch[1] : '')).toString().trim();
-  const cleanName = rawCustomerName.replace(/\s*\(NIF:\s*[^)]+\)/i, '').trim();
+  const cleanName = rawCustomerName.replace(/\s*\((?:NIF|CPF):\s*[^)]+\)/i, '').trim();
 
   const [customerName, setCustomerName] = useState(cleanName);
   const [customerNif, setCustomerNif] = useState(initialNif);
@@ -5381,7 +5381,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
     e.preventDefault();
     setSaving(true);
     const finalCustomerName = customerNif.trim() 
-      ? `${customerName.trim()} (NIF: ${customerNif.trim()})`
+      ? `${customerName.trim()} (CPF: ${customerNif.trim()})`
       : customerName.trim();
 
     const updatedPayload = {
@@ -5557,7 +5557,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                   />
                 </div>
                 <div className="space-y-0.5">
-                  <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">NIF (Opcional)</label>
+                  <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">CPF na nota (Opcional)</label>
                   <input
                     type="text"
                     value={customerNif}
