@@ -8,8 +8,9 @@ Ela começou como cópia do projeto de outro cliente (41 Menus), mas **não tem 
 | Serviço | Destino da DOBRO |
 |---|---|
 | GitHub | `neritonjunioria-tech/dobropizza` (remote `origin`) |
-| Netlify | conta **neritonjunioria@gmail.com**, onde só existe o site da DOBRO |
+| Netlify | conta **neritonjunioria@gmail.com** (`https://dobropizzasdelivery.netlify.app`) |
 | Supabase | projeto `dobropizza`, ref `yexlnjznkxthffklovql` |
+
 
 ## Proibido
 
