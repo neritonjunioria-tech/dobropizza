@@ -157,9 +157,8 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
         
         <div className="p-5 overflow-y-auto">
            <p className="text-gray-500 text-sm mb-2 leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100">{item.ingredients}</p>
-           <p className="text-[11px] text-gray-400 mb-1">Contém: Glúten, leite e derivados.</p>
-           {item.id.startsWith('p-') && (
-             <p className="text-[11px] text-gray-400 mb-6">Todas as pizzas são finalizadas com orégano.</p>
+           {item.category !== 'bebidas' && (
+             <p className="text-[11px] text-gray-400 mb-6">Contém: Glúten, leite e derivados.</p>
            )}
            {!item.id.startsWith('p-') && <div className="mb-6" />}
            {(item.id === 'md-2-esfirra' || isMondayPromoPizza) && (
