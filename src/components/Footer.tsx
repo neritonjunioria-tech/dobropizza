@@ -10,13 +10,11 @@ export default function Footer() {
           {/* Coluna 1: Marca & Conceito */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#fdfbf7] p-1 flex items-center justify-center shrink-0">
-                <img
-                  src="/dobro/logo-dobro.png"
-                  alt="DOBRO Pizzas"
-                  className="w-full h-full object-contain"
-                />
-              </div>
+              <img
+                src="/dobro/logo-dobro-circulo.png"
+                alt="DOBRO Pizzas"
+                className="w-10 h-10 rounded-full object-cover shrink-0"
+              />
               <span className="font-semibold text-lg text-white tracking-tight font-sans">
                 DOBRO <span className="text-[#d5af7a] font-normal">Pizzas</span>
               </span>

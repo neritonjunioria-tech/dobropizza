@@ -310,9 +310,9 @@ function App() {
           <div className="flex justify-between items-center gap-2 w-full md:w-auto">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <img 
-                src="/dobro/logo-dobro.png" 
-                alt="DOBRO Pizzas" 
-                className="h-10 w-10 shrink-0 object-contain rounded-full border border-[#e8d8d1] bg-[#e8d8d1]/30 p-1"
+                src="/dobro/logo-dobro-circulo.png"
+                alt="DOBRO Pizzas"
+                className="h-11 w-11 shrink-0 rounded-full object-cover shadow-sm"
               />
               <div className="font-bold text-xl sm:text-2xl drop-shadow-sm text-[#083d07] tracking-tight flex items-baseline gap-1 whitespace-nowrap">
                 DOBRO <span className="hidden min-[360px]:inline text-[#d5af7a] text-base sm:text-lg font-medium">Pizzas</span>
