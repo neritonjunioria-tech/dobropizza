@@ -19,11 +19,11 @@ export interface MenuItem {
 }
 
 export const menuData: MenuItem[] = [
-  // --- MAIS VENDIDAS (TRADICIONAIS DOBRO) ---
+  // --- MAIS VENDIDAS ---
   {
     id: 'p-dobro-classica',
-    name: 'Clássica Dobro',
-    ingredients: 'Massa artesanal 28cm de fermentação lenta, molho rústico de tomates pelados, mozzarella farta, tomatinhos cereja confitados e folhas frescas de manjericão aromático.',
+    name: 'Clássica',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, tomatinhos, manjericão e orégano.',
     priceSingle: 38.0,
     category: 'mais-pedidos',
     imageUrl: '/dobro/classica.jpeg',
@@ -32,7 +32,7 @@ export const menuData: MenuItem[] = [
   {
     id: 'p-dobro-hothoney',
     name: 'Calabresa Hot Honey',
-    ingredients: 'Massa artesanal 28cm de fermentação lenta, molho pomodoro rústico, mozzarella especial, rodelas tostadas de calabresa defumada nobre e infusão exclusiva de mel picante da casa (Hot Honey).',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, calabresa, molho de mel com pimenta calabresa.',
     priceSingle: 42.0,
     category: 'mais-pedidos',
     imageUrl: '/dobro/calabresa-hot-honey.jpeg',
@@ -40,8 +40,8 @@ export const menuData: MenuItem[] = [
   },
   {
     id: 'p-dobro-calabresacream',
-    name: 'Calabresa com Cream Cheese',
-    ingredients: 'Massa artesanal 28cm de fermentação lenta, molho de tomate caseiro, mozzarella especial em ponto de ouro, calabresa defumada artesanal e generosas gotas de cream cheese cremoso gratinadas no forno.',
+    name: 'Calabresa e Cream Cheese',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, calabresa, cream cheese e orégano.',
     priceSingle: 39.0,
     category: 'mais-pedidos',
     imageUrl: '/dobro/calabresa-cream-cheese.jpeg',
@@ -56,21 +56,39 @@ export const menuData: MenuItem[] = [
     imageUrl: '/dobro/4-queijos.jpeg',
     isBestseller: true
   },
+  {
+    id: 'p-dobro-peperoni',
+    name: 'Peperoni',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, peperoni e orégano.',
+    priceSingle: 38.0,
+    category: 'mais-pedidos',
+    imageUrl: '/dobro/peperoni.jpeg',
+    isBestseller: true
+  },
+  {
+    id: 'p-dobro-jilo',
+    name: 'Jiló',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, jiló cozido, bacon e orégano.',
+    priceSingle: 38.0,
+    category: 'mais-pedidos',
+    imageUrl: '/dobro/jilo.jpeg',
+    isBestseller: true
+  },
 
   // --- PIZZAS PREMIUM DOBRO ---
   {
     id: 'p-dobro-blumenau',
-    name: 'Linguiça Blumenau Artesanal',
-    ingredients: 'Massa artesanal 28cm de fermentação lenta, autêntica linguiça Blumenau defumada artesanalmente e assada no forno, molho pomodoro fresco, mozzarella derretida, cebola roxa finamente fatiada e alecrim fresco.',
+    name: 'Blumenau',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, linguiça Blumenau, parmesão e orégano.',
     priceSingle: 42.0,
     category: 'premium',
     imageUrl: '/dobro/blumenau.jpeg',
     isBestseller: false
   },
   {
-    id: 'p-dobro-jilo',
-    name: 'Jiló Especial',
-    ingredients: 'Massa artesanal 28cm de fermentação lenta, lâminas finas de jiló confitadas no azeite extravirgem, mozzarella cremosa, lascas de queijo e raspas aromáticas de limão siciliano.',
+    id: 'p-dobro-zucchini',
+    name: 'Zuchinni',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, fatias de abobrinha italiana flambada no azeite com tomilho, parmesão e orégano.',
     priceSingle: 44.0,
     category: 'premium',
     imageUrl: '/dobro/zucchini.jpeg',
@@ -78,8 +96,8 @@ export const menuData: MenuItem[] = [
   },
   {
     id: 'p-dobro-peramel',
-    name: 'Pera & Mel',
-    ingredients: 'Massa artesanal 28cm de fermentação lenta, base aveludada de queijo gorgonzola e mozzarella selecionada, lâminas frescas de pera, nozes crocantes e fio generoso de mel puro de flor de laranjeira.',
+    name: 'Pêra e Mel',
+    ingredients: 'Massa Dobro Longa Fermentação, mel, mussarela, fatias de pera, gorgonzola, finalizada com mel.',
     priceSingle: 45.0,
     category: 'premium',
     imageUrl: '/dobro/pera-mel.jpeg',
@@ -87,11 +105,20 @@ export const menuData: MenuItem[] = [
   },
   {
     id: 'p-dobro-avelamorango',
-    name: 'Avelã, Morango & Amor',
-    ingredients: 'Massa doce artesanal 28cm crocante, camada farta do mais puro creme nobre de cacau e avelãs, fatias frescas de morangos suculentos selecionados e lascas tostadas de amêndoas.',
+    name: 'Avelã, Morango e Amor',
+    ingredients: 'Massa Dobro Longa Fermentação, geleia de morango dobro, creme de avelã, morango fresco.',
     priceSingle: 42.0,
     category: 'premium',
     imageUrl: '/dobro/avela-morango-amor.jpeg',
+    isBestseller: false
+  },
+  {
+    id: 'p-dobro-roja',
+    name: 'Roja',
+    ingredients: 'Massa Dobro Longa Fermentação, geléia de frutas vermelhas levemente apimentada, mussarela, gorgonzola.',
+    priceSingle: 42.0,
+    category: 'premium',
+    imageUrl: '/dobro/roja.jpeg',
     isBestseller: false
   },
 
@@ -99,7 +126,7 @@ export const menuData: MenuItem[] = [
   {
     id: 's-dobro-elisabet',
     name: 'Sanduba Elisabet',
-    ingredients: 'Massa artesanal de pizza Dobro assada na hora, fatias suculentas de rosbife com tempero especial da casa, maionese artesanal da casa, salsa criolla fresca, alface americana crocante e toque de cebolinha verde.',
+    ingredients: 'Massa Dobro Longa Fermentação, rosbeef, maionese da casa,salsa criolla, alface americana, cebolinha verde.',
     priceSingle: 32.0,
     category: 'sandubas',
     imageUrl: '/dobro/sanduba-elisabet.jpeg',
@@ -108,7 +135,7 @@ export const menuData: MenuItem[] = [
   {
     id: 's-dobro-parma',
     name: 'Sanduba de Parma',
-    ingredients: 'Massa artesanal de pizza Dobro assada na hora, lâminas de presunto de Parma nobre, mussarela de búfala fresca, molho pesto artesanal aromático, tomatinhos cereja confit e rúcula fresca selecionada.',
+    ingredients: 'Massa Dobro Longa Fermentação, molho pesto, rúcula, tomate confit, mussarela de búfala, presunto parma e raspas de limão siciliano',
     priceSingle: 35.0,
     category: 'sandubas',
     imageUrl: '/dobro/sanduba-parma.jpeg',
