@@ -19,7 +19,7 @@ import { CartItem } from "./types";
 import { playVictorySound } from "./utils/sound";
 import { getLisbonDate } from "./utils/date";
 import { hapticLight, hapticMedium, hapticSuccess } from "./utils/haptics";
-import { Search, Plus, ShoppingBag, X, Instagram, MapPin, ChevronDown, ArrowUp } from "lucide-react";
+import { Search, Plus, ShoppingBag, X, Instagram, MapPin, ChevronDown, ArrowUp, Flame, Star, Sandwich, CupSoda, Pizza, Leaf, Cake, Tag, CalendarDays, type LucideIcon } from "lucide-react";
 import Cart from "./components/Cart";
 import MenuItemCard from "./components/MenuItemCard";
 import PizzaModal from "./components/PizzaModal";
@@ -32,29 +32,45 @@ import MenuDoDiaModal from "./components/MenuDoDiaModal";
 export const categoriesUI = [
     {
       id: "mais-pedidos",
-      label: "MAIS VENDIDAS 🔥",
+      label: "MAIS VENDIDAS",
       sub: "Os sabores favoritos da Dobro",
       group: ["mais-pedidos"],
     },
     {
       id: "premium",
-      label: "PREMIUM ⭐",
+      label: "PREMIUM",
       sub: "Massa artesanal 28cm e receitas autorais exclusivas",
       group: ["premium", "tradicionais"],
     },
     {
       id: "sandubas",
-      label: "SANDUBAS 🥪",
+      label: "SANDUBAS",
       sub: "Sanduíches artesanais na massa da casa",
       group: ["sandubas"],
     },
     {
       id: "bebidas",
-      label: "BEBIDAS 🥤",
+      label: "BEBIDAS",
       sub: "Refrigerantes e águas geladas",
       group: ["bebidas"],
     },
   ];
+
+// Line icons shown next to each category title (emojis typed in the admin are stripped from the label)
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  "mais-pedidos": Flame,
+  premium: Star,
+  especiais: Star,
+  gourmet: Star,
+  tradicionais: Pizza,
+  sandubas: Sandwich,
+  bebidas: CupSoda,
+  vegetarianas: Leaf,
+  doces: Cake,
+  promocoes: Tag,
+  "menu-do-dia": CalendarDays,
+};
+const stripEmoji = (s: string) => s.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, "").replace(/\s{2,}/g, " ").trim();
 
 import { useAnalytics } from './hooks/useAnalytics';
 
@@ -219,7 +235,7 @@ function App() {
       if (!tabsMap[tabId]) {
         tabsMap[tabId] = {
           id: tabId,
-          label: cat.display_label || cat.name.toUpperCase(),
+          label: stripEmoji(cat.display_label || cat.name.toUpperCase()),
           sub: cat.display_sub || "",
           group: [],
           order: cat.order_index ?? 999,
@@ -438,8 +454,12 @@ function App() {
               return (
                 <div key={cat.id} id={`cat-${cat.id}`} className="scroll-mt-36">
                     <>
-                      <h2 className="text-[26px] font-extrabold text-[#1a1a1a] mb-1">
+                      <h2 className="text-[26px] font-extrabold text-[#1a1a1a] mb-1 flex items-center gap-2.5">
                         {cat.label}
+                        {(() => {
+                          const Icon = CATEGORY_ICONS[cat.id] ?? CATEGORY_ICONS[cat.group[0]];
+                          return Icon ? <Icon className="w-[22px] h-[22px] text-[#083D07] shrink-0" strokeWidth={1.75} aria-hidden="true" /> : null;
+                        })()}
                       </h2>
                       <p className="text-gray-500 mb-6 text-[15px] font-medium">
                         {cat.sub}

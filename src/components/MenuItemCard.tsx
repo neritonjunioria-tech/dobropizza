@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus } from "lucide-react";
+import { Plus, Flame } from "lucide-react";
 import { MenuItem } from "../types";
 import { getLisbonDate } from "../utils/date";
 import { findImageForProduct } from "../utils/imageResolver";
@@ -103,7 +103,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
           <h3 className={`font-bold ${catId === "mais-pedidos" ? "text-[14px]" : "text-[16px]"} text-[#44210f] mb-1 leading-tight`}>
             {item.name}
           </h3>
-          <p className={`${catId === "mais-pedidos" ? "text-[11px]" : "text-[13px]"} text-[#745240] line-clamp-3 leading-relaxed mb-4`}>
+          <p className={`${catId === "mais-pedidos" ? "text-[11px]" : "text-[12px]"} text-[#745240] leading-snug mb-4`}>
             {item.ingredients}
           </p>
           <div className="mt-auto flex items-center justify-between">
@@ -131,12 +131,12 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
       )}
       {catId === "menu-do-dia" && item.dayOfWeek === getLisbonDate().getDay() && (
         <div className="absolute top-0 right-0 bg-[#F6E3DF] text-[#44210F] border-b border-l border-[#E4C5B9] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-2xs animate-pulse">
-          🔥 HOJE
+          <span className="inline-flex items-center gap-1"><Flame className="w-3 h-3" strokeWidth={2} aria-hidden="true" />HOJE</span>
         </div>
       )}
       {(item.isBestseller || catId === "mais-pedidos" || item.category === "mais-pedidos") && (
         <div className="absolute top-0 right-0 bg-[#E8D8D1] text-[#083D07] border-b border-l border-[#D5AF7A]/60 text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-2xs">
-          🔥 Mais Vendida
+          <span className="inline-flex items-center gap-1"><Flame className="w-3 h-3" strokeWidth={2} aria-hidden="true" />Mais Vendida</span>
         </div>
       )}
       <div className={`flex-1 flex flex-col justify-between h-full ${hasPhoto ? "min-h-[92px] sm:min-h-[112px]" : "min-h-[76px] sm:min-h-[88px]"}`}>
@@ -147,7 +147,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
             {item.name}
           </h3>
           <p
-            className={`${catId === "mais-pedidos" ? "text-[10.5px] sm:text-[11px]" : "text-[11.5px] sm:text-[13px]"} text-[#745240] line-clamp-2 leading-relaxed pr-1.5 mt-0.5`}
+            className={`${catId === "mais-pedidos" ? "text-[10px] sm:text-[11px]" : "text-[11px] sm:text-[12px]"} text-[#745240] leading-snug break-words pr-1.5 mt-0.5`}
           >
             {item.ingredients}
           </p>
