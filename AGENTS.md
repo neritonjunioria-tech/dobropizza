@@ -21,6 +21,13 @@ Ela começou como cópia do projeto de outro cliente (41 Menus), mas **não tem 
 - Rodar `netlify deploy`, `netlify link` ou `netlify init` a partir deste computador sem antes conferir com `netlify status` que a conta logada é **neritonjunioria@gmail.com** e que o site é o da DOBRO. O Netlify CLI deste PC pode estar logado na conta de outro cliente.
 - Adicionar remotes de Git de outros projetos ou fazer push para qualquer remote que não seja `origin`.
 - Copiar pastas `.git` ou `.netlify` de outros projetos para cá.
+- **Ativar ou ligar o n8n** (workflows, webhooks ou o status `bot_active`) do agente de IA **Jéssica** sem a autorização prévia e explícita do usuário.
+
+## Agente de IA (Jéssica) e Automação n8n
+
+1. **Identidade**: A atendente virtual de IA da DOBRO Pizzas chama-se **Jéssica**.
+2. **Trava de Segurança n8n**: É terminantemente proibido ativar o n8n, publicar ou habilitar workflows da Jéssica, disparar mensagens em massa ou alternar `bot_active` sem comando e consentimento explícito do usuário.
+3. Todo e qualquer fluxo de n8n deve permanecer desligado/desativado por padrão até ordem expressa do usuário.
 
 ## Como publicar
 
@@ -32,3 +39,4 @@ Ela começou como cópia do projeto de outro cliente (41 Menus), mas **não tem 
 
 - Nomes e descrições de produtos: use exatamente o texto que o usuário enviar, sem corrigir nem reescrever.
 - Moeda: real brasileiro (R$). A loja fica em São José dos Pinhais — PR, Brasil.
+

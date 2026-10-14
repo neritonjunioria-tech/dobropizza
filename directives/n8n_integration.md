@@ -1,7 +1,11 @@
 # Integração n8n e Agente de IA
 
 ## Objetivo
-Configurar o botão de Human Handover (Liga/Desliga do robô) e integrar os pedidos recebidos pela IA (Giovanna) diretamente no Gestor de Pedidos.
+Configurar o botão de Human Handover (Liga/Desliga do robô) e integrar os pedidos recebidos pela IA (Jéssica) diretamente no Gestor de Pedidos.
+
+> ⚠️ **REGRA INVIOLÁVEL DE SEGURANÇA**:
+> É terminantemente **PROIBIDO ativar o n8n** (workflows, webhooks ou automações) ou alterar o status do bot (`bot_active`) sem a autorização prévia e explícita do usuário. Qualquer workflow deve permanecer inativo/desligado por padrão.
+
 
 ## Entradas e Componentes Envolvidos
 - **Painel Front-End**: `AgentManager.tsx` (já atualizado para usar a tabela `settings`)
