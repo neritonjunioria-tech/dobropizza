@@ -130,7 +130,7 @@ graph TD
     B --> B1[Calabresa Hot Honey]
     B --> B2[Pera & Mel]
     B --> B3[Linguiça Blumenau Artesanal]
-    B --> B4[Zucchini Al Forno]
+    B --> B4[Jiló Especial]
     
     C --> C1[Calabresa com Cream Cheese]
     C --> C2[Clássica Dobro Margherita]
@@ -145,8 +145,8 @@ graph TD
    *Base aveludada de queijo gorgonzola e mozzarella selecionada, lâminas frescas de pera, nozes crocantes e fio generoso de mel puro de flor de laranjeira.*
 3. **Linguiça Blumenau Artesanal** (`/dobro/blumenau.jpeg`)
    *Autêntica linguiça Blumenau defumada artesanalmente e assada no forno, molho pomodoro fresco, queijo mozzarella derretido, cebola roxa finamente fatiada e alecrim fresco.*
-4. **Zucchini Al Forno** (`/dobro/zucchini.jpeg`)
-   *Massa de fermentação natural, lâminas delicadas de abobrinha italiana marinadas no azeite extravirgem, mozzarella cremosa, lascas de parmesão e raspas perfumadas de limão siciliano.*
+4. **Jiló Especial** (`/dobro/zucchini.jpeg`)
+   *Massa artesanal 28cm de fermentação lenta, lâminas finas de jiló confitadas no azeite extravirgem, mozzarella cremosa, lascas de queijo e raspas aromáticas de limão siciliano.*
 5. **Calabresa com Cream Cheese** (`/dobro/calabresa-cream-cheese.jpeg`)
    *Molho de tomate caseiro, mozzarella especial em ponto de ouro, calabresa defumada artesanal e generosas gotas de cream cheese cremoso gratinadas no forno.*
 6. **Clássica Dobro** (`/dobro/classica.jpeg`)

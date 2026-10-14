@@ -90,7 +90,7 @@ export const menuData: MenuItem[] = [
   {
     id: 's-dobro-elisabet',
     name: 'Sanduba Elisabet',
-    ingredients: 'Massa artesanal de pizza Dobro assada na hora, fatias suculentas de rosbife com tempero especial da casa, maionese artesanal da casa, salsa criola fresca, alface americana crocante e toque de cebolinha verde.',
+    ingredients: 'Massa artesanal de pizza Dobro assada na hora, fatias suculentas de rosbife com tempero especial da casa, maionese artesanal da casa, salsa criolla fresca, alface americana crocante e toque de cebolinha verde.',
     priceSingle: 32.0,
     category: 'sandubas',
     imageUrl: '/dobro/sanduba-elisabet.jpeg',

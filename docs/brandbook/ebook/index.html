@@ -87,6 +87,7 @@ figcaption b { font-weight: 500; color: var(--espresso); }
 
 .manifesto { font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.55; display: grid; gap: 12px; max-width: 40ch; }
 .manifesto .sign { font-style: normal; color: var(--trigo); font-size: 17px; }
+.page:not(.dark) .manifesto .sign { color: var(--verde); }
 
 .voice { display: grid; }
 .voice div { display: grid; grid-template-columns: 110px 1fr; gap: 20px; padding: 12px 0; border-top: 1px solid var(--linha); }
@@ -207,7 +208,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
 .story { width: 150px; aspect-ratio: 9 / 16; position: relative; overflow: hidden; border-radius: 12px; }
 .story img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .posts { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; min-height: 0; }
-.posts figure img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.posts figure { margin: 0; display: grid; grid-template-rows: auto auto; align-content: start; justify-items: start; gap: 8px; min-height: 0; }
+.posts figure img { height: 318px; width: auto; max-width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.posts figure figcaption { font-size: 10px; line-height: 1.5; }
 
 .board { aspect-ratio: 8 / 3; width: 100%; background: var(--linho); display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); overflow: hidden; }
 .board .t { padding: 6% 7%; display: grid; grid-template-rows: auto 1fr auto; gap: 10px; min-height: 0; }
@@ -305,19 +308,19 @@ figcaption b { font-weight: 500; color: var(--espresso); }
     <nav class="toc">
       <a><span class="n">01</span><span class="t">Como usar</span><span class="p">03</span></a>
       <a><span class="n">02</span><span class="t">Essência da marca</span><span class="p">04</span></a>
-      <a><span class="n">03</span><span class="t">Tom de voz</span><span class="p">08</span></a>
-      <a><span class="n">04</span><span class="t">Logotipo</span><span class="p">09</span></a>
-      <a><span class="n">05</span><span class="t">Cores</span><span class="p">13</span></a>
-      <a><span class="n">06</span><span class="t">Tipografia</span><span class="p">15</span></a>
-      <a><span class="n">07</span><span class="t">Elementos gráficos</span><span class="p">16</span></a>
-      <a><span class="n">08</span><span class="t">Fotografia</span><span class="p">17</span></a>
-      <a><span class="n">09</span><span class="t">Embalagem e delivery</span><span class="p">19</span></a>
-      <a><span class="n">10</span><span class="t">Equipe e papelaria</span><span class="p">22</span></a>
-      <a><span class="n">11</span><span class="t">Cardápio</span><span class="p">24</span></a>
-      <a><span class="n">12</span><span class="t">Redes sociais</span><span class="p">25</span></a>
-      <a><span class="n">13</span><span class="t">Publicidade externa</span><span class="p">27</span></a>
-      <a><span class="n">14</span><span class="t">Consistência e produção</span><span class="p">28</span></a>
-      <a><span class="n">15</span><span class="t">Biblioteca e pendências</span><span class="p">30</span></a>
+      <a><span class="n">03</span><span class="t">Tom de voz</span><span class="p">07</span></a>
+      <a><span class="n">04</span><span class="t">Logotipo</span><span class="p">08</span></a>
+      <a><span class="n">05</span><span class="t">Cores</span><span class="p">12</span></a>
+      <a><span class="n">06</span><span class="t">Tipografia</span><span class="p">14</span></a>
+      <a><span class="n">07</span><span class="t">Elementos gráficos</span><span class="p">15</span></a>
+      <a><span class="n">08</span><span class="t">Fotografia</span><span class="p">16</span></a>
+      <a><span class="n">09</span><span class="t">Embalagem e delivery</span><span class="p">18</span></a>
+      <a><span class="n">10</span><span class="t">Equipe e papelaria</span><span class="p">21</span></a>
+      <a><span class="n">11</span><span class="t">Cardápio</span><span class="p">23</span></a>
+      <a><span class="n">12</span><span class="t">Redes sociais</span><span class="p">24</span></a>
+      <a><span class="n">13</span><span class="t">Publicidade externa</span><span class="p">26</span></a>
+      <a><span class="n">14</span><span class="t">Consistência e produção</span><span class="p">27</span></a>
+      <a><span class="n">15</span><span class="t">Biblioteca e pendências</span><span class="p">29</span></a>
     </nav>
   </div>
 </section>
@@ -344,7 +347,7 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   <div class="folio"><span>02 — Essência · Oficial</span><span>04</span></div>
   <div class="content fill">
     <div class="stack" style="gap:24px">
-      <h2>O poder do dobro.</h2>
+      <h2>O poder da DOBRO.</h2>
       <p class="lede">A DOBRO não compete por preço nem por pressa. Compete por qualidade: mais tempo de massa, ingredientes melhores e o cuidado de quem recebe bem.</p>
       <div class="pillars">
         <div class="pillar"><span class="w">Tempo</span><p>Massa de fermentação lenta, de 48 a 72 horas. Leve, aerada e de fácil digestão.</p></div>
@@ -357,7 +360,7 @@ figcaption b { font-weight: 500; color: var(--espresso); }
 </section>
 
 <!-- 05 MANIFESTO -->
-<section class="page dark">
+<section class="page">
   <div class="folio"><span>02 — Manifesto · Oficial</span><span>05</span></div>
   <div class="content" style="grid-template-rows:minmax(0,1fr) auto;gap:36px">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:0"><img class="photo" src="img/blumenau.webp" alt="Pizza Linguiça Blumenau, foto real"><img class="photo" src="img/parma.webp" alt="Sanduba de Parma, foto real"></div>
@@ -389,25 +392,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 07 PERSONALIDADE -->
-<section class="page">
-  <div class="folio"><span>02 — Personalidade · Proposta</span><span>07</span></div>
-  <div class="content">
-    <h2>O anfitrião artesão.</h2>
-    <p class="lede">Domina o ofício, recebe bem e capricha nos detalhes, sem pose. Fala de ingredientes com orgulho e de pessoas com carinho.</p>
-    <div class="rows">
-      <div class="row"><span class="k">Rigorosa</span><p>Tempo de massa, temperatura e ponto não se negociam. <span class="muted">Não é: rígida ou fria.</span></p></div>
-      <div class="row"><span class="k">Artesanal</span><p>Mostra o processo: a massa, o forno, as mãos. <span class="muted">Não é: rústica descuidada.</span></p></div>
-      <div class="row"><span class="k">Calorosa</span><p>Recebe como em casa, trata pelo nome. <span class="muted">Não é: informal demais.</span></p></div>
-      <div class="row"><span class="k">Confiante</span><p>Sabe o que faz e explica com clareza. <span class="muted">Não é: arrogante.</span></p></div>
-      <div class="row"><span class="k">Generosa</span><p>Ingredientes fartos e atenção extra. <span class="muted">Não é: exagerada.</span></p></div>
-    </div>
-  </div>
-</section>
-
-<!-- 08 TOM DE VOZ -->
+<!-- 07 TOM DE VOZ -->
 <section class="page linho">
-  <div class="folio"><span>03 — Tom de voz · Oficial</span><span>08</span></div>
+  <div class="folio"><span>03 — Tom de voz · Oficial</span><span>07</span></div>
   <div class="content">
     <h2>Precisa, sensorial e acolhedora.</h2>
     <p class="lede">Frases curtas, ingrediente de verdade, tempo de verdade. A DOBRO descreve textura e processo, nunca exagera.</p>
@@ -425,9 +412,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 09 LOGO -->
+<!-- 08 LOGO -->
 <section class="page">
-  <div class="folio"><span>04 — Logotipo · Oficial</span><span>09</span></div>
+  <div class="folio"><span>04 — Logotipo · Oficial</span><span>08</span></div>
   <div class="content">
     <h2>Cada parte tem um porquê.</h2>
     <div class="stage">
@@ -448,9 +435,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 10 VERSÕES -->
+<!-- 09 VERSÕES -->
 <section class="page">
-  <div class="folio"><span>04 — Versões</span><span>10</span></div>
+  <div class="folio"><span>04 — Versões</span><span>09</span></div>
   <div class="content">
     <h2>Uma marca para cada fundo.</h2>
     <div class="tiles">
@@ -465,9 +452,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 11 PROTEÇÃO -->
+<!-- 10 PROTEÇÃO -->
 <section class="page">
-  <div class="folio"><span>04 — Área de proteção · Proposta</span><span>11</span></div>
+  <div class="folio"><span>04 — Área de proteção · Proposta</span><span>10</span></div>
   <div class="content">
     <h2>Espaço é parte da marca.</h2>
     <div class="clear"><div class="box">
@@ -483,9 +470,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 12 INCORRETOS -->
+<!-- 11 INCORRETOS -->
 <section class="page">
-  <div class="folio"><span>04 — Usos incorretos</span><span>12</span></div>
+  <div class="folio"><span>04 — Usos incorretos</span><span>11</span></div>
   <div class="content">
     <h2>O que nunca fazer.</h2>
     <div class="tiles four">
@@ -501,9 +488,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 13 CORES -->
+<!-- 12 CORES -->
 <section class="page">
-  <div class="folio"><span>05 — Cores · Oficial</span><span>13</span></div>
+  <div class="folio"><span>05 — Cores · Oficial</span><span>12</span></div>
   <div class="content">
     <h2>Oliveira, trigo, forno e linho.</h2>
     <div class="swatches">
@@ -523,9 +510,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 14 COMBINAÇÕES -->
+<!-- 13 COMBINAÇÕES -->
 <section class="page">
-  <div class="folio"><span>05 — Combinações · Proposta</span><span>14</span></div>
+  <div class="folio"><span>05 — Combinações · Proposta</span><span>13</span></div>
   <div class="content">
     <h2>Pares que funcionam.</h2>
     <p class="lede">Contraste medido pelo padrão WCAG. A partir de 4,5 : 1 serve para texto corrido.</p>
@@ -542,9 +529,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 15 TIPOGRAFIA -->
+<!-- 14 TIPOGRAFIA -->
 <section class="page">
-  <div class="folio"><span>06 — Tipografia · Oficial</span><span>15</span></div>
+  <div class="folio"><span>06 — Tipografia · Oficial</span><span>14</span></div>
   <div class="content">
     <div class="two">
       <div class="stack">
@@ -569,9 +556,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 16 ELEMENTOS -->
+<!-- 15 ELEMENTOS -->
 <section class="page dark">
-  <div class="folio"><span>07 — Elementos gráficos · Proposta</span><span>16</span></div>
+  <div class="folio"><span>07 — Elementos gráficos · Proposta</span><span>15</span></div>
   <div class="content fill">
     <div class="stack" style="gap:28px">
       <h2>Linha fina e repetição.</h2>
@@ -589,9 +576,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 17 FOTOGRAFIA -->
+<!-- 16 FOTOGRAFIA -->
 <section class="page">
-  <div class="folio"><span>08 — Fotografia · Proposta</span><span>17</span></div>
+  <div class="folio"><span>08 — Fotografia · Proposta</span><span>16</span></div>
   <div class="content fill">
     <div class="stack" style="gap:20px">
       <h2>Só o produto real.</h2>
@@ -616,9 +603,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 18 DIREÇÃO DE ARTE -->
+<!-- 17 DIREÇÃO DE ARTE -->
 <section class="page">
-  <div class="folio"><span>08 — Direção de arte · Proposta</span><span>18</span></div>
+  <div class="folio"><span>08 — Direção de arte · Proposta</span><span>17</span></div>
   <div class="content">
     <h2>Guia para o fotógrafo.</h2>
     <div class="rows">
@@ -633,9 +620,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 19 CAIXA -->
+<!-- 18 CAIXA -->
 <section class="page">
-  <div class="folio"><span>09 — Caixa de pizza · Proposta</span><span>19</span></div>
+  <div class="folio"><span>09 — Caixa de pizza · Proposta</span><span>18</span></div>
   <div class="content fill">
     <h2>A embalagem que protege a crocância.</h2>
     <div class="stack" style="grid-template-rows:minmax(0,1fr) auto;gap:20px;min-height:0">
@@ -649,9 +636,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 20 SACOLA -->
+<!-- 19 SACOLA -->
 <section class="page">
-  <div class="folio"><span>09 — Sacola de delivery · Proposta</span><span>20</span></div>
+  <div class="folio"><span>09 — Sacola de delivery · Proposta</span><span>19</span></div>
   <div class="content fill">
     <h2>A frase certa na chegada.</h2>
     <div style="display:grid;gap:26px;min-height:0;align-content:start">
@@ -665,9 +652,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 21 KIT -->
+<!-- 20 KIT -->
 <section class="page">
-  <div class="folio"><span>09 — Fechamento do pedido · Proposta</span><span>21</span></div>
+  <div class="folio"><span>09 — Fechamento do pedido · Proposta</span><span>20</span></div>
   <div class="content fill">
     <h2>Detalhes que fecham o cuidado.</h2>
     <div class="desk" style="grid-template-columns:auto auto;align-content:center">
@@ -679,9 +666,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 22 UNIFORMES -->
+<!-- 21 UNIFORMES -->
 <section class="page">
-  <div class="folio"><span>10 — Uniformes · Proposta</span><span>22</span></div>
+  <div class="folio"><span>10 — Uniformes · Proposta</span><span>21</span></div>
   <div class="content">
     <h2>A equipe também é marca.</h2>
     <img src="img/uniforme.webp" alt="Quatro uniformes DOBRO em verde e linho: pizzaiolo, salão, atendimento e cozinha, mockup ilustrativo" style="width:100%;height:auto;display:block">
@@ -694,9 +681,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
     </div>
   </div>
 </section>
-<!-- 23 PAPELARIA -->
+<!-- 22 PAPELARIA -->
 <section class="page">
-  <div class="folio"><span>10 — Papelaria · Proposta</span><span>23</span></div>
+  <div class="folio"><span>10 — Papelaria · Proposta</span><span>22</span></div>
   <div class="content fill">
     <h2>Pequenos formatos, mesmo cuidado.</h2>
     <div class="desk" style="grid-template-columns:auto auto;align-content:center;gap:28px 24px">
@@ -709,9 +696,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 24 CARDÁPIO -->
+<!-- 23 CARDÁPIO -->
 <section class="page">
-  <div class="folio"><span>11 — Cardápio · Proposta</span><span>24</span></div>
+  <div class="folio"><span>11 — Cardápio · Proposta</span><span>23</span></div>
   <div class="content fill">
     <h2>Ler o cardápio é provar antes.</h2>
     <div class="two" style="min-height:0;grid-template-columns:auto 1fr;align-items:center">
@@ -738,23 +725,23 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 25 POSTS -->
+<!-- 24 POSTS -->
 <section class="page">
-  <div class="folio"><span>12 — Redes sociais · Modelos</span><span>25</span></div>
+  <div class="folio"><span>12 — Redes sociais · Modelos</span><span>24</span></div>
   <div class="content">
     <h2>Posts que vendem pelo produto.</h2>
     <div class="posts">
       <figure><img src="img/criativo1.webp" alt="Post Crocância que se ouve"><figcaption><b>Crocância que se ouve.</b> Fatia separada revela a massa.</figcaption></figure>
       <figure><img src="img/criativo2.webp" alt="Post 72 horas"><figcaption><b>72 h.</b> O número do processo vira o título.</figcaption></figure>
       <figure><img src="img/post1.webp" alt="Post promocional com preço"><figcaption><b>Promoção.</b> Título, preço real do gestor e chamada.</figcaption></figure>
-      <figure style="grid-template-rows:auto auto;align-content:start"><img src="img/post2.webp" alt="Post da caixa aberta" style="aspect-ratio:3/2"><figcaption><b>Embalagem.</b> A caixa aberta como prova de cuidado. Formato horizontal para anúncios.</figcaption></figure>
+      <figure style="grid-template-rows:auto auto;align-content:start"><img src="img/post2.webp" alt="Post da caixa aberta" style="aspect-ratio:3/2;width:100%;height:auto"><figcaption><b>Embalagem.</b> A caixa aberta como prova de cuidado. Formato horizontal para anúncios.</figcaption></figure>
     </div>
   </div>
 </section>
 
-<!-- 26 FEED -->
+<!-- 25 FEED -->
 <section class="page linho">
-  <div class="folio"><span>12 — Redes sociais · Proposta</span><span>26</span></div>
+  <div class="folio"><span>12 — Redes sociais · Proposta</span><span>25</span></div>
   <div class="content">
     <h2>Um feed com ritmo.</h2>
     <div style="display:flex;gap:28px;align-items:flex-end;justify-content:center">
@@ -778,9 +765,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 27 EXTERNA -->
+<!-- 26 EXTERNA -->
 <section class="page">
-  <div class="folio"><span>13 — Publicidade externa · Proposta</span><span>27</span></div>
+  <div class="folio"><span>13 — Publicidade externa · Proposta</span><span>26</span></div>
   <div class="content">
     <h2>Lido em três segundos.</h2>
     <p class="lead ooh-lead">Uma marca, uma frase, uma pizza. Quem passa de carro precisa entender tudo antes do semáforo abrir.</p>
@@ -802,9 +789,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 28 CONSISTÊNCIA -->
+<!-- 27 CONSISTÊNCIA -->
 <section class="page">
-  <div class="folio"><span>14 — Consistência · Proposta</span><span>28</span></div>
+  <div class="folio"><span>14 — Consistência · Proposta</span><span>27</span></div>
   <div class="content">
     <h2>Quatro decisões que mantêm a marca.</h2>
     <div class="tiles four">
@@ -817,9 +804,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 29 PRODUÇÃO -->
+<!-- 28 PRODUÇÃO -->
 <section class="page">
-  <div class="folio"><span>14 — Especificações · Referência</span><span>29</span></div>
+  <div class="folio"><span>14 — Especificações · Referência</span><span>28</span></div>
   <div class="content">
     <h2>Para enviar à gráfica.</h2>
     <table class="tbl">
@@ -839,9 +826,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 30 BIBLIOTECA -->
+<!-- 29 BIBLIOTECA -->
 <section class="page">
-  <div class="folio"><span>15 — Biblioteca</span><span>30</span></div>
+  <div class="folio"><span>15 — Biblioteca</span><span>29</span></div>
   <div class="content">
     <h2>Onde estão os arquivos.</h2>
     <div class="rows">
@@ -865,9 +852,9 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 31 PENDÊNCIAS -->
+<!-- 30 PENDÊNCIAS -->
 <section class="page dark">
-  <div class="folio"><span>15 — Pendências e aprovação</span><span>31</span></div>
+  <div class="folio"><span>15 — Pendências e aprovação</span><span>30</span></div>
   <div class="content">
     <h2>Antes de produzir.</h2>
     <div class="stack">
@@ -896,7 +883,7 @@ figcaption b { font-weight: 500; color: var(--espresso); }
   </div>
 </section>
 
-<!-- 32 CONTRACAPA -->
+<!-- 31 CONTRACAPA -->
 <section class="page dark closing">
   <img class="bgimg" src="img/contracapa.webp" alt="Pizzaiolo DOBRO segurando a pizza Zucchini na tábua">
   <div class="foot"><svg class="logo" viewBox="0 0 950.4 205" aria-label="DOBRO Pizzas"><use href="#lg" width="950.4" height="205"/></svg><p class="tag">O dobro de sabor.</p><i class="rule"></i><span>BRAND BOOK 2026</span></div>

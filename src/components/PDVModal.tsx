@@ -1083,7 +1083,7 @@ export default function PDVModal({
               <p className="text-xs mt-0.5">Navegue pelas categorias na lateral.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-2.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-3.5 sm:gap-4">
               {filteredProducts.map(product => {
                 const hasSizes = Boolean(product.priceP || product.priceM || product.priceG);
                 const displayPrice = product.priceG || product.priceM || product.priceSingle || product.priceP || 0;
@@ -1094,6 +1094,7 @@ export default function PDVModal({
                   selectedCategory === 'promocoes' ||
                   selectedCategory?.toLowerCase().includes('promo');
                 const isExtraItem = product.category === 'adicionais-extras' || product.id?.startsWith('extra-item-');
+                const isPizza = product.category === 'tradicionais' || product.category === 'premium' || product.category === 'mais-pedidos' || product.id?.startsWith('p-');
 
                 return (
                   <button
@@ -1102,10 +1103,46 @@ export default function PDVModal({
                       if (el) cardsRef.current.push(el);
                     }}
                     onClick={() => handleProductClick(product)}
-                    className="group bg-[var(--pdv-surface)] rounded-xl p-2 pb-2 flex flex-col text-left transition-all duration-200 hover:-translate-y-0.5 hover:scale-[1.02] hover:shadow-[var(--pdv-shadow-md)] shadow-[var(--pdv-shadow-sm)] cursor-pointer active:scale-95 relative border border-[var(--pdv-border)] touch-manipulation select-none"
+                    className="group bg-white rounded-2xl p-3.5 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-[#D5AF7A] shadow-xs cursor-pointer active:scale-[0.99] relative border border-[#E8D8D1] touch-manipulation select-none"
                   >
-                    {/* Image / Thumbnail (4:5 para Promoção do Dia, 1:1 Quadrado para os demais itens) */}
-                    <div className={`w-full ${isPromoItem ? 'aspect-[4/5]' : 'aspect-square'} bg-stone-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center relative shadow-inner border border-stone-200/50`}>
+                    {/* Informações Textuais (Estilo Cardápio 41 Menus) */}
+                    <div className="flex-1 flex flex-col justify-between h-full min-h-[92px] sm:min-h-[104px]">
+                      <div>
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <h3 className="font-bold text-sm sm:text-[15px] text-[#44210F] leading-snug group-hover:text-[#083D07] transition-colors">
+                            {product.name}
+                          </h3>
+                        </div>
+                        <p className="text-xs sm:text-[13px] text-[#745240] line-clamp-2 leading-relaxed pr-1.5 mt-0.5">
+                          {product.ingredients || ''}
+                        </p>
+                      </div>
+
+                      <div className="mt-3 flex items-center justify-between pr-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-extrabold text-[#083D07] text-[15px] sm:text-base">
+                            R$ {displayPrice.toFixed(2).replace('.', ',')}
+                          </span>
+                          {isPizza && (
+                            <span className="text-[10px] font-bold text-[#745240] bg-[#e8d8d1]/70 px-1.5 py-0.5 rounded tracking-tight">
+                              28cm
+                            </span>
+                          )}
+                          {hasSizes && (
+                            <span className="text-[9px] font-bold text-[#745240] uppercase tracking-tight">
+                              A partir
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/60 flex items-center justify-center font-black shadow-2xs group-hover:bg-[#d5af7a] group-hover:text-[#083d07] transition-all shrink-0">
+                          <Plus size={15} className="stroke-[2.5]" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Foto Lateral Estilo Cardápio Digital Oficial */}
+                    <div className="w-[88px] h-[88px] sm:w-[104px] sm:h-[104px] shrink-0 rounded-xl overflow-hidden bg-stone-100 border border-[#E8D8D1] shadow-2xs relative flex items-center justify-center">
                       {isExtraItem ? (
                         <div className="w-full h-full bg-gradient-to-br from-[#F6E3DF] to-[#E8D8D1] flex flex-col items-center justify-center text-[#44210F] p-2">
                           <Sparkles size={24} className="text-[#D5AF7A] mb-1" />
@@ -1117,50 +1154,21 @@ export default function PDVModal({
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       )}
-                      
-                      {/* Multiple sizes badge */}
                       {hasSizes && (
-                        <span className="absolute top-1.5 right-1.5 bg-white/95 text-red-600 text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded-full shadow-2xs backdrop-blur-2xs">
+                        <span className="absolute top-1.5 right-1.5 bg-white/95 text-[#083D07] text-[7.5px] font-black uppercase px-1.5 py-0.5 rounded-full shadow-2xs backdrop-blur-2xs border border-[#E8D8D1]">
                           P · M · G · B · GG
                         </span>
                       )}
                     </div>
-
-                    {/* Product Name */}
-                    <div className="px-0.5 flex-1 flex flex-col">
-                      <h3 className="font-bold text-xs text-gray-900 leading-tight mb-0.5 group-hover:text-red-600 transition-colors line-clamp-2">
-                        {product.name}
-                      </h3>
-                      <p className="text-[9.5px] text-gray-400 leading-tight line-clamp-1 mb-1.5">
-                        {product.ingredients || ''}
-                      </p>
-
-                      <div className="mt-auto pt-1.5 border-t border-[var(--pdv-border)] flex items-center justify-between">
-                        <div className="flex flex-col">
-                          {hasSizes ? (
-                            <span className="text-[8px] font-bold text-[var(--pdv-text-secondary)] uppercase tracking-wide">A partir de</span>
-                          ) : (
-                            <span className="text-[8px] font-bold text-[var(--pdv-text-secondary)] uppercase tracking-wide">Preço</span>
-                          )}
-                          <span className="font-black text-xs sm:text-[13px] text-[var(--pdv-text-primary)] leading-none">
-                            € {displayPrice.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/60 flex items-center justify-center font-black shadow-2xs hover:bg-[#d5af7a] hover:text-[#083d07] transition-all shrink-0">
-                          <Plus size={13} className="stroke-[3]" />
-                        </div>
-                      </div>
-                    </div>
                   </button>
                 );
-              })}
-            </div>
+              })}            </div>
           )}
         </main>
         </div>
 
         {/* COLUMN 3: CART & CHECKOUT (Compact ergonomics & expansive catalog) */}
-        <aside className="w-full h-[60vh] lg:h-full lg:w-[320px] xl:w-[340px] bg-white border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col shrink-0 shadow-2xl z-20 overflow-hidden">
+        <aside className="w-full h-[60vh] lg:h-full lg:w-[390px] xl:w-[430px] 2xl:w-[460px] bg-white border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col shrink-0 shadow-2xl z-20 overflow-hidden">
           
           {/* Section 1: Order Type Selector & Customer / Delivery Details (Ultra-Compact) */}
           <div className="p-2 bg-stone-50 border-b border-stone-200 space-y-1.5 shrink-0">
@@ -1203,100 +1211,105 @@ export default function PDVModal({
 
             {/* Inputs based on Order Type */}
             {orderType === 'retirada' && (
-              <div className="grid grid-cols-2 gap-1">
+              <div className="space-y-2 pt-1">
                 <input
                   type="text"
                   value={customerName}
                   onChange={e => setCustomerName(e.target.value)}
                   placeholder="Nome do Cliente *"
-                  className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-bold text-stone-900 focus:border-red-500 focus:ring-1 focus:ring-red-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
+                  className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-bold text-stone-900 focus:border-[#083D07] focus:ring-1 focus:ring-[#083D07]/20 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
                 />
-                <input
-                  type="text"
-                  value={customerNif}
-                  onChange={e => setCustomerNif(e.target.value)}
-                  placeholder="CPF na nota (opcional)"
-                  className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-red-500 focus:ring-1 focus:ring-red-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
-                />
-                <input
-                  type="tel"
-                  value={customerPhone}
-                  onChange={e => setCustomerPhone(e.target.value)}
-                  placeholder="Telefone (opcional)"
-                  className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-mono font-medium text-stone-900 focus:border-red-500 focus:ring-1 focus:ring-red-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
-                />
-              </div>
-            )}
-
-            {orderType === 'mesa' && (
-              <div className="grid grid-cols-2 gap-1">
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={e => setCustomerName(e.target.value)}
-                  placeholder="Nome do Cliente *"
-                  className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-bold text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
-                />
-                <input
-                  type="text"
-                  value={customerNif}
-                  onChange={e => setCustomerNif(e.target.value)}
-                  placeholder="CPF na nota (opcional)"
-                  className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
-                />
-                <input
-                  type="text"
-                  value={tableNumber}
-                  onChange={e => setTableNumber(e.target.value)}
-                  placeholder="Nº Mesa / Comanda *"
-                  className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-mono font-bold text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
-                />
-              </div>
-            )}
-
-            {orderType === 'entrega' && (
-              <div className="space-y-1 pt-0.5">
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-2 gap-2">
                   <input
-                    type="text"
-                    value={customerName}
-                    onChange={e => setCustomerName(e.target.value)}
-                    placeholder="Nome do Cliente *"
-                    className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-bold text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
+                    type="tel"
+                    value={customerPhone}
+                    onChange={e => setCustomerPhone(e.target.value)}
+                    placeholder="Telefone (opcional)"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-mono font-medium text-stone-900 focus:border-[#083D07] focus:ring-1 focus:ring-[#083D07]/20 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
                   />
                   <input
                     type="text"
                     value={customerNif}
                     onChange={e => setCustomerNif(e.target.value)}
                     placeholder="CPF na nota (opcional)"
-                    className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-medium text-stone-900 focus:border-[#083D07] focus:ring-1 focus:ring-[#083D07]/20 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
+                  />
+                </div>
+              </div>
+            )}
+
+            {orderType === 'mesa' && (
+              <div className="space-y-2 pt-1">
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={tableNumber}
+                    onChange={e => setTableNumber(e.target.value)}
+                    placeholder="Nº Mesa / Comanda *"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-mono font-bold text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
+                  />
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={e => setCustomerName(e.target.value)}
+                    placeholder="Nome do Cliente *"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-bold text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
+                  />
+                </div>
+                <input
+                  type="text"
+                  value={customerNif}
+                  onChange={e => setCustomerNif(e.target.value)}
+                  placeholder="CPF na nota (opcional)"
+                  className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-medium text-stone-900 focus:border-amber-500 focus:ring-1 focus:ring-amber-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
+                />
+              </div>
+            )}
+
+            {orderType === 'entrega' && (
+              <div className="space-y-2 pt-1">
+                <div className="grid grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={customerName}
+                    onChange={e => setCustomerName(e.target.value)}
+                    placeholder="Nome do Cliente *"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-bold text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
                   />
                   <input
                     type="tel"
                     value={customerPhone}
                     onChange={e => setCustomerPhone(e.target.value)}
                     placeholder="Telefone (opcional)"
-                    className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-mono font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-mono font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
                   />
                 </div>
+
+                <input
+                  type="text"
+                  value={customerNif}
+                  onChange={e => setCustomerNif(e.target.value)}
+                  placeholder="CPF na nota (opcional)"
+                  className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
+                />
 
                 <div>
                   <input
                     type="text"
                     value={deliveryAddress}
                     onChange={e => setDeliveryAddress(e.target.value)}
-                    placeholder="Morada / Rua, Nº, Andar, Cód. Postal *"
-                    className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
+                    placeholder="Endereço / Rua, Nº, Bairro, CEP *"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-2 gap-2">
                   {zones.length > 0 && (
                     <div ref={zoneDropdownRef} className="relative">
                       <button
                         type="button"
                         onClick={() => setIsZoneDropdownOpen(!isZoneDropdownOpen)}
-                        className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-bold text-stone-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none cursor-pointer shadow-2xs flex items-center justify-between text-left"
+                        className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-bold text-stone-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none cursor-pointer shadow-2xs flex items-center justify-between text-left"
                       >
                         <span className="truncate flex-1">
                           {deliveryZone || 'Selecione a Zona'}
@@ -1308,7 +1321,7 @@ export default function PDVModal({
                         <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-lg shadow-xl z-50 py-1 max-h-48 overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
                           {zones.map(z => {
                             const isSelected = deliveryZone === z.name;
-                            const feeDisplay = isFreeDelivery ? 'Grátis!' : `+€${z.fee.toFixed(2)}`;
+                            const feeDisplay = isFreeDelivery ? 'Grátis!' : `+R$ ${z.fee.toFixed(2).replace('.', ',')}`;
                             return (
                               <button
                                 key={z.name}
@@ -1337,14 +1350,122 @@ export default function PDVModal({
                     value={deliveryReference}
                     onChange={e => setDeliveryReference(e.target.value)}
                     placeholder="Ref. / Complemento"
-                    className="w-full h-7 px-2 bg-white border border-stone-300 rounded-md text-[11px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal"
+                    className="w-full h-9 px-3 bg-white border border-stone-300 rounded-lg text-xs sm:text-[13px] font-medium text-stone-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 focus:outline-none transition-all placeholder:text-stone-400 placeholder:font-normal shadow-2xs"
                   />
+                </div>
+
+                {/* Responsável pela Entrega / Motoboy */}
+                <div className="p-2.5 bg-blue-50/60 rounded-xl border border-blue-200/80 space-y-2 mt-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-mono font-bold text-blue-950 uppercase flex items-center gap-1.5">
+                      <Bike size={13} className="text-blue-700" />
+                      Responsável pela Entrega
+                    </span>
+                    <span className="text-[10px] font-bold text-blue-700">
+                      {deliveryProvider === 'proprio' ? 'Próprio' : deliveryProvider === 'ifood' ? 'iFood' : 'Uber'}
+                    </span>
+                  </div>
+
+                  {/* Provider Pills */}
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryProvider('proprio')}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                        deliveryProvider === 'proprio'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                      }`}
+                    >
+                      Próprio
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeliveryProvider('ifood');
+                        setSelectedMotoboyId('');
+                        setMotoboyFee('0');
+                      }}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                        deliveryProvider === 'ifood'
+                          ? 'bg-rose-600 text-white border-rose-600 shadow-xs'
+                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                      }`}
+                    >
+                      iFood
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeliveryProvider('uber');
+                        setSelectedMotoboyId('');
+                        setMotoboyFee('0');
+                      }}
+                      className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all border cursor-pointer ${
+                        deliveryProvider === 'uber'
+                          ? 'bg-stone-900 text-white border-stone-900 shadow-xs'
+                          : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
+                      }`}
+                    >
+                      Uber
+                    </button>
+                  </div>
+
+                  {/* Se Próprio: Selecionar Motoboy Cadastrado e Taxa */}
+                  {deliveryProvider === 'proprio' && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                      <div>
+                        <label className="block text-[10px] font-bold text-stone-600 uppercase mb-1">
+                          Motoboy Cadastrado
+                        </label>
+                        <select
+                          value={selectedMotoboyId}
+                          onChange={e => {
+                            const mId = e.target.value;
+                            setSelectedMotoboyId(mId);
+                            const m = motoboys.find(item => item.id === mId);
+                            if (m && m.default_fee) {
+                              setMotoboyFee(m.default_fee.toString());
+                            }
+                          }}
+                          className="w-full h-8.5 px-2 bg-white border border-blue-300 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        >
+                          <option value="">Selecione o Motoboy...</option>
+                          {motoboys.map(m => (
+                            <option key={m.id} value={m.id}>
+                              {m.name} {m.default_fee ? `(R$ ${m.default_fee.toFixed(2)})` : ''}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-bold text-stone-600 uppercase mb-1">
+                          Taxa do Motoboy (R$)
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">R$</span>
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={motoboyFee}
+                            onChange={e => {
+                              setMotoboyFee(e.target.value);
+                              setMotoboyFeeTouched(true);
+                            }}
+                            placeholder="0,00"
+                            className="w-full h-8.5 pl-8 pr-2 bg-white border border-blue-300 rounded-lg text-xs font-mono font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {isFreeDelivery && (
                   <div className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 text-[9px] font-mono font-bold flex items-center justify-between">
                     <span>🎉 Entrega Grátis!</span>
-                    <span>€ 0.00</span>
+                    <span>R$ 0,00</span>
                   </div>
                 )}
               </div>
@@ -1416,7 +1537,7 @@ export default function PDVModal({
                         </h4>
                       </div>
                       <span className="font-black font-mono text-[11px] text-stone-900 shrink-0">
-                        € {item.totalPrice.toFixed(2)}
+                        R$ {item.totalPrice.toFixed(2).replace('.', ',')}
                       </span>
                     </div>
 
@@ -1444,7 +1565,7 @@ export default function PDVModal({
                         )}
                         {item.selectedExtras && item.selectedExtras.map(extra => (
                           <span key={extra.id} className="px-1 py-0.2 rounded bg-[#F6E3DF] text-[#44210F] border border-[#E4C5B9] text-[8.5px] font-mono font-bold">
-                            + {extra.name} (€ {extra.price.toFixed(2)})
+                            + {extra.name} (R$ {extra.price.toFixed(2).replace('.', ',')})
                           </span>
                         ))}
                         {item.notes && (
@@ -1478,7 +1599,7 @@ export default function PDVModal({
                           </button>
                         </div>
                         <span className="text-[9px] font-mono text-stone-400">
-                          (€ {item.unitPrice.toFixed(2)} un)
+                          (R$ {item.unitPrice.toFixed(2).replace('.', ',')} un)
                         </span>
                       </div>
 
@@ -1566,9 +1687,7 @@ export default function PDVModal({
                 <button 
                   onClick={() => setAdjustmentMode('fixed')} 
                   className={`px-1 py-0.2 text-[8.5px] font-mono font-bold rounded cursor-pointer ${adjustmentMode === 'fixed' ? 'bg-[#083d07] text-white' : 'text-stone-500'}`}
-                >
-                  €
-                </button>
+                >R$</button>
                 <button 
                   onClick={() => setAdjustmentMode('percent')} 
                   className={`px-1 py-0.2 text-[8.5px] font-mono font-bold rounded cursor-pointer ${adjustmentMode === 'percent' ? 'bg-[#083d07] text-white' : 'text-stone-500'}`}
@@ -1599,28 +1718,54 @@ export default function PDVModal({
               )}
             </div>
 
-            <div className="flex flex-wrap gap-1.5 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
               <button
+                type="button"
                 onClick={() => setPaymentMethod('MB Way')}
-                className={`flex-1 min-w-[70px] py-1.5 px-2 rounded-[var(--pdv-radius-md)] text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border ${
+                className={`py-2 px-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer border ${
                   paymentMethod === 'MB Way'
-                    ? 'border-[#D5AF7A] bg-[#F6E3DF] text-[#44210F] shadow-[var(--pdv-shadow-sm)] font-bold'
-                    : 'border-[var(--pdv-border)] bg-[var(--pdv-surface)] text-[var(--pdv-text-secondary)] hover:bg-[var(--pdv-surface-hover)] hover:text-[var(--pdv-text-primary)]'
+                    ? 'border-[#D5AF7A] bg-[#F6E3DF] text-[#44210F] shadow-sm ring-1 ring-[#D5AF7A]'
+                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                 }`}
               >
-                <Smartphone size={12} className={paymentMethod === 'MB Way' ? 'text-[#44210F]' : 'text-stone-400'} />
+                <Smartphone size={14} className={paymentMethod === 'MB Way' ? 'text-[#44210F]' : 'text-stone-400'} />
                 <span>Pix</span>
               </button>
               <button
+                type="button"
                 onClick={() => setPaymentMethod('Numerário')}
-                className={`flex-1 min-w-[70px] py-1.5 px-2 rounded-[var(--pdv-radius-md)] text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border ${
+                className={`py-2 px-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer border ${
                   paymentMethod === 'Numerário'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-[var(--pdv-shadow-sm)]'
-                    : 'border-[var(--pdv-border)] bg-[var(--pdv-surface)] text-[var(--pdv-text-secondary)] hover:bg-[var(--pdv-surface-hover)] hover:text-[var(--pdv-text-primary)]'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm ring-1 ring-emerald-500'
+                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                 }`}
               >
-                <DollarSign size={12} className={paymentMethod === 'Numerário' ? 'text-emerald-600' : 'text-stone-400'} />
+                <DollarSign size={14} className={paymentMethod === 'Numerário' ? 'text-emerald-600' : 'text-stone-400'} />
                 <span>Dinheiro</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('Cartão de Crédito')}
+                className={`py-2 px-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer border ${
+                  paymentMethod === 'Cartão de Crédito'
+                    ? 'border-amber-500 bg-amber-50 text-amber-900 shadow-sm ring-1 ring-amber-500'
+                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
+              >
+                <CreditCard size={14} className={paymentMethod === 'Cartão de Crédito' ? 'text-amber-600' : 'text-stone-400'} />
+                <span>Crédito</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPaymentMethod('Cartão de Débito')}
+                className={`py-2 px-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer border ${
+                  paymentMethod === 'Cartão de Débito'
+                    ? 'border-blue-500 bg-blue-50 text-blue-900 shadow-sm ring-1 ring-blue-500'
+                    : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
+                }`}
+              >
+                <CreditCard size={14} className={paymentMethod === 'Cartão de Débito' ? 'text-blue-600' : 'text-stone-400'} />
+                <span>Débito</span>
               </button>
             </div>
 
@@ -1672,15 +1817,15 @@ export default function PDVModal({
                 </span>
                 {(subtotal !== totalAmount || deliveryFee > 0 || adjustmentAmount !== 0) && (
                   <span className="text-[9px] font-mono text-stone-400">
-                    Sub: € {subtotal.toFixed(2)}
-                    {deliveryFee > 0 && ` + Ent: € ${deliveryFee.toFixed(2)}`}
+                    Sub: R$ {subtotal.toFixed(2).replace('.', ',')}
+                    {deliveryFee > 0 && ` + Ent: R$ ${deliveryFee.toFixed(2).replace('.', ',')}`}
                     {isFreeDelivery && ` + Ent: Grátis`}
-                    {adjustmentAmount !== 0 && ` ${adjustmentAmount < 0 ? '-' : '+'} € ${Math.abs(adjustmentAmount).toFixed(2)}`}
+                    {adjustmentAmount !== 0 && ` ${adjustmentAmount < 0 ? '-' : '+'} R$ ${Math.abs(adjustmentAmount).toFixed(2).replace('.', ',')}`}
                   </span>
                 )}
               </div>
               <span className="text-lg font-black font-mono text-stone-900 tabular-nums">
-                € {totalAmount.toFixed(2)}
+                R$ {totalAmount.toFixed(2).replace('.', ',')}
               </span>
             </div>
 
@@ -1754,7 +1899,7 @@ export default function PDVModal({
                     </span>
                   </div>
                   <span className="text-sm font-black font-mono text-amber-900">
-                    € {(customizingItem.priceSingle || 0).toFixed(2)}
+                    R$ {(customizingItem.priceSingle || 0).toFixed(2).replace('.', ',')}
                   </span>
                 </div>
               ) : (
@@ -1790,7 +1935,7 @@ export default function PDVModal({
                           }`}
                         >
                           <span className="text-xs font-black">{size === 'P' ? 'Pequena' : size === 'M' ? 'Média' : size === 'G' ? 'Grande' : size}</span>
-                          <span className="text-[10px] font-bold text-gray-500">+ € {p.toFixed(2)}</span>
+                          <span className="text-[10px] font-bold text-gray-500">+ R$ {p.toFixed(2).replace('.', ',')}</span>
                         </button>
                       );
                     })}
@@ -1996,7 +2141,7 @@ export default function PDVModal({
                         <span className="font-extrabold text-gray-900 truncate">{customizingItem.name}</span>
                       </div>
                       <span className="text-[11px] font-bold font-mono text-gray-500 shrink-0">
-                        € {getPizzaPriceForSize(customizingItem, customSize).toFixed(2)}
+                        R$ {getPizzaPriceForSize(customizingItem, customSize).toFixed(2).replace('.', ',')}
                       </span>
                     </div>
 
@@ -2069,7 +2214,7 @@ export default function PDVModal({
                                         </div>
                                       </div>
                                       <span className="text-[11px] font-bold font-mono text-gray-600 group-hover:text-amber-900 shrink-0">
-                                        € {pizzaPrice.toFixed(2)}
+                                        R$ {pizzaPrice.toFixed(2).replace('.', ',')}
                                       </span>
                                     </button>
                                   );
@@ -2091,7 +2236,7 @@ export default function PDVModal({
                           
                           <div className="flex items-center gap-1.5 shrink-0">
                             <span className="text-[11px] font-bold font-mono text-gray-500 mr-1">
-                              € {sPrice.toFixed(2)}
+                              R$ {sPrice.toFixed(2).replace('.', ',')}
                             </span>
                             <button
                               type="button"
@@ -2186,7 +2331,7 @@ export default function PDVModal({
                                       </div>
                                     </div>
                                     <span className="text-[11px] font-bold font-mono text-gray-600 group-hover:text-amber-900 shrink-0">
-                                      € {pizzaPrice.toFixed(2)}
+                                      R$ {pizzaPrice.toFixed(2).replace('.', ',')}
                                     </span>
                                   </button>
                                 );
@@ -2250,7 +2395,7 @@ export default function PDVModal({
                           }`}
                         >
                           <span className="text-xs font-bold truncate">{b.name.replace('Borda de ', '')}</span>
-                          <span className="text-[9px] font-bold text-gray-500">+ € {b.priceSingle?.toFixed(2)}</span>
+                          <span className="text-[9px] font-bold text-gray-500">+ R$ {b.priceSingle?.toFixed(2).replace('.', ',')}</span>
                         </button>
                       );
                     })}
@@ -2267,7 +2412,7 @@ export default function PDVModal({
                     </label>
                     {customExtras.length > 0 && (
                       <span className="text-[10px] font-bold text-[#44210F] bg-[#F6E3DF] border border-[#E4C5B9] px-1.5 py-0.5 rounded-md">
-                        {customExtras.length} selecionado{customExtras.length > 1 ? 's' : ''} (+ € {customExtras.reduce((s, e) => s + e.price, 0).toFixed(2)})
+                        {customExtras.length} selecionado{customExtras.length > 1 ? 's' : ''} (+ R$ {customExtras.reduce((s, e) => s + e.price, 0).toFixed(2)})
                       </span>
                     )}
                   </div>
@@ -2287,7 +2432,7 @@ export default function PDVModal({
                         >
                           <div className="flex flex-col min-w-0 pr-1">
                             <span className="text-xs font-bold truncate">{extra.name}</span>
-                            <span className="text-[10px] font-bold text-gray-500 font-mono">+ € {extra.price.toFixed(2)}</span>
+                            <span className="text-[10px] font-bold text-gray-500 font-mono">+ R$ {extra.price.toFixed(2).replace('.', ',')}</span>
                           </div>
                           <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
                             isSelected ? 'bg-[#083D07] border-[#083D07] text-white' : 'border-gray-300 bg-white'
@@ -2330,7 +2475,7 @@ export default function PDVModal({
               >
                 <Check size={16} className="stroke-[3]" />
                 <span>
-                  {editingCartIndex !== null ? 'Salvar Alterações' : 'Confirmar Inclusão'} (€ {currentPreviewPrice.toFixed(2)})
+                  {editingCartIndex !== null ? 'Salvar Alterações' : 'Confirmar Inclusão'} (R$ {currentPreviewPrice.toFixed(2).replace('.', ',')})
                 </span>
               </button>
             </div>
