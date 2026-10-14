@@ -70,9 +70,9 @@ export const menuData: MenuItem[] = [
     name: 'Jiló',
     ingredients: 'Massa Dobro Longa Fermentação, molho pomodoro, mussarela, jiló cozido, bacon e orégano.',
     priceSingle: 38.0,
-    category: 'mais-pedidos',
+    category: 'premium',
     imageUrl: '/dobro/jilo.jpeg',
-    isBestseller: true
+    isBestseller: false
   },
 
   // --- PIZZAS PREMIUM DOBRO ---
