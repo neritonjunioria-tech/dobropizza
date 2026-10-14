@@ -108,13 +108,13 @@ export default function OrderTracking() {
             {order.items.map((item: any, i: number) => (
               <div key={i} className="flex justify-between text-sm">
                 <span className="text-gray-600">{item.quantity}x {formatItemNameForPrint(item)}</span>
-                <span className="font-medium">€{(item.priceCalculated * item.quantity).toFixed(2)}</span>
+                <span className="font-medium">R$ {(item.priceCalculated * item.quantity).toFixed(2)}</span>
               </div>
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between font-bold text-lg">
             <span>Total</span>
-            <span>€{order.totalAmount.toFixed(2)}</span>
+            <span>R$ {order.totalAmount.toFixed(2)}</span>
           </div>
           <div className="mt-2 text-sm text-gray-500 text-right">
             Pago em {order.paymentMethod}

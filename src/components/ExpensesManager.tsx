@@ -545,7 +545,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                 <span className="text-[10px] text-[#8a6f5c]">{filteredExpenses.length} {filteredExpenses.length === 1 ? 'saída' : 'saídas'}</span>
               </div>
               <p className="text-2xl font-bold tracking-tight text-[#44210f] mt-1 tabular-nums">
-                € {filteredTotalAmount.toFixed(2)}
+                R$ {filteredTotalAmount.toFixed(2)}
               </p>
             </div>
             
@@ -555,14 +555,14 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
               <p className="text-sm font-bold tracking-tight truncate text-[#44210f]" title={topCategory.name}>
                 {topCategory.name}
               </p>
-              <span className="text-[10px] text-amber-700 font-medium tabular-nums mt-1">€ {topCategory.amount.toFixed(2)}</span>
+              <span className="text-[10px] text-amber-700 font-medium tabular-nums mt-1">R$ {topCategory.amount.toFixed(2)}</span>
             </div>
 
             {/* Média */}
             <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-3 border border-[#d3c8bb] shadow-2xs flex flex-col justify-between">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8a6f5c] mb-1">Ticket Médio</span>
               <p className="text-sm font-bold tracking-tight text-[#44210f] tabular-nums">
-                € {averageExpense.toFixed(2)}
+                R$ {averageExpense.toFixed(2)}
               </p>
               <span className="text-[10px] text-[#8a6f5c] font-medium tabular-nums mt-1">por despesa</span>
             </div>
@@ -616,9 +616,9 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
               {/* Valor & Data */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="block text-[11px] font-semibold text-stone-700">Valor (€) *</label>
+                  <label className="block text-[11px] font-semibold text-stone-700">Valor (R$) *</label>
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">€</span>
+                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-stone-400">R$</span>
                     <input
                       type="number"
                       step="0.01"
@@ -860,7 +860,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                   ) : (
                     filteredExpenses.map((exp) => {
                       const d = new Date(exp.created_at);
-                      const formattedDate = !isNaN(d.getTime()) ? d.toLocaleDateString('pt-PT').slice(0, 5) : '-';
+                      const formattedDate = !isNaN(d.getTime()) ? d.toLocaleDateString('pt-BR').slice(0, 5) : '-';
                       const isBeingDeleted = deletingId === exp.id;
 
                       return (
@@ -876,7 +876,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
                             </span>
                           </td>
                           <td className="px-4 py-3 text-right font-bold text-stone-900 tabular-nums">
-                            € {Number(exp.amount || 0).toFixed(2)}
+                            R$ {Number(exp.amount || 0).toFixed(2)}
                           </td>
                           <td className="px-4 py-3 text-center">
                             <button
@@ -900,7 +900,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
             {filteredExpenses.length > 0 && (
               <div className="bg-stone-50 border-t border-stone-200 p-3 shrink-0 flex items-center justify-between text-xs font-semibold text-stone-700">
                 <span>Total Filtrado ({filteredExpenses.length})</span>
-                <span className="text-stone-900 text-sm tabular-nums">€ {filteredTotalAmount.toFixed(2)}</span>
+                <span className="text-stone-900 text-sm tabular-nums">R$ {filteredTotalAmount.toFixed(2)}</span>
               </div>
             )}
           </div>

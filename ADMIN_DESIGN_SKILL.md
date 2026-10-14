@@ -1,4 +1,4 @@
-# SKILL — Redesign Visual do Painel Administrativo (41 Menus)
+# SKILL — Redesign Visual do Painel Administrativo (DOBRO Pizzas)
 
 Este documento é o manual de design oficial para a modernização do **visual** do painel administrativo (`/admin`), sem alterar qualquer funcionalidade do sistema. O cardápio público (a loja) **não faz parte deste trabalho** — nada fora de `src/pages/AdminDashboard.tsx` e dos componentes que só existem dentro do painel (`MenuManager`, `CategoryManager`, `SettingsManager`, `CustomersManager`, `CaixaManager`, `UsersManager`) deve ser alterado.
 
@@ -6,7 +6,7 @@ Este documento é o manual de design oficial para a modernização do **visual**
 
 ## 1. Seu papel
 
-Você é um designer de produto sênior, com a mesma régua de qualidade de quem desenhou o Stripe Dashboard, o Linear, os apps internos de operação da Uber e o painel de lojista do iFood — ferramentas usadas por profissionais, todo dia, sob pressão, que precisam ser rápidas de ler e bonitas sem serem "decoradas". Você está redesenhando o painel de gestão da 41 Menus (pizzaria/esfiharia em Sesimbra, Portugal).
+Você é um designer de produto sênior, com a mesma régua de qualidade de quem desenhou o Stripe Dashboard, o Linear, os apps internos de operação da Uber e o painel de lojista do iFood — ferramentas usadas por profissionais, todo dia, sob pressão, que precisam ser rápidas de ler e bonitas sem serem "decoradas". Você está redesenhando o painel de gestão da DOBRO Pizzas (pizzaria artesanal em São José dos Pinhais — PR, Brasil).
 
 ## 2. Regra inviolável (não negociável)
 
@@ -43,7 +43,7 @@ A ideia central: o painel deve parecer o balcão de operação de uma pizzaria d
 --cor-texto-secundario: #78716C
 --cor-texto-terciario:  #A8A29E
 
---cor-marca:            #C81E3A   (vermelho da 41 Menus, levemente escurecido em relação ao #ea1d2c da loja — mais sério, menos "app de consumidor")
+--cor-marca:            #083D07   (Verde Floresta da DOBRO, a cor principal da marca)
 --cor-marca-hover:      #A8172F
 --cor-marca-fraca:      #FDEEF0   (fundo suave para estados ativos/selecionados)
 
@@ -65,7 +65,7 @@ Regra de uso: a cor de marca (`--cor-marca`) só aparece em **ações primárias
 
 Duas famílias, papéis bem definidos:
 - **Interface geral** (títulos, botões, texto de corpo): a fonte do sistema já usada no projeto (`font-sans` do Tailwind) — não trocar de fonte, só a escala.
-- **Números e dados** (valores em €, quantidades, IDs de pedido, horas): `font-mono` do Tailwind (ex: `font-mono tabular-nums`), sempre. Isso é o "gesto de comanda" — todo valor numérico importante ganha essa textura de recibo.
+- **Números e dados** (valores em R$, quantidades, IDs de pedido, horas): `font-mono` do Tailwind (ex: `font-mono tabular-nums`), sempre. Isso é o "gesto de comanda" — todo valor numérico importante ganha essa textura de recibo.
 
 Escala de tamanho (classes Tailwind a usar consistentemente):
 ```
@@ -99,7 +99,7 @@ Reconstruir o cabeçalho de topo do painel (acima do conteúdo de cada aba) com 
 
 **Especificação da Logo do Cliente (canto superior direito):**
 1. Adicione uma nova chave em `settings`: `admin_logo_url` (texto, pode ficar vazio).
-2. Na aba "Configurações", adicione uma seção **"Logo do Painel"** — igual ao padrão de upload já usado no projeto (bucket `Cardapio41menus`, pasta `admin/logo/`), com preview da imagem atual. Isso é diferente da logo do site público que foi removida antes — esta é exclusiva da área administrativa.
+2. Na aba "Configurações", adicione uma seção **"Logo do Painel"** — igual ao padrão de upload já usado no projeto (bucket `cardapio-dobropizza`, pasta `admin/logo/`), com preview da imagem atual. Isso é diferente da logo do site público que foi removida antes — esta é exclusiva da área administrativa.
 3. No topo do painel administrativo (não no site), se `admin_logo_url` estiver preenchida, mostre a imagem no canto superior direito (altura fixa de `h-9`, `object-contain`). Se estiver vazia, mostre o nome do usuário logado normalmente, sem quebrar o layout.
 
 ### 8.3 Cards de KPI (Visão Geral)
@@ -121,7 +121,7 @@ Inputs: `bg-[#FAFAF9] border border-[--cor-borda] rounded-lg text-sm`, foco com 
 Fundo escurecido `bg-[#1C1917]/50` (não preto puro `/60` genérico), card do modal com `rounded-2xl shadow-xl`, cabeçalho do modal com botão de fechar sempre no canto superior direito, ícone `X` com `stroke-width={2}`.
 
 ### 8.8 Gráficos (Recharts, na Visão Geral)
-Linha/área do gráfico na cor de marca (`--cor-marca`), grade de fundo bem discreta (`stroke="#F0EFED"`), eixos em `text-xs` na cor terciária. Nunca usar mais de 2 cores num mesmo gráfico, a não ser que cada cor represente uma categoria real de dado (ex: comparação de categorias mais vendidas) — nesse caso, usar uma paleta harmônica derivada da cor de marca (tons de vermelho/terracota/dourado), nunca cores aleatórias tipo "azul, verde, roxo, amarelo" sem relação com a marca.
+Linha/área do gráfico na cor de marca (`--cor-marca`), grade de fundo bem discreta (`stroke="#F0EFED"`), eixos em `text-xs` na cor terciária. Nunca usar mais de 2 cores num mesmo gráfico, a não ser que cada cor represente uma categoria real de dado (ex: comparação de categorias mais vendidas) — nesse caso, usar uma paleta harmônica derivada da cor de marca (tons de verde/terracota/dourado), nunca cores aleatórias tipo "azul, verde, roxo, amarelo" sem relação com a marca.
 
 ### 8.9 Estados vazios e de carregamento
 Toda mensagem de "carregando..." ou "nenhum resultado encontrado" ganha um tratamento consistente: ícone discreto + frase curta e direta (ex: "Nenhum pedido ainda hoje" ao invés de só "Nenhum pedido encontrado"), seguindo a voz do produto — direta, sem gírias, sem ponto de exclamação forçado.

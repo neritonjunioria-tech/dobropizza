@@ -341,7 +341,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               <Flame size={14} className="text-rose-600" />
             </div>
             <p className="text-2xl sm:text-3xl font-bold font-mono text-stone-900 tabular-nums tracking-tight mt-1">
-              {data.visitors.toLocaleString('pt-PT')}
+              {data.visitors.toLocaleString('pt-BR')}
             </p>
           </div>
           <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500 font-mono">
@@ -360,7 +360,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               <ShoppingBag size={14} className="text-amber-500" />
             </div>
             <p className="text-2xl sm:text-3xl font-bold font-mono text-stone-900 tabular-nums tracking-tight mt-1">
-              {data.addedToCart.toLocaleString('pt-PT')}
+              {data.addedToCart.toLocaleString('pt-BR')}
             </p>
           </div>
           <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500 font-mono">
@@ -379,7 +379,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               <CreditCard size={14} className="text-blue-500" />
             </div>
             <p className="text-2xl sm:text-3xl font-bold font-mono text-stone-900 tabular-nums tracking-tight mt-1">
-              {data.initiatedCheckout.toLocaleString('pt-PT')}
+              {data.initiatedCheckout.toLocaleString('pt-BR')}
             </p>
           </div>
           <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500 font-mono">
@@ -398,7 +398,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               <CheckCircle2 size={14} className="text-emerald-400" />
             </div>
             <p className="text-2xl sm:text-3xl font-bold font-mono text-emerald-400 tabular-nums tracking-tight mt-1">
-              {data.purchases.toLocaleString('pt-PT')}
+              {data.purchases.toLocaleString('pt-BR')}
             </p>
           </div>
           <div className="mt-3 pt-2.5 border-t border-[#d3c8bb] flex items-center justify-between text-[11px] text-[#745240] font-mono">
@@ -537,7 +537,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                     TRÁFEGO
                   </text>
                   <text x="0" y="12" textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize="12" fontWeight="700" fontFamily="monospace">
-                    {data.visitors.toLocaleString('pt-PT')} Acessos
+                    {data.visitors.toLocaleString('pt-BR')} Acessos
                   </text>
                 </g>
               </g>
@@ -571,7 +571,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                     VISITANTES
                   </text>
                   <text x="0" y="11" textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize="11.5" fontWeight="700" fontFamily="monospace">
-                    {data.engaged.toLocaleString('pt-PT')} Navegando
+                    {data.engaged.toLocaleString('pt-BR')} Navegando
                   </text>
                 </g>
               </g>
@@ -605,7 +605,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                     CARRINHO
                   </text>
                   <text x="0" y="10" textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize="10.5" fontWeight="700" fontFamily="monospace">
-                    {data.addedToCart.toLocaleString('pt-PT')} no Carrinho
+                    {data.addedToCart.toLocaleString('pt-BR')} no Carrinho
                   </text>
                 </g>
               </g>
@@ -639,7 +639,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                     CHECKOUT
                   </text>
                   <text x="0" y="9" textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize="10" fontWeight="700" fontFamily="monospace">
-                    {data.initiatedCheckout.toLocaleString('pt-PT')} Iniciados
+                    {data.initiatedCheckout.toLocaleString('pt-BR')} Iniciados
                   </text>
                 </g>
               </g>
@@ -676,7 +676,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                     VENDAS
                   </text>
                   <text x="0" y="7.5" textAnchor="middle" dominantBaseline="central" fill="#ffffff" fontSize="9" fontWeight="800" fontFamily="monospace">
-                    {data.purchases.toLocaleString('pt-PT')} Fechados
+                    {data.purchases.toLocaleString('pt-BR')} Fechados
                   </text>
                 </g>
               </g>
@@ -746,7 +746,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
 
                   <div className="text-right shrink-0">
                     <p className="text-sm font-bold font-mono text-stone-900 tabular-nums leading-tight">
-                      {stage.count.toLocaleString('pt-PT')}
+                      {stage.count.toLocaleString('pt-BR')}
                     </p>
                     <span className="text-[9px] font-mono text-stone-400 block leading-tight">
                       {stage.unit}
@@ -874,7 +874,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                   Recompra & Clientes
                 </span>
                 <span className="font-mono text-[9.5px] font-bold text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded border border-emerald-200">
-                  € {data.ticketMedio.toFixed(2)} Médio
+                  R$ {data.ticketMedio.toFixed(2)} Médio
                 </span>
               </div>
               <p className="text-[11px] text-stone-500 leading-snug">

@@ -16,11 +16,11 @@ export default function FAQSection() {
     },
     {
       question: 'Quais são as áreas de entrega e as taxas correspondentes?',
-      answer: 'ZONAS COM ENTREGA GRÁTIS:\nCotovia, Quintinha, Quintola de Santana, Santana, Maçã, Faúlha, Sampaio, Corredora, Almoinha, Alto das Vinhas, Carrasqueira\n\nZONAS COM €2,00:\nVila de Sesimbra, Zambujal\n\nZONAS COM €4,00:\nCaixas, Alfarim, Aiana\n\nZONAS COM €5,00:\nMeco, Azeitão, Aldeia da Piedade, Aldeia de Irmãos, Oleiros, Várzeas, Vila Nogueira, Moinho da Torre, Casal Bolinhos\n\nZONAS COM €6,00:\nLagoa da Albufeira\n\nCONDIÇÃO ESPECIAL:\nAcima de €35,00 de subtotal → entrega grátis em qualquer zona\n\nZONA NÃO ATENDIDA:\nSe a sua zona não estiver listada, lamento, mas ainda não fazemos entregas nessa zona. Pode levantar aqui no DOBRO Pizzas em Sesimbra.'
+      answer: 'ZONAS COM ENTREGA GRÁTIS:\nCotovia, Quintinha, Quintola de Santana, Santana, Maçã, Faúlha, Sampaio, Corredora, Almoinha, Alto das Vinhas, Carrasqueira\n\nZONAS COM R$2,00:\nVila de Sesimbra, Zambujal\n\nZONAS COM R$4,00:\nCaixas, Alfarim, Aiana\n\nZONAS COM R$5,00:\nMeco, Azeitão, Aldeia da Piedade, Aldeia de Irmãos, Oleiros, Várzeas, Vila Nogueira, Moinho da Torre, Casal Bolinhos\n\nZONAS COM R$6,00:\nLagoa da Albufeira\n\nCONDIÇÃO ESPECIAL:\nAcima de R$35,00 de subtotal → entrega grátis em qualquer zona\n\nZONA NÃO ATENDIDA:\nSe a sua zona não estiver listada, lamento, mas ainda não fazemos entregas nessa zona. Pode levantar aqui no DOBRO Pizzas em Sesimbra.'
     },
     {
       question: 'Qual é o valor mínimo para entrega e como Ganhar a Entrega?',
-      answer: 'O valor mínimo de um pedido para podermos enviar um estafeta é de 10,00€. E para pedidos com subtotal acima de 35,00€, Ganha a entrega!'
+      answer: 'O valor mínimo de um pedido para podermos enviar um estafeta é de R$ 10,00. E para pedidos com subtotal acima de R$ 35,00, Ganha a entrega!'
     },
     {
       question: 'Quais são os métodos de pagamento aceites?',

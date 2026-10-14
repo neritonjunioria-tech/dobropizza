@@ -1,7 +1,7 @@
 # Skill: CRM & Cardápio Digital Specialist
 
 ## Descrição
-Skill especializada para desenvolvimento de sistemas de CRM, cardápios digitais, delivery e gestão de restaurantes/pizzarias. Baseada no projeto "41 Menu's" (Pizzaria & Esfiharia Delivery).
+Skill especializada para desenvolvimento de sistemas de CRM, cardápios digitais, delivery e gestão de restaurantes/pizzarias. Usada no projeto DOBRO Pizzas (pizzaria artesanal, São José dos Pinhais — PR, Brasil).
 
 ## Contexto do Projeto
 - **Stack**: React 19 + TypeScript + Vite + TailwindCSS v4 + Supabase (PostgreSQL + Auth + Realtime + Storage)
@@ -72,7 +72,7 @@ const fetchDashboardData = async (isBackground = false) => { ... }
 ### Estilização (Tailwind v4 + Design Tokens)
 ```typescript
 // adminDesignTokens.ts - fonte única de verdade
-ADMIN_COLORS = { bg: '#FAFAF9', brand: '#C81E3A', accentGold: '#D4AF6A', ... }
+ADMIN_COLORS = { bg: '#FAFAF9', brand: '#083D07', accentGold: '#D4AF6A', ... }
 ADMIN_STYLES = { card: 'bg-white rounded-xl border border-[#E7E5E1] ...', ... }
 ```
 
@@ -99,8 +99,8 @@ Exporta todas as tabelas para JSON/CSV (backup manual)
 1. **Sempre use `useMenu()`** para acessar cardápio - nunca importe `ALL_MENU_ITEMS` diretamente
 2. **Paused items** = source of truth via `paused_items` table + Realtime, nunca localStorage
 3. **Imagens**: `findImageForProduct(item)` tenta múltiplas extensões + fallback automático
-4. **Moeda**: Sempre `toFixed(2)` + `€` prefix, usar `font-mono tabular-nums` para alinhamento
-5. **Datas**: `getLisbonDate()` para timezone Portugal (WET/WEST)
+4. **Moeda**: Sempre `toFixed(2)` + `R$` prefix, usar `font-mono tabular-nums` para alinhamento
+5. **Datas**: `getLisbonDate()` (nome herdado do projeto anterior; a DOBRO fica no Brasil, fuso America/Sao_Paulo)
 6. **Permissões**: `hasPermission('perm_key')` - owner tem tudo, demais via `profiles.permissions` JSONB
 7. **Impressão**: CSS `@media print` com `.no-print` / `.print-only` classes
 

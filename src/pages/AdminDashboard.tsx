@@ -103,7 +103,7 @@ const safeGetDate = (dStr: any): Date | null => {
 
 const formatCurrency = (val: any): string => {
   const num = typeof val === 'number' ? val : Number(val) || 0;
-  return `€ ${num.toFixed(2)}`;
+  return `R$ ${num.toFixed(2)}`;
 };
 
 const safeParseItems = (items: any): any[] => {
@@ -1194,7 +1194,7 @@ export default function AdminDashboard() {
     const headers = ['ID', 'Data', 'Cliente', 'Telefone', 'Tipo', 'Pagamento', 'Total', 'Status'];
     const rows = orders.map((o: any) => [
       o.id,
-      (safeGetDate(o.createdAt) || new Date()).toLocaleString('pt-PT').replace(/,/g, ''),
+      (safeGetDate(o.createdAt) || new Date()).toLocaleString('pt-BR').replace(/,/g, ''),
       `"${o.customerName || ''}"`,
       o.customerPhone || '',
       o.orderType,
@@ -1262,7 +1262,7 @@ export default function AdminDashboard() {
         <Bike size={12} />
         <span>{responsible || 'Sem motoboy'}</span>
         {responsible && order.deliveryCost !== null && order.deliveryCost !== undefined && (
-          <span className="font-normal text-stone-500 tabular-nums">€{Number(order.deliveryCost).toFixed(2)}</span>
+          <span className="font-normal text-stone-500 tabular-nums">R$ {Number(order.deliveryCost).toFixed(2)}</span>
         )}
       </button>
     );
@@ -1486,7 +1486,7 @@ export default function AdminDashboard() {
                 <ReportCard
                   customDelay={0.05}
                   title="Fluxo de Caixa"
-                  value={`€ ${(dashboardData?.lucroLiquido ?? (filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0) - (expenses.reduce((s, e) => s + Number(e.amount || 0), 0)))).toFixed(2)}`}
+                  value={`R$ ${(dashboardData?.lucroLiquido ?? (filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0) - (expenses.reduce((s, e) => s + Number(e.amount || 0), 0)))).toFixed(2)}`}
                   icon={<TrendingUp size={14} strokeWidth={1.5} className="text-emerald-950" />}
                   onClick={() => setReportModal({isOpen: true, type: 'fluxo_caixa', title: 'Relatório de Fluxo de Caixa (Entradas vs Saídas)'})}
                   subtitle="Entradas, Saídas e Lucro"
@@ -1494,7 +1494,7 @@ export default function AdminDashboard() {
                 <ReportCard
                   customDelay={0.10}
                   title="Faturamento Geral"
-                  value={`€ ${filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0).toFixed(2)}`}
+                  value={`R$ ${filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0).toFixed(2)}`}
                   icon={<DollarSign size={14} strokeWidth={1.5} className="text-emerald-950" />}
                   onClick={() => setReportModal({isOpen: true, type: 'faturamento', title: 'Faturamento Geral por Dia'})}
                   subtitle="Vendas por dia e pedidos"
@@ -1510,7 +1510,7 @@ export default function AdminDashboard() {
                 <ReportCard
                   customDelay={0.20}
                   title="Ticket Médio"
-                  value={`€ ${filteredOrders.length > 0 ? (filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0) / filteredOrders.length).toFixed(2) : '0.00'}`}
+                  value={`R$ ${filteredOrders.length > 0 ? (filteredOrders.reduce((acc, o) => acc + o.totalAmount, 0) / filteredOrders.length).toFixed(2) : '0.00'}`}
                   icon={<CreditCard size={14} strokeWidth={1.5} className="text-emerald-950" />}
                   onClick={() => {
                     setTicketMedioTab('todos');
@@ -2206,7 +2206,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
               <KpiCard
                 title="Faturamento Bruto"
-                value={`€ ${faturamentoBruto.toFixed(2)}`}
+                value={`R$ ${faturamentoBruto.toFixed(2)}`}
                 icon={<DollarSign size={13} strokeWidth={1.5} className="text-emerald-600" />}
                 trend={(dashboardData?.revenueChangePercent ?? 0) >= 0 ? `+${(dashboardData?.revenueChangePercent ?? 0).toFixed(1)}%` : `${(dashboardData?.revenueChangePercent ?? 0).toFixed(1)}%`}
                 trendUp={(dashboardData?.revenueChangePercent ?? 0) >= 0}
@@ -2216,7 +2216,7 @@ export default function AdminDashboard() {
               />
               <KpiCard
                 title="Ticket Médio"
-                value={`€ ${ticketMedio.toFixed(2)}`}
+                value={`R$ ${ticketMedio.toFixed(2)}`}
                 icon={<CreditCard size={13} strokeWidth={1.5} className="text-stone-700" />}
                 trend="+0%"
                 trendUp={true}
@@ -2371,7 +2371,7 @@ export default function AdminDashboard() {
                             axisLine={false} 
                             tickLine={false} 
                             tick={{ fill: '#71717a', fontSize: 10, fontWeight: 600, fontFamily: 'ui-monospace, monospace' }}
-                            tickFormatter={(value) => `€${value}`}
+                            tickFormatter={(value) => `R$ ${value}`}
                           />
                           <Tooltip
                             contentStyle={{ backgroundColor: '#18181b', color: '#ffffff', borderRadius: '8px', border: '1px solid #27272a', boxShadow: '0 4px 12px rgb(0 0 0 / 0.15)', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}
@@ -2379,7 +2379,7 @@ export default function AdminDashboard() {
                             labelStyle={{ color: '#a1a1aa', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }}
                             labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullName || _label}
                             formatter={(value: any, _name: any, item: any) => [
-                              `€ ${Number(value).toFixed(2)}${item?.payload?.orders !== undefined ? ` (${item.payload.orders} pedidos)` : ''}`,
+                              `R$ ${Number(value).toFixed(2)}${item?.payload?.orders !== undefined ? ` (${item.payload.orders} pedidos)` : ''}`,
                               'Vendas do Dia'
                             ]}
                             cursor={{fill: 'rgba(24, 24, 27, 0.04)'}}
@@ -2427,7 +2427,7 @@ export default function AdminDashboard() {
                                     {cat.qty !== undefined && cat.qty > 0 && (
                                       <span className="font-bold text-stone-900 tabular-nums">{cat.qty} un.</span>
                                     )}
-                                    <span className="text-stone-500 font-bold tabular-nums">€{(cat.value || 0).toFixed(2)}</span>
+                                    <span className="text-stone-500 font-bold tabular-nums">R$ {(cat.value || 0).toFixed(2)}</span>
                                   </div>
                                 </div>
                                 <div className="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
@@ -2474,7 +2474,7 @@ export default function AdminDashboard() {
                                   </div>
                                   <div className="flex items-center gap-2 shrink-0 font-mono text-[10px] sm:text-[11px]">
                                     <span className="font-bold text-stone-900 tabular-nums">{item.qty} un.</span>
-                                    <span className="text-stone-400 font-medium tabular-nums">€{(item.revenue || 0).toFixed(2)}</span>
+                                    <span className="text-stone-400 font-medium tabular-nums">R$ {(item.revenue || 0).toFixed(2)}</span>
                                   </div>
                                 </div>
                                 <div className="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
@@ -2500,7 +2500,7 @@ export default function AdminDashboard() {
                             contentStyle={{ backgroundColor: '#18181b', color: '#ffffff', borderRadius: '8px', border: '1px solid #27272a', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}
                             itemStyle={{ color: '#ffffff', fontWeight: 700 }}
                             formatter={(value: any, _name: any, item: any) => [
-                              `€ ${(Number(value) || 0).toFixed(2)}${item?.payload?.count !== undefined ? ` (${item.payload.count} pedidos)` : ''}`,
+                              `R$ ${(Number(value) || 0).toFixed(2)}${item?.payload?.count !== undefined ? ` (${item.payload.count} pedidos)` : ''}`,
                               'Total'
                             ]}
                             cursor={{fill: 'rgba(24, 24, 27, 0.04)'}}
@@ -2539,7 +2539,7 @@ export default function AdminDashboard() {
                           .map((cat: any, idx: number) => (
                             <div key={idx} className="flex justify-between items-center gap-2 text-xs">
                               <span className="font-mono text-stone-600 capitalize leading-snug">{String(cat.name || '').replace('-', ' ')}</span>
-                              <span className="font-mono font-bold tabular-nums text-stone-900 shrink-0">€ {(Number(cat.value) || 0).toFixed(2)}</span>
+                              <span className="font-mono font-bold tabular-nums text-stone-900 shrink-0">R$ {(Number(cat.value) || 0).toFixed(2)}</span>
                             </div>
                           ))
                       )}
@@ -2572,7 +2572,7 @@ export default function AdminDashboard() {
                               </span>
                             </div>
                             <span className="font-mono font-bold tabular-nums text-stone-900 shrink-0">
-                              € {(Number(product.revenue) || 0).toFixed(2)}
+                              R$ {(Number(product.revenue) || 0).toFixed(2)}
                             </span>
                           </div>
                         ))
@@ -2600,14 +2600,14 @@ export default function AdminDashboard() {
                         <BarChart data={salesData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e4e7" />
                           <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11, fontWeight: 600, fontFamily: 'ui-monospace, monospace' }} dy={10} />
-                          <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11, fontWeight: 600, fontFamily: 'ui-monospace, monospace' }} tickFormatter={(value) => `€${value}`} />
+                          <YAxis axisLine={false} tickLine={false} tick={{ fill: '#71717a', fontSize: 11, fontWeight: 600, fontFamily: 'ui-monospace, monospace' }} tickFormatter={(value) => `R$ ${value}`} />
                           <Tooltip
                             contentStyle={{ backgroundColor: '#18181b', color: '#ffffff', borderRadius: '8px', border: '1px solid #27272a', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}
                             itemStyle={{ color: '#ffffff', fontWeight: 700 }}
                             labelStyle={{ color: '#a1a1aa', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }}
                             labelFormatter={(_label, payload) => payload?.[0]?.payload?.fullName || _label}
                             formatter={(value: any, _name: any, item: any) => [
-                              `€ ${Number(value).toFixed(2)}${item?.payload?.orders !== undefined ? ` (${item.payload.orders} pedidos)` : ''}`,
+                              `R$ ${Number(value).toFixed(2)}${item?.payload?.orders !== undefined ? ` (${item.payload.orders} pedidos)` : ''}`,
                               'Vendas do Dia'
                             ]}
                             cursor={{fill: 'rgba(24, 24, 27, 0.04)'}}
@@ -2636,7 +2636,7 @@ export default function AdminDashboard() {
                           [...(dashboardData?.chartData?.salesByCategory || [])].sort((a, b) => (Number(b.value) || 0) - (Number(a.value) || 0)).slice(0, 3).map((cat: any, idx: number) => (
                             <div key={idx} className="flex justify-between items-center gap-2">
                               <span className="text-xs font-mono text-stone-600 capitalize leading-snug">{String(cat.name || '').replace('-', ' ')}</span>
-                              <span className="text-xs font-mono font-bold tabular-nums text-stone-900 shrink-0">€ {(Number(cat.value) || 0).toFixed(2)}</span>
+                              <span className="text-xs font-mono font-bold tabular-nums text-stone-900 shrink-0">R$ {(Number(cat.value) || 0).toFixed(2)}</span>
                             </div>
                           ))
                         )}
@@ -2663,7 +2663,7 @@ export default function AdminDashboard() {
                                 <span className="w-5 h-5 rounded bg-stone-100 flex items-center justify-center text-[10px] font-mono font-bold text-stone-600 border border-stone-200 shrink-0">{index + 1}</span>
                                 <span className="text-xs font-semibold text-stone-900 leading-snug" title={product.name}>{formatItemNameForPrint({ name: product.name })}</span>
                               </div>
-                              <span className="text-xs font-mono font-bold tabular-nums text-stone-900 shrink-0">€ {(Number(product.revenue) || 0).toFixed(2)}</span>
+                              <span className="text-xs font-mono font-bold tabular-nums text-stone-900 shrink-0">R$ {(Number(product.revenue) || 0).toFixed(2)}</span>
                             </div>
                           ))
                         )}
@@ -2714,7 +2714,7 @@ export default function AdminDashboard() {
                                       {cat.qty !== undefined && cat.qty > 0 && (
                                         <span className="font-bold text-stone-900 tabular-nums">{cat.qty} un.</span>
                                       )}
-                                      <span className="text-stone-500 font-bold tabular-nums">€{(cat.value || 0).toFixed(2)}</span>
+                                      <span className="text-stone-500 font-bold tabular-nums">R$ {(cat.value || 0).toFixed(2)}</span>
                                     </div>
                                   </div>
                                   <div className="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
@@ -2771,7 +2771,7 @@ export default function AdminDashboard() {
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0 font-mono text-[10px] sm:text-[11px]">
                                       <span className="font-bold text-stone-900 tabular-nums">{item.qty} un.</span>
-                                      <span className="text-stone-400 font-medium tabular-nums">€{(item.revenue || 0).toFixed(2)}</span>
+                                      <span className="text-stone-400 font-medium tabular-nums">R$ {(item.revenue || 0).toFixed(2)}</span>
                                     </div>
                                   </div>
                                   <div className="w-full bg-stone-100 rounded-full h-2 overflow-hidden">
@@ -2806,7 +2806,7 @@ export default function AdminDashboard() {
                             contentStyle={{ backgroundColor: '#18181b', color: '#ffffff', borderRadius: '8px', border: '1px solid #27272a', fontFamily: 'ui-monospace, monospace', fontSize: '11px' }}
                             itemStyle={{ color: '#ffffff', fontWeight: 700 }}
                             formatter={(value: any, _name: any, item: any) => [
-                              `€ ${(Number(value) || 0).toFixed(2)}${item?.payload?.count !== undefined ? ` (${item.payload.count} pedidos)` : ''}`,
+                              `R$ ${(Number(value) || 0).toFixed(2)}${item?.payload?.count !== undefined ? ` (${item.payload.count} pedidos)` : ''}`,
                               'Total'
                             ]}
                             cursor={{fill: 'rgba(24, 24, 27, 0.04)'}}
@@ -3121,7 +3121,7 @@ export default function AdminDashboard() {
                                 {/* Valor Total em Destaque */}
                                 <div className="text-right">
                                   <span className="font-mono font-black text-lg text-stone-900 tabular-nums">
-                                    €{Number(order.totalAmount || 0).toFixed(2)}
+                                    R$ {Number(order.totalAmount || 0).toFixed(2)}
                                   </span>
                                 </div>
                               </div>
@@ -3131,7 +3131,7 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-1.5 text-xs text-stone-500 font-mono">
                                   <Clock size={12} className="text-stone-400" />
                                   <span className="font-bold text-stone-700">
-                                    {new Date(order.createdAt).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(order.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                   </span>
                                   {order.status !== 'Finalizado' && order.status !== 'Cancelado' && elapsed.text && (
                                     <span className="text-[11px] font-bold px-1.5 py-0.2 rounded bg-stone-100 text-stone-700 border border-stone-200">
@@ -3219,7 +3219,7 @@ export default function AdminDashboard() {
 
                                 {order.changeFor && Number(order.changeFor) > 0 && (
                                   <span className="text-[11px] font-mono font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                                    Troco p/ €{Number(order.changeFor).toFixed(2)}
+                                    Troco p/ R$ {Number(order.changeFor).toFixed(2)}
                                   </span>
                                 )}
                               </div>
@@ -3275,10 +3275,10 @@ export default function AdminDashboard() {
                                           </div>
                                         </div>
 
-                                        {/* Preço só é exibido se for maior que 0 (evita €0.00 confuso de IA) */}
+                                        {/* Preço só é exibido se for maior que 0 (evita R$0.00 confuso de IA) */}
                                         {itemPrice > 0 && (
                                           <span className="font-mono text-stone-700 text-xs font-bold tabular-nums shrink-0">
-                                            €{itemPrice.toFixed(2)}
+                                            R$ {itemPrice.toFixed(2)}
                                           </span>
                                         )}
                                       </div>
@@ -3443,7 +3443,7 @@ export default function AdminDashboard() {
                                   </div>
                                   <div className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
                                     <span className="font-bold text-stone-700">
-                                      {new Date(order.createdAt).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                                      {new Date(order.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                     {order.status !== 'Finalizado' && order.status !== 'Cancelado' && elapsed.text && (
                                       <span className="text-[10px] text-stone-400">({elapsed.text})</span>
@@ -3517,14 +3517,14 @@ export default function AdminDashboard() {
                                     </span>
                                     {order.changeFor && Number(order.changeFor) > 0 && (
                                       <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
-                                        Troco €{Number(order.changeFor).toFixed(0)}
+                                        Troco R$ {Number(order.changeFor).toFixed(0)}
                                       </span>
                                     )}
                                   </div>
                                 </td>
 
                                 <td className="py-3 px-4 font-black tabular-nums text-stone-900 text-sm">
-                                  €{Number(order.totalAmount || 0).toFixed(2)}
+                                  R$ {Number(order.totalAmount || 0).toFixed(2)}
                                 </td>
 
                                 <td className="py-3 px-4 text-center">
@@ -3889,7 +3889,7 @@ export default function AdminDashboard() {
                           <div className="mt-2 flex flex-col gap-1.5">
                             <div className="flex justify-between items-center gap-1">
                               <span className="font-bold text-xs text-stone-900 font-mono shrink-0">
-                                {item.priceSingle ? `€ ${Number(item.priceSingle).toFixed(2)}` : (item.priceP ? `Pq: € ${Number(item.priceP).toFixed(2)}` : '')}
+                                {item.priceSingle ? `R$ ${Number(item.priceSingle).toFixed(2)}` : (item.priceP ? `Pq: R$ ${Number(item.priceP).toFixed(2)}` : '')}
                               </span>
                               <button
                                 onClick={() => togglePauseItem(item.id)}
@@ -4072,7 +4072,7 @@ export default function AdminDashboard() {
                 }
                 
                 if (reportModal.type === 'faturamento') {
-                  const formatCurrency = (val: any) => new Intl.NumberFormat('pt-PT', { style: 'currency', currency: 'EUR' }).format(Number(val) || 0);
+                  const formatCurrency = (val: any) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(val) || 0);
                   const formatDateTime = (val: any) => {
                     if (!val) return 'Ativo';
                     const d = new Date(val);
@@ -4159,7 +4159,7 @@ export default function AdminDashboard() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center bg-stone-50 p-4 rounded-xl border border-stone-200">
                         <span className="font-bold text-stone-700 text-sm">Faturamento Acumulado dos Itens:</span>
-                        <span className="font-black text-xl font-mono text-emerald-700">€ {totalRev.toFixed(2)}</span>
+                        <span className="font-black text-xl font-mono text-emerald-700">R$ {totalRev.toFixed(2)}</span>
                       </div>
                       <div className="border border-stone-200 rounded-xl overflow-hidden shadow-xs">
                         <table className="w-full text-left border-collapse">
@@ -4175,7 +4175,7 @@ export default function AdminDashboard() {
                               <tr key={idx} className="hover:bg-stone-50/80 transition-colors">
                                 <td className="py-3 px-4 font-bold text-stone-900">{name}</td>
                                 <td className="py-3 px-4 text-center font-mono font-bold text-stone-600">{data.qty} uni</td>
-                                <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">€ {data.rev.toFixed(2)}</td>
+                                <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">R$ {data.rev.toFixed(2)}</td>
                               </tr>
                             ))}
                             {sorted.length === 0 && (
@@ -4269,12 +4269,12 @@ export default function AdminDashboard() {
                                 <div className={`text-xl font-black font-mono tracking-tight leading-none ${
                                   isSelected ? 'text-white' : 'text-stone-900'
                                 }`}>
-                                  € {seg.ticket.toFixed(2)}
+                                  R$ {seg.ticket.toFixed(2)}
                                 </div>
                                 <div className={`text-[10.5px] font-mono mt-1 ${
                                   isSelected ? 'text-stone-400' : 'text-stone-500'
                                 }`}>
-                                  Total: € {seg.rev.toFixed(2)}
+                                  Total: R$ {seg.rev.toFixed(2)}
                                 </div>
                               </div>
                             </button>
@@ -4288,7 +4288,7 @@ export default function AdminDashboard() {
                           Mostrando pedidos de: <strong className="text-stone-900 font-bold">{currentTabName}</strong> ({currentTabOrders.length})
                         </div>
                         <div className="text-stone-400 text-[10px]">
-                          Fórmula: Total (€ {currentTabRev.toFixed(2)}) ÷ {currentTabOrders.length || 0} pedidos = <span className="text-stone-800 font-bold">€ {currentTabTicket.toFixed(2)}</span>
+                          Fórmula: Total (R$ {currentTabRev.toFixed(2)}) ÷ {currentTabOrders.length || 0} pedidos = <span className="text-stone-800 font-bold">R$ {currentTabTicket.toFixed(2)}</span>
                         </div>
                       </div>
 
@@ -4313,7 +4313,7 @@ export default function AdminDashboard() {
                                 <tr key={o.id} className="hover:bg-stone-50/70 transition-colors">
                                   <td className="py-2 px-3.5 font-mono font-bold text-stone-900">#{o.id}</td>
                                   <td className="py-2 px-3.5 font-mono text-stone-600 text-[11px]">
-                                    {new Date(o.createdAt).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                                    {new Date(o.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                   </td>
                                   <td className="py-2 px-3.5 font-medium text-stone-800">{o.customerName}</td>
                                   <td className="py-2 px-3.5">
@@ -4322,7 +4322,7 @@ export default function AdminDashboard() {
                                     </span>
                                   </td>
                                   <td className="py-2 px-3.5 font-mono text-stone-600 text-[11px]">{o.paymentMethod}</td>
-                                  <td className="py-2 px-3.5 text-right font-mono font-bold text-stone-900">€ {Number(o.totalAmount || 0).toFixed(2)}</td>
+                                  <td className="py-2 px-3.5 text-right font-mono font-bold text-stone-900">R$ {Number(o.totalAmount || 0).toFixed(2)}</td>
                                   <td className="py-2 px-3.5 text-center">
                                     <button
                                       type="button"
@@ -4366,7 +4366,7 @@ export default function AdminDashboard() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center bg-stone-50 p-4 rounded-xl border border-stone-200">
                         <span className="font-bold text-stone-700 text-sm">Total Geral em Pagamentos:</span>
-                        <span className="font-black text-xl font-mono text-emerald-700">€ {totalRev.toFixed(2)}</span>
+                        <span className="font-black text-xl font-mono text-emerald-700">R$ {totalRev.toFixed(2)}</span>
                       </div>
                       <div className="border border-stone-200 rounded-xl overflow-hidden shadow-xs">
                         <table className="w-full text-left border-collapse">
@@ -4382,7 +4382,7 @@ export default function AdminDashboard() {
                               <tr key={idx} className="hover:bg-stone-50/80 transition-colors">
                                 <td className="py-3 px-4 font-bold text-stone-900">{pm}</td>
                                 <td className="py-3 px-4 text-center font-mono font-bold text-stone-600">{data.count} pedidos</td>
-                                <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">€ {data.rev.toFixed(2)}</td>
+                                <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">R$ {data.rev.toFixed(2)}</td>
                               </tr>
                             ))}
                           </tbody>
@@ -4398,7 +4398,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center bg-stone-50 p-4 rounded-xl border border-stone-200">
                       <span className="font-bold text-stone-700 text-sm">Total de Pedidos no Período ({filteredReportOrders.length}):</span>
-                      <span className="font-black text-xl font-mono text-emerald-700">€ {totalPeriodo.toFixed(2)}</span>
+                      <span className="font-black text-xl font-mono text-emerald-700">R$ {totalPeriodo.toFixed(2)}</span>
                     </div>
                     <div className="border border-stone-200 rounded-xl overflow-hidden shadow-xs">
                       <table className="w-full text-left border-collapse">
@@ -4417,7 +4417,7 @@ export default function AdminDashboard() {
                             <tr key={o.id} className="hover:bg-stone-50/80 transition-colors">
                               <td className="py-3 px-4 font-mono font-bold text-stone-900">#{o.id}</td>
                               <td className="py-3 px-4 text-xs font-medium text-stone-600">
-                                {new Date(o.createdAt).toLocaleString('pt-PT')}
+                                {new Date(o.createdAt).toLocaleString('pt-BR')}
                               </td>
                               <td className="py-3 px-4 font-semibold text-stone-800">{o.customerName}</td>
                               <td className="py-3 px-4">
@@ -4429,7 +4429,7 @@ export default function AdminDashboard() {
                                   {o.status}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">€ {Number(o.totalAmount || 0).toFixed(2)}</td>
+                              <td className="py-3 px-4 text-right font-mono font-bold text-emerald-700">R$ {Number(o.totalAmount || 0).toFixed(2)}</td>
                               <td className="py-3 px-4 text-center">
                                 <div className="flex items-center justify-center gap-1.5">
                                   <button
@@ -4536,13 +4536,13 @@ export default function AdminDashboard() {
                           <span style={{ fontSize: '12px', fontWeight: 'normal' }}>{formatItemNameForPrint(item)}</span>
                         </div>
                         <span style={{ fontSize: '13px', fontWeight: '800', whiteSpace: 'nowrap' }}>
-                          {(((item.basePrice !== undefined ? item.basePrice : item.priceCalculated) || 0) * (item.quantity || 1)).toFixed(2)} €
+                          R$ {(((item.basePrice !== undefined ? item.basePrice : item.priceCalculated) || 0) * (item.quantity || 1)).toFixed(2)}
                         </span>
                       </div>
                       {item.extras && item.extras.length > 0 && item.extras.map((extra: any, extraIdx: number) => (
                         <div key={`${idx}-extra-${extraIdx}`} style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '8px', marginTop: '1px' }}>
                           <span style={{ fontSize: '10px', fontWeight: 'normal' }}>{extra.quantity > 1 ? `${extra.quantity}x ` : ''}{extra.name}</span>
-                          <span style={{ fontSize: '10px', fontWeight: 'normal' }}>{((extra.price || 0) * (item.quantity || 1)).toFixed(2)} €</span>
+                          <span style={{ fontSize: '10px', fontWeight: 'normal' }}>R$ {((extra.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
                         </div>
                       ))}
                       {item.notes && (
@@ -4571,19 +4571,19 @@ export default function AdminDashboard() {
                     <div style={{ marginBottom: '6px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'normal', marginBottom: '2px' }}>
                         <span>Subtotal</span>
-                        <span>{itemsSubtotal.toFixed(2)} €</span>
+                        <span>R$ {itemsSubtotal.toFixed(2)}</span>
                       </div>
                       {isDelivery && deliveryFee > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'normal', marginBottom: '2px' }}>
                           <span>Taxa de Entrega</span>
-                          <span>{deliveryFee.toFixed(2)} €</span>
+                          <span>R$ {deliveryFee.toFixed(2)}</span>
                         </div>
                       )}
                       {addAmount > 0 && (
                         <div style={{ marginBottom: '3px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'bold' }}>
                             <span>+ Taxa / Adicional</span>
-                            <span>+ {addAmount.toFixed(2)} €</span>
+                            <span>+ R$ {addAmount.toFixed(2)}</span>
                           </div>
                           {reasonNote && (
                             <div style={{ fontSize: '10px', fontStyle: 'italic', paddingLeft: '8px', color: '#333' }}>
@@ -4595,12 +4595,12 @@ export default function AdminDashboard() {
                       {discAmount > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 'bold', marginBottom: '2px' }}>
                           <span>- Desconto</span>
-                          <span>- {discAmount.toFixed(2)} €</span>
+                          <span>- R$ {discAmount.toFixed(2)}</span>
                         </div>
                       )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: '900', marginTop: '3px', borderTop: '1px dashed #000', paddingTop: '3px' }}>
                         <span>Montante pago</span>
-                        <span>{(printOrder.totalAmount || 0).toFixed(2)} €</span>
+                        <span>R$ {(printOrder.totalAmount || 0).toFixed(2)}</span>
                       </div>
                     </div>
                   );
@@ -4608,14 +4608,14 @@ export default function AdminDashboard() {
 
                 {/* Payment + Time */}
                 <div style={{ fontSize: '10px' }}>
-                  <p style={{ margin: '0 0 2px 0', fontWeight: 'normal' }}>Realizado a {new Date(printOrder.createdAt).toLocaleString('pt-PT')}</p>
+                  <p style={{ margin: '0 0 2px 0', fontWeight: 'normal' }}>Realizado a {new Date(printOrder.createdAt).toLocaleString('pt-BR')}</p>
                   <p style={{ margin: '0 0 2px 0', fontWeight: 'bold' }}>
                     {(printOrder.orderType === 'Delivery' || printOrder.orderType === 'entrega')
                       ? 'Entrega est.: 40 a 50 min'
                       : 'Recolher em: 25 a 35 min'}
                   </p>
                   <p style={{ margin: 0, fontWeight: 'normal' }}>Pagamento: {printOrder.paymentMethod}</p>
-                  {printOrder.changeFor && <p style={{ margin: '1px 0 0 0', fontWeight: 'normal' }}>Troco para: € {printOrder.changeFor}</p>}
+                  {printOrder.changeFor && <p style={{ margin: '1px 0 0 0', fontWeight: 'normal' }}>Troco para: R$ {printOrder.changeFor}</p>}
                 </div>
 
                 {/* Footer */}
@@ -4685,13 +4685,13 @@ export default function AdminDashboard() {
                       <span style={{ fontSize: '10pt', fontWeight: 'normal' }}>{formatItemNameForPrint(item)}</span>
                     </div>
                     <span style={{ fontSize: '12pt', fontWeight: '800', whiteSpace: 'nowrap' }}>
-                      {(((item.basePrice !== undefined ? item.basePrice : item.priceCalculated) || 0) * (item.quantity || 1)).toFixed(2)} €
+                      R$ {(((item.basePrice !== undefined ? item.basePrice : item.priceCalculated) || 0) * (item.quantity || 1)).toFixed(2)}
                     </span>
                   </div>
                   {item.extras && item.extras.length > 0 && item.extras.map((extra: any, extraIdx: number) => (
                     <div key={`${idx}-extra-${extraIdx}`} style={{ display: 'flex', justifyContent: 'space-between', paddingLeft: '10px', marginTop: '2px' }}>
                       <span style={{ fontSize: '10pt', fontWeight: 'normal' }}>{extra.quantity > 1 ? `${extra.quantity}x ` : ''}{extra.name}</span>
-                      <span style={{ fontSize: '10pt', fontWeight: 'normal' }}>{((extra.price || 0) * (item.quantity || 1)).toFixed(2)} €</span>
+                      <span style={{ fontSize: '10pt', fontWeight: 'normal' }}>R$ {((extra.price || 0) * (item.quantity || 1)).toFixed(2)}</span>
                     </div>
                   ))}
                   {item.notes && (
@@ -4720,19 +4720,19 @@ export default function AdminDashboard() {
                 <div style={{ marginBottom: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11pt', fontWeight: 'normal', marginBottom: '3px' }}>
                     <span>Subtotal</span>
-                    <span>{itemsSubtotal.toFixed(2)} €</span>
+                    <span>R$ {itemsSubtotal.toFixed(2)}</span>
                   </div>
                   {isDelivery && deliveryFee > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11pt', fontWeight: 'normal', marginBottom: '3px' }}>
                       <span>Taxa de Entrega</span>
-                      <span>{deliveryFee.toFixed(2)} €</span>
+                      <span>R$ {deliveryFee.toFixed(2)}</span>
                     </div>
                   )}
                   {addAmount > 0 && (
                     <div style={{ marginBottom: '3px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11pt', fontWeight: 'bold' }}>
                         <span>+ Taxa / Adicional</span>
-                        <span>+ {addAmount.toFixed(2)} €</span>
+                        <span>+ R$ {addAmount.toFixed(2)}</span>
                       </div>
                       {reasonNote && (
                         <div style={{ fontSize: '10pt', fontStyle: 'italic', paddingLeft: '8px', color: '#000' }}>
@@ -4744,12 +4744,12 @@ export default function AdminDashboard() {
                   {discAmount > 0 && (
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11pt', fontWeight: 'bold', marginBottom: '3px' }}>
                       <span>- Desconto</span>
-                      <span>- {discAmount.toFixed(2)} €</span>
+                      <span>- R$ {discAmount.toFixed(2)}</span>
                     </div>
                   )}
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11pt', fontWeight: '900', marginTop: '3px', borderTop: '1px dashed #000', paddingTop: '3px' }}>
                     <span>Montante pago</span>
-                    <span>{(printOrder.totalAmount || 0).toFixed(2)} €</span>
+                    <span>R$ {(printOrder.totalAmount || 0).toFixed(2)}</span>
                   </div>
                 </div>
               );
@@ -4757,14 +4757,14 @@ export default function AdminDashboard() {
 
             {/* Payment + Time */}
             <div style={{ fontSize: '10pt' }}>
-              <p style={{ margin: '0 0 3px 0', fontWeight: 'normal' }}>Realizado a {new Date(printOrder.createdAt).toLocaleString('pt-PT')}</p>
+              <p style={{ margin: '0 0 3px 0', fontWeight: 'normal' }}>Realizado a {new Date(printOrder.createdAt).toLocaleString('pt-BR')}</p>
               <p style={{ margin: '0 0 3px 0', fontWeight: 'bold' }}>
                 {(printOrder.orderType === 'Delivery' || printOrder.orderType === 'entrega')
                   ? 'Entrega est.: 40 a 50 min'
                   : 'Recolher em: 25 a 35 min'}
               </p>
               <p style={{ margin: 0, fontWeight: 'normal' }}>Pagamento: {printOrder.paymentMethod}</p>
-              {printOrder.changeFor && <p style={{ margin: '2px 0 0 0', fontWeight: 'normal' }}>Troco para: € {printOrder.changeFor}</p>}
+              {printOrder.changeFor && <p style={{ margin: '2px 0 0 0', fontWeight: 'normal' }}>Troco para: R$ {printOrder.changeFor}</p>}
             </div>
 
             {/* Footer */}
@@ -5495,27 +5495,27 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
         <div className="bg-[#E8D8D1] px-3.5 py-1.5 border-b border-[#D5AF7A] flex items-center justify-between text-xs text-[#083D07] font-bold shrink-0">
           <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
             <span className="text-stone-300">
-              Subtotal: <strong className="text-white font-bold">€ {subtotal.toFixed(2)}</strong>
+              Subtotal: <strong className="text-white font-bold">R$ {subtotal.toFixed(2)}</strong>
             </span>
             {orderType === 'entrega' && activeDeliveryFee > 0 && (
               <span className="text-sky-400 font-semibold">
-                (+) Ent: € {activeDeliveryFee.toFixed(2)}
+                (+) Ent: R$ {activeDeliveryFee.toFixed(2)}
               </span>
             )}
             {Number(additionalAmount) > 0 && (
               <span className="text-amber-400 font-semibold">
-                (+) Adic: € {Number(additionalAmount).toFixed(2)}
+                (+) Adic: R$ {Number(additionalAmount).toFixed(2)}
               </span>
             )}
             {Number(discountAmount) > 0 && (
               <span className="text-emerald-400 font-semibold">
-                (-) Desc: € {Number(discountAmount).toFixed(2)}
+                (-) Desc: R$ {Number(discountAmount).toFixed(2)}
               </span>
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
             <span className="text-[9px] font-mono text-stone-400 uppercase">Total:</span>
-            <span className="text-sm font-black text-rose-500 font-mono leading-none">€ {finalTotal.toFixed(2)}</span>
+            <span className="text-sm font-black text-rose-500 font-mono leading-none">R$ {finalTotal.toFixed(2)}</span>
           </div>
         </div>
 
@@ -5530,7 +5530,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                 </h4>
                 {orderType === 'entrega' && activeDeliveryFee > 0 && (
                   <span className="text-[10px] font-mono font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-                    + € {activeDeliveryFee.toFixed(2)} Taxa de Entrega
+                    + R$ {activeDeliveryFee.toFixed(2)} Taxa de Entrega
                   </span>
                 )}
               </div>
@@ -5648,16 +5648,16 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                         <option value="">-- Selecione a Zona --</option>
                         {zones.map((z) => (
                           <option key={z.id} value={z.name}>
-                            {z.name} (+ € {z.fee.toFixed(2)})
+                            {z.name} (+ R$ {z.fee.toFixed(2)})
                           </option>
                         ))}
                       </select>
                     </div>
 
-                    {/* Taxa de Entrega (€) */}
+                    {/* Taxa de Entrega (R$) */}
                     <div className="sm:col-span-2 space-y-0.5">
                       <label className="block text-[8px] font-mono font-bold text-sky-950 uppercase tracking-wider text-center">
-                        Taxa (€)
+                        Taxa (R$)
                       </label>
                       <input
                         type="number"
@@ -5679,7 +5679,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                       )}
                     </span>
                     <span className="font-mono font-bold text-sky-800">
-                      Taxa somada no total: + € {activeDeliveryFee.toFixed(2)}
+                      Taxa somada no total: + R$ {activeDeliveryFee.toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -5689,7 +5689,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
               {paymentMethod === 'Dinheiro' && (
                 <div className="pt-1.5 border-t border-stone-100 grid grid-cols-2 gap-2">
                   <div className="space-y-0.5">
-                    <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Troco Para (€)</label>
+                    <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Troco Para (R$)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -5702,7 +5702,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                   </div>
                   <div className="flex items-center justify-between bg-stone-50 px-2 py-1 rounded border border-stone-100">
                     <span className="text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">Troco:</span>
-                    <span className="text-xs font-black text-emerald-600">€ {calculatedChange.toFixed(2)}</span>
+                    <span className="text-xs font-black text-emerald-600">R$ {calculatedChange.toFixed(2)}</span>
                   </div>
                 </div>
               )}
@@ -5728,7 +5728,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                           <div className="flex-1 min-w-0">
                             <div className="font-bold text-xs text-stone-900 truncate">{formatItemNameForPrint(item)}</div>
                             <div className="text-[9px] text-stone-400 font-medium">
-                              {item.size ? `${item.size} | ` : ''}€ {price.toFixed(2)} un.
+                              {item.size ? `${item.size} | ` : ''}R$ {price.toFixed(2)} un.
                             </div>
                             {/* Tags de Extras Adicionados */}
                             {item.extras && item.extras.length > 0 && (
@@ -5739,7 +5739,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                                     className="text-[8.5px] font-bold bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded flex items-center gap-0.5 shadow-2xs"
                                   >
                                     <span>+{ex.name}</span>
-                                    <span className="font-mono text-[8px] text-rose-800">(€{Number(ex.price).toFixed(2)})</span>
+                                    <span className="font-mono text-[8px] text-rose-800">(R$ {Number(ex.price).toFixed(2)})</span>
                                   </span>
                                 ))}
                               </div>
@@ -5766,7 +5766,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                           </div>
 
                           <div className="font-bold text-xs text-stone-900 w-14 text-right font-mono">
-                            € {(price * qty).toFixed(2)}
+                            R$ {(price * qty).toFixed(2)}
                           </div>
 
                           <div className="flex items-center gap-1">
@@ -5917,7 +5917,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                                 )}
                               </div>
                               <span className="text-[11px] font-mono font-bold text-stone-600 shrink-0">
-                                {isP ? `a partir de € ${displayPrice.toFixed(2)}` : `€ ${displayPrice.toFixed(2)}`}
+                                {isP ? `a partir de R$ ${displayPrice.toFixed(2)}` : `R$ ${displayPrice.toFixed(2)}`}
                               </span>
                             </div>
                           );
@@ -5964,7 +5964,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                             <span className="text-[8px] opacity-75 leading-tight">{sz.sub}</span>
                             {szPrice > 0 && (
                               <span className="text-[8.5px] font-mono mt-0.5 leading-none">
-                                €{szPrice.toFixed(1)}
+                                R$ {szPrice.toFixed(1)}
                               </span>
                             )}
                           </button>
@@ -5977,7 +5977,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                     <div className="flex items-center justify-between px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-700 border border-stone-200">
                       <span className="text-[10px] font-mono text-stone-500 uppercase">Item Simples</span>
                       <span className="font-mono text-stone-900">
-                        € {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0).toFixed(2)}
+                        R$ {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0).toFixed(2)}
                       </span>
                     </div>
                   )
@@ -6006,7 +6006,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                         </span>
                       </div>
                       <span className="text-[10px] font-mono font-bold text-stone-500 shrink-0">
-                        € {getPizzaPriceForSize(selectedBaseMenuItem, selectedSize).toFixed(2)}
+                        R$ {getPizzaPriceForSize(selectedBaseMenuItem, selectedSize).toFixed(2)}
                       </span>
                     </div>
 
@@ -6071,7 +6071,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                                   >
                                     <span className="truncate">{p.name}</span>
                                     <span className="text-[10px] font-mono text-stone-500 shrink-0">
-                                      € {getPizzaPriceForSize(p, selectedSize).toFixed(2)}
+                                      R$ {getPizzaPriceForSize(p, selectedSize).toFixed(2)}
                                     </span>
                                   </div>
                                 ))
@@ -6094,7 +6094,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                           <div className="flex items-center gap-1.5 shrink-0">
                             {sPrice > 0 && (
                               <span className="text-[10px] font-mono font-bold text-stone-500 mr-0.5">
-                                € {sPrice.toFixed(2)}
+                                R$ {sPrice.toFixed(2)}
                               </span>
                             )}
                             <button
@@ -6175,7 +6175,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                               >
                                 <span className="truncate">{p.name}</span>
                                 <span className="text-[10px] font-mono text-stone-500 shrink-0">
-                                  € {getPizzaPriceForSize(p, selectedSize).toFixed(2)}
+                                  R$ {getPizzaPriceForSize(p, selectedSize).toFixed(2)}
                                 </span>
                               </div>
                             ))
@@ -6211,7 +6211,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                         <span>🥓 Adicionais Extras</span>
                         {selectedExtras.length > 0 && (
                           <span className="text-rose-600 font-bold bg-rose-50 px-1.5 py-0.2 rounded border border-rose-200 text-[8.5px]">
-                            + € {selectedExtras.reduce((s, e) => s + (Number(e.price) || 0), 0).toFixed(2)}
+                            + R$ {selectedExtras.reduce((s, e) => s + (Number(e.price) || 0), 0).toFixed(2)}
                           </span>
                         )}
                       </label>
@@ -6239,7 +6239,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                               <span className="text-[10px] truncate leading-tight">{extra.name}</span>
                             </div>
                             <span className={`text-[9px] font-mono shrink-0 ml-1 leading-none ${isSelected ? 'text-rose-700 font-black' : 'text-stone-500'}`}>
-                              +€{extra.price.toFixed(2)}
+                              +R$ {extra.price.toFixed(2)}
                             </span>
                           </button>
                         );
@@ -6262,7 +6262,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                   <Check size={14} className="stroke-[2.5]" />
                   <span>
                     {editingItemIndex !== null ? 'Salvar Alteração no Pedido' : 'Incluir no Pedido'}
-                    {currentItemFinalPrice > 0 && ` (€ ${currentItemFinalPrice.toFixed(2)} un.)`}
+                    {currentItemFinalPrice > 0 && ` (R$ ${currentItemFinalPrice.toFixed(2)} un.)`}
                   </span>
                 </button>
               </div>
@@ -6275,7 +6275,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-0.5">
                   <label className="block text-[8px] font-mono font-bold text-emerald-700 uppercase tracking-wider">
-                    Desconto (- €)
+                    Desconto (- R$)
                   </label>
                   <input
                     type="number"
@@ -6289,7 +6289,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                 </div>
                 <div className="space-y-0.5">
                   <label className="block text-[8px] font-mono font-bold text-amber-700 uppercase tracking-wider">
-                    Taxa Extra (+ €)
+                    Taxa Extra (+ R$)
                   </label>
                   <input
                     type="number"
@@ -6323,9 +6323,9 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
             <div>
               <span className="block text-[8px] font-mono text-[#745240] uppercase">Total Recalculado</span>
               <div className="flex items-baseline gap-2">
-                <span className="text-xl font-black text-rose-500 leading-none font-mono">€ {finalTotal.toFixed(2)}</span>
+                <span className="text-xl font-black text-rose-500 leading-none font-mono">R$ {finalTotal.toFixed(2)}</span>
                 {orderType === 'entrega' && activeDeliveryFee > 0 && (
-                  <span className="text-[10px] text-sky-400 font-mono font-medium">(inclui €{activeDeliveryFee.toFixed(2)} entrega)</span>
+                  <span className="text-[10px] text-sky-400 font-mono font-medium">(inclui R$ {activeDeliveryFee.toFixed(2)} entrega)</span>
                 )}
               </div>
             </div>

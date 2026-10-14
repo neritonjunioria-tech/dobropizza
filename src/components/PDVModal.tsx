@@ -1105,7 +1105,7 @@ export default function PDVModal({
                     onClick={() => handleProductClick(product)}
                     className="group bg-white rounded-2xl p-3.5 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-[#D5AF7A] shadow-xs cursor-pointer active:scale-[0.99] relative border border-[#E8D8D1] touch-manipulation select-none"
                   >
-                    {/* Informações Textuais (Estilo Cardápio 41 Menus) */}
+                    {/* Informações Textuais (Estilo Cardápio) */}
                     <div className="flex-1 flex flex-col justify-between h-full min-h-[92px] sm:min-h-[104px]">
                       <div>
                         <div className="flex items-center gap-1.5 mb-1">

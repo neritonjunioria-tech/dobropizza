@@ -269,19 +269,19 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
             <div className="flex gap-4 sm:gap-6 min-w-max">
               <div className="flex flex-col">
                 <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Faturamento Bruto</span>
-                <span className="font-mono text-white font-bold text-xs sm:text-sm leading-tight">€ {summary.totalRevenue.toFixed(2)}</span>
+                <span className="font-mono text-white font-bold text-xs sm:text-sm leading-tight">R$ {summary.totalRevenue.toFixed(2)}</span>
               </div>
               <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
                 <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Numerário</span>
-                <span className="font-mono text-emerald-400 font-bold text-xs sm:text-sm leading-tight">€ {summary.totalDinheiro.toFixed(2)}</span>
+                <span className="font-mono text-emerald-400 font-bold text-xs sm:text-sm leading-tight">R$ {summary.totalDinheiro.toFixed(2)}</span>
               </div>
               <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
                 <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">MB Way</span>
-                <span className="font-mono text-blue-400 font-bold text-xs sm:text-sm leading-tight">€ {(summary.paymentTotals['MB Way'] || summary.paymentTotals['MBWAY'] || summary.paymentTotals['mbway'] || 0).toFixed(2)}</span>
+                <span className="font-mono text-blue-400 font-bold text-xs sm:text-sm leading-tight">R$ {(summary.paymentTotals['MB Way'] || summary.paymentTotals['MBWAY'] || summary.paymentTotals['mbway'] || 0).toFixed(2)}</span>
               </div>
               <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
                 <span className="text-[9px] font-mono text-[#d5af7a]/70 uppercase tracking-wider">Caixa (Fundo + Vendas)</span>
-                <span className="font-mono text-[#d5af7a] font-bold text-xs sm:text-sm leading-tight">€ {(summary.fundoInicial + summary.totalDinheiro).toFixed(2)}</span>
+                <span className="font-mono text-[#d5af7a] font-bold text-xs sm:text-sm leading-tight">R$ {(summary.fundoInicial + summary.totalDinheiro).toFixed(2)}</span>
               </div>
             </div>
             
@@ -318,11 +318,11 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                       <span className="font-mono text-[11px] font-bold text-stone-300 flex items-center gap-1.5">
                         <Bike size={12} className="text-amber-500" /> ENTREGA
                       </span>
-                      <span className="font-mono text-xs sm:text-sm font-bold text-white">€ {summary.entrega.total.toFixed(2)}</span>
+                      <span className="font-mono text-xs sm:text-sm font-bold text-white">R$ {summary.entrega.total.toFixed(2)}</span>
                     </div>
                     <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
                       <span>{summary.entrega.count} pedidos</span>
-                      {summary.entrega.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.entrega.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} €${val.toFixed(2)}`).join(' | ')}</span>}
+                      {summary.entrega.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.entrega.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `$R$ {pm}${val.toFixed(2)}`).join(' | ')}</span>}
                     </div>
                   </div>
 
@@ -332,11 +332,11 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                       <span className="font-mono text-[11px] font-bold text-stone-300 flex items-center gap-1.5">
                         <UtensilsCrossed size={12} className="text-emerald-500" /> MESA
                       </span>
-                      <span className="font-mono text-xs sm:text-sm font-bold text-white">€ {summary.mesa.total.toFixed(2)}</span>
+                      <span className="font-mono text-xs sm:text-sm font-bold text-white">R$ {summary.mesa.total.toFixed(2)}</span>
                     </div>
                     <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
                       <span>{summary.mesa.count} pedidos</span>
-                      {summary.mesa.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.mesa.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} €${val.toFixed(2)}`).join(' | ')}</span>}
+                      {summary.mesa.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.mesa.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `$R$ {pm}${val.toFixed(2)}`).join(' | ')}</span>}
                     </div>
                   </div>
 
@@ -346,11 +346,11 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                       <span className="font-mono text-[11px] font-bold text-stone-300 flex items-center gap-1.5">
                         <ShoppingBag size={12} className="text-sky-500" /> RETIRADA
                       </span>
-                      <span className="font-mono text-xs sm:text-sm font-bold text-white">€ {summary.retirada.total.toFixed(2)}</span>
+                      <span className="font-mono text-xs sm:text-sm font-bold text-white">R$ {summary.retirada.total.toFixed(2)}</span>
                     </div>
                     <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
                       <span>{summary.retirada.count} pedidos</span>
-                      {summary.retirada.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.retirada.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} €${val.toFixed(2)}`).join(' | ')}</span>}
+                      {summary.retirada.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.retirada.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `$R$ {pm}${val.toFixed(2)}`).join(' | ')}</span>}
                     </div>
                   </div>
 
@@ -372,7 +372,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                         <div key={pm}>
                           <div className="flex justify-between text-[11px] font-mono mb-0.5">
                             <span className="text-stone-300">{pm}</span>
-                            <span className="font-bold text-white">€ {val.toFixed(2)}</span>
+                            <span className="font-bold text-white">R$ {val.toFixed(2)}</span>
                           </div>
                           <div className="h-1 w-full bg-[#0b520a] rounded-full overflow-hidden">
                             <div className="h-full bg-stone-400" style={{ width: `${pct}%` }} />
@@ -389,11 +389,11 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                   <div className="grid grid-cols-2 gap-1.5 mb-1">
                     <div className="bg-emerald-950/30 border border-emerald-900/50 px-2 py-1 rounded">
                       <span className="text-[8.5px] font-mono text-emerald-500 block leading-tight">SUPRIMENTOS</span>
-                      <span className="text-emerald-400 font-mono font-bold text-xs leading-tight">+ €{summary.suprimentosTotal.toFixed(2)}</span>
+                      <span className="text-emerald-400 font-mono font-bold text-xs leading-tight">+ R$ {summary.suprimentosTotal.toFixed(2)}</span>
                     </div>
                     <div className="bg-rose-950/30 border border-rose-900/50 px-2 py-1 rounded">
                       <span className="text-[8.5px] font-mono text-rose-500 block leading-tight">SANGRIAS</span>
-                      <span className="text-rose-400 font-mono font-bold text-xs leading-tight">- €{summary.sangriasTotal.toFixed(2)}</span>
+                      <span className="text-rose-400 font-mono font-bold text-xs leading-tight">- R$ {summary.sangriasTotal.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="max-h-16 overflow-y-auto pr-1 space-y-0.5">
@@ -401,7 +401,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                       sessionDetails.movements.map((m: any, idx: number) => (
                         <div key={idx} className="flex justify-between text-[9px] font-mono">
                           <span className="text-stone-400 uppercase truncate max-w-[150px]">{m.type} {m.notes ? `(${m.notes})` : ''}</span>
-                          <span className={m.type === 'suprimento' ? 'text-emerald-400' : 'text-rose-400'}>{m.type === 'suprimento' ? '+' : '-'}€{Number(m.amount||0).toFixed(2)}</span>
+                          <span className={m.type === 'suprimento' ? 'text-emerald-400' : 'text-rose-400'}>{m.type === 'suprimento' ? '+' : '-'}R$ {Number(m.amount||0).toFixed(2)}</span>
                         </div>
                       ))
                     ) : (
@@ -419,28 +419,28 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                     <Wallet size={11} /> Auditoria da Gaveta
                   </h3>
                   <span className={`text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded uppercase border ${summary.difference === 0 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-rose-400 border-rose-500/30 bg-rose-500/10'}`}>
-                    {summary.difference === 0 ? 'EXATA' : summary.difference < 0 ? `FALTA €${Math.abs(summary.difference).toFixed(2)}` : `SOBRA €${summary.difference.toFixed(2)}`}
+                    {summary.difference === 0 ? 'EXATA' : summary.difference < 0 ? `FALTA R$ ${Math.abs(summary.difference).toFixed(2)}` : `SOBRA R$ ${summary.difference.toFixed(2)}`}
                   </span>
                 </div>
 
                 <div className="space-y-1 mb-1.5">
                   <div className="flex justify-between items-center px-2 py-1 rounded bg-[#083d07]/80 border border-[#0b520a]/50">
                     <span className="text-[9px] font-mono text-stone-400">FUNDO ABERTURA</span>
-                    <span className="font-mono text-xs text-stone-200">€ {summary.fundoInicial.toFixed(2)}</span>
+                    <span className="font-mono text-xs text-stone-200">R$ {summary.fundoInicial.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center px-2 py-1 rounded bg-[#083d07]/80 border border-[#0b520a]/50">
                     <span className="text-[9px] font-mono text-stone-400">(+) DINHEIRO VENDAS</span>
-                    <span className="font-mono text-xs text-emerald-400">+ € {summary.totalDinheiro.toFixed(2)}</span>
+                    <span className="font-mono text-xs text-emerald-400">+ R$ {summary.totalDinheiro.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-center px-2 py-1 rounded bg-[#083d07]/80 border border-[#0b520a]/50">
                     <span className="text-[9px] font-mono text-stone-400">(+/-) MOVS MANUAIS</span>
                     <span className={`font-mono text-xs ${summary.netManualMovements >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {summary.netManualMovements >= 0 ? '+' : ''}€ {summary.netManualMovements.toFixed(2)}
+                      {summary.netManualMovements >= 0 ? '+' : ''}R$ {summary.netManualMovements.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center px-2 py-1.5 rounded bg-[#083d07]/10 border border-[#d5af7a]/30 mt-0.5 shadow-[0_0_15px_rgba(253,222,88,0.05)]">
                     <span className="text-[9px] font-mono text-[#d5af7a] font-bold">(=) SALDO ESPERADO</span>
-                    <span className="font-mono text-sm font-bold text-[#d5af7a]">€ {summary.expectedCash.toFixed(2)}</span>
+                    <span className="font-mono text-sm font-bold text-[#d5af7a]">R$ {summary.expectedCash.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -448,11 +448,11 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                   <div className="mt-0.5 border-t border-[#0b520a] pt-1.5 space-y-1">
                     <div className="flex justify-between items-center px-1">
                       <span className="text-[9px] font-mono text-stone-400">VALOR CONTADO:</span>
-                      <span className="font-mono text-xs font-bold text-white bg-[#0b520a] px-2 py-0.5 rounded border border-stone-700">€ {summary.countedCash.toFixed(2)}</span>
+                      <span className="font-mono text-xs font-bold text-white bg-[#0b520a] px-2 py-0.5 rounded border border-stone-700">R$ {summary.countedCash.toFixed(2)}</span>
                     </div>
                     <div className={`flex justify-between items-center px-2 py-1 rounded ${summary.difference === 0 ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50' : 'bg-rose-950/40 text-rose-400 border border-rose-900/50'}`}>
                       <span className="text-[9px] font-mono font-bold uppercase">Diferença:</span>
-                      <span className="font-mono text-sm font-black">{summary.difference >= 0 ? '+' : ''}€ {summary.difference.toFixed(2)}</span>
+                      <span className="font-mono text-sm font-black">{summary.difference >= 0 ? '+' : ''}R$ {summary.difference.toFixed(2)}</span>
                     </div>
                   </div>
                 )}
@@ -530,7 +530,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
 
                   <div className="hidden lg:flex items-center gap-1 px-2.5 py-1 bg-stone-100 rounded-lg text-xs font-mono text-stone-600 shrink-0 border border-stone-200">
                     <span>Filtrado:</span>
-                    <strong className="text-stone-950 font-bold">€ {totalFilteredRevenue.toFixed(2)}</strong>
+                    <strong className="text-stone-950 font-bold">R$ {totalFilteredRevenue.toFixed(2)}</strong>
                   </div>
                 </div>
 
@@ -614,7 +614,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                               </span>
 
                               <span className="font-mono font-bold text-xs text-stone-950 tabular-nums">
-                                € {totalAmt.toFixed(2)}
+                                R$ {totalAmt.toFixed(2)}
                               </span>
 
                               <div className="flex items-center gap-1">
@@ -718,7 +718,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                                   {(order.change_for || order.changeFor) && (
                                     <div>
                                       <span className="text-[10px] text-stone-400 block uppercase font-mono">Troco Solicitado para:</span>
-                                      <span className="font-mono font-bold text-stone-900">€ {Number(order.change_for || order.changeFor).toFixed(2)}</span>
+                                      <span className="font-mono font-bold text-stone-900">R$ {Number(order.change_for || order.changeFor).toFixed(2)}</span>
                                     </div>
                                   )}
 
@@ -729,7 +729,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                                     </div>
                                     <div className="flex justify-between text-stone-900 font-mono font-bold text-xs pt-1 border-t border-dashed border-stone-200">
                                       <span>Total Pago:</span>
-                                      <span className="text-emerald-700">€ {totalAmt.toFixed(2)}</span>
+                                      <span className="text-emerald-700">R$ {totalAmt.toFixed(2)}</span>
                                     </div>
                                   </div>
 
@@ -796,7 +796,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                                                       key={extIdx} 
                                                       className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 mr-1"
                                                     >
-                                                      + {ext.name} (€ {Number(ext.price || 0).toFixed(2)})
+                                                      + {ext.name} (R$ {Number(ext.price || 0).toFixed(2)})
                                                     </span>
                                                   ))}
                                                 </div>
@@ -805,10 +805,10 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                                               )}
                                             </td>
                                             <td className="py-2.5 px-3 text-right font-mono text-stone-600">
-                                              € {unitPrice.toFixed(2)}
+                                              R$ {unitPrice.toFixed(2)}
                                             </td>
                                             <td className="py-2.5 px-3 text-right font-mono font-semibold text-stone-800">
-                                              € {subTotal.toFixed(2)}
+                                              R$ {subTotal.toFixed(2)}
                                             </td>
                                           </tr>
                                         );
@@ -925,12 +925,12 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                     <div key={i} className="text-xs">
                       <div className="flex justify-between items-start">
                         <span><strong className="font-black">{qty}x </strong><span className="font-normal">{formatItemNameForPrint(it)}</span></span>
-                        <span className="font-bold tabular-nums">€ {(price * qty).toFixed(2)}</span>
+                        <span className="font-bold tabular-nums">R$ {(price * qty).toFixed(2)}</span>
                       </div>
                       {extras.length > 0 && (
                         <div className="pl-3 text-[10px] text-stone-600">
                           {extras.map((ex: any, ei: number) => (
-                            <div key={ei}>+ {ex.name} (€ {Number(ex.price || 0).toFixed(2)})</div>
+                            <div key={ei}>+ {ex.name} (R$ {Number(ex.price || 0).toFixed(2)})</div>
                           ))}
                         </div>
                       )}
@@ -951,12 +951,12 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                 {(selectedReceiptOrder.change_for || selectedReceiptOrder.changeFor) && (
                   <div className="flex justify-between text-stone-600">
                     <span>Troco para:</span>
-                    <span className="font-bold">€ {Number(selectedReceiptOrder.change_for || selectedReceiptOrder.changeFor).toFixed(2)}</span>
+                    <span className="font-bold">R$ {Number(selectedReceiptOrder.change_for || selectedReceiptOrder.changeFor).toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-base font-black pt-1 border-t border-stone-300">
                   <span>TOTAL:</span>
-                  <span className="text-stone-950">€ {Number(selectedReceiptOrder.total_amount || selectedReceiptOrder.totalAmount || 0).toFixed(2)}</span>
+                  <span className="text-stone-950">R$ {Number(selectedReceiptOrder.total_amount || selectedReceiptOrder.totalAmount || 0).toFixed(2)}</span>
                 </div>
               </div>
 

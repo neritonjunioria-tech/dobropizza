@@ -336,8 +336,8 @@ export default function Cart({
     }
 
     const orderDateObj = new Date();
-    const dateStr = orderDateObj.toLocaleDateString('pt-PT', { timeZone: 'Europe/Lisbon' });
-    const timeStr = orderDateObj.toLocaleTimeString('pt-PT', { timeZone: 'Europe/Lisbon', hour: '2-digit', minute: '2-digit' });
+    const dateStr = orderDateObj.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+    const timeStr = orderDateObj.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
 
     text += `-----------------------------------\n`;
     text += `[ITENS DO PEDIDO]\n`;
@@ -569,10 +569,10 @@ export default function Cart({
                 </span>
               ) : (
                 <span className="text-stone-600">
-                  Falta <strong className="text-[#8b0000]">€{(freeDeliveryThreshold - subtotal).toFixed(2)}</strong> para <strong>Entrega Grátis</strong> 🛵
+                  Falta <strong className="text-[#8b0000]">R$ {(freeDeliveryThreshold - subtotal).toFixed(2)}</strong> para <strong>Entrega Grátis</strong> 🛵
                 </span>
               )}
-              <span className="text-stone-400 font-medium text-[10px]">Meta: €{freeDeliveryThreshold.toFixed(2)}</span>
+              <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {freeDeliveryThreshold.toFixed(2)}</span>
             </div>
             <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200/60">
               <div

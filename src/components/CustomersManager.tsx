@@ -466,8 +466,8 @@ export default function CustomersManager() {
       'Telefone',
       'Segmento',
       'Pedidos',
-      'Total Gasto (EUR)',
-      'Ticket Medio (EUR)',
+      'Total Gasto (BRL)',
+      'Ticket Medio (BRL)',
       'Ultimo Pedido (Data)',
       'Dias sem Comprar',
       'Item Mais Pedido',
@@ -482,7 +482,7 @@ export default function CustomersManager() {
       c.total_orders,
       c.total_spent.toFixed(2),
       c.ticket_medio.toFixed(2),
-      c.last_order_at ? new Date(c.last_order_at).toLocaleDateString('pt-PT') : '-',
+      c.last_order_at ? new Date(c.last_order_at).toLocaleDateString('pt-BR') : '-',
       c.days_since_last_order,
       `"${(c.favorite_items[0]?.name || '').replace(/"/g, '""')}"`,
       `"${(c.primary_address || '').replace(/"/g, '""')}"`,
@@ -567,7 +567,7 @@ export default function CustomersManager() {
           <div className="pt-2 sm:pt-0 sm:px-3">
             <span className="text-[10px] sm:text-[11px] font-semibold text-stone-500 uppercase tracking-wider block font-sans">Ticket Médio</span>
             <span className="text-xl sm:text-2xl font-bold font-mono text-stone-900 tracking-tight block mt-0.5">
-              € {stats.avgTicket.toFixed(2)}
+              R$ {stats.avgTicket.toFixed(2)}
             </span>
             <span className="text-[10px] text-stone-400 block font-sans">
               por pedido
@@ -577,7 +577,7 @@ export default function CustomersManager() {
           <div className="pt-2 sm:pt-0 sm:px-3">
             <span className="text-[10px] sm:text-[11px] font-semibold text-stone-500 uppercase tracking-wider block font-sans">Total Faturado</span>
             <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-700 tracking-tight block mt-0.5">
-              € {stats.totalRevenue.toLocaleString('pt-PT', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              R$ {stats.totalRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
             <span className="text-[10px] text-stone-400 block font-sans">
               carteira total
@@ -711,9 +711,9 @@ export default function CustomersManager() {
                 className="h-10 sm:h-9 pl-3 pr-8 border border-stone-200 hover:border-stone-300 bg-white text-stone-700 rounded-lg text-xs font-sans font-medium appearance-none cursor-pointer shadow-2xs focus:outline-none focus:border-[#083d07]"
               >
                 <option value="recent">Última Compra</option>
-                <option value="spent">+ Faturamento (€)</option>
+                <option value="spent">+ Faturamento (R$)</option>
                 <option value="orders">+ Pedidos Realizados</option>
-                <option value="ticket">+ Ticket Médio (€)</option>
+                <option value="ticket">+ Ticket Médio (R$)</option>
                 <option value="inactive">+ Tempo Sem Comprar</option>
               </select>
               <ChevronDown size={13} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
@@ -822,7 +822,7 @@ export default function CustomersManager() {
                     </div>
                     <div>
                       <span className="text-[9.5px] uppercase font-semibold text-stone-400 block">Total Gasto</span>
-                      <span className="text-xs font-bold text-stone-900 font-mono tabular-nums">€ {c.total_spent.toFixed(2)}</span>
+                      <span className="text-xs font-bold text-stone-900 font-mono tabular-nums">R$ {c.total_spent.toFixed(2)}</span>
                     </div>
                     <div>
                       <span className="text-[9.5px] uppercase font-semibold text-stone-400 block">Última Compra</span>
@@ -923,7 +923,7 @@ export default function CustomersManager() {
                           </div>
                           {c.first_order_at && (
                             <span className="text-[11px] text-stone-500 font-sans mt-0.5">
-                              Cliente desde {new Date(c.first_order_at).toLocaleDateString('pt-PT')}
+                              Cliente desde {new Date(c.first_order_at).toLocaleDateString('pt-BR')}
                             </span>
                           )}
                         </div>
@@ -963,12 +963,12 @@ export default function CustomersManager() {
 
                       {/* Total Gasto */}
                       <td className="py-3 px-3 text-right font-bold text-stone-900 font-mono tabular-nums text-xs">
-                        € {c.total_spent.toFixed(2)}
+                        R$ {c.total_spent.toFixed(2)}
                       </td>
 
                       {/* Ticket Médio */}
                       <td className="py-3 px-3 text-right font-bold text-emerald-700 font-mono tabular-nums text-xs">
-                        € {c.ticket_medio.toFixed(2)}
+                        R$ {c.ticket_medio.toFixed(2)}
                       </td>
 
                       {/* Última Compra */}
@@ -995,7 +995,7 @@ export default function CustomersManager() {
                             </span>
                           </div>
                           <span className="text-[11px] text-stone-500 font-sans tabular-nums">
-                            {c.last_order_at ? new Date(c.last_order_at).toLocaleDateString('pt-PT') : '-'}
+                            {c.last_order_at ? new Date(c.last_order_at).toLocaleDateString('pt-BR') : '-'}
                           </span>
                         </div>
                       </td>
@@ -1039,7 +1039,7 @@ export default function CustomersManager() {
               <>
                 <span className="text-stone-300 hidden sm:inline">•</span>
                 <span className="font-mono tabular-nums text-stone-600">
-                  Total Filtrado: <strong className="text-stone-900 font-bold">€ {filteredRevenue.toFixed(2)}</strong>
+                  Total Filtrado: <strong className="text-stone-900 font-bold">R$ {filteredRevenue.toFixed(2)}</strong>
                 </span>
               </>
             )}
@@ -1261,8 +1261,8 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                 {customer.first_order_at && (
                   <>
                     <span className="text-stone-300">•</span>
-                    <span className="hidden sm:inline">Cliente desde {new Date(customer.first_order_at).toLocaleDateString('pt-PT')}</span>
-                    <span className="inline sm:hidden">Desde {new Date(customer.first_order_at).toLocaleDateString('pt-PT')}</span>
+                    <span className="hidden sm:inline">Cliente desde {new Date(customer.first_order_at).toLocaleDateString('pt-BR')}</span>
+                    <span className="inline sm:hidden">Desde {new Date(customer.first_order_at).toLocaleDateString('pt-BR')}</span>
                   </>
                 )}
               </div>
@@ -1296,7 +1296,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 p-3 sm:p-4 bg-stone-50 border-b border-stone-200 shrink-0">
           <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-stone-200 shadow-2xs">
             <span className="text-[10px] font-sans font-bold text-stone-500 uppercase tracking-wider block">Total Gasto</span>
-            <span className="text-base sm:text-xl font-bold font-mono text-stone-900 mt-0.5 block">€ {customer.total_spent.toFixed(2)}</span>
+            <span className="text-base sm:text-xl font-bold font-mono text-stone-900 mt-0.5 block">R$ {customer.total_spent.toFixed(2)}</span>
           </div>
           <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-stone-200 shadow-2xs">
             <span className="text-[10px] font-sans font-bold text-stone-500 uppercase tracking-wider block">Pedidos Feitos</span>
@@ -1306,7 +1306,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
           </div>
           <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-stone-200 shadow-2xs">
             <span className="text-[10px] font-sans font-bold text-stone-500 uppercase tracking-wider block">Ticket Médio</span>
-            <span className="text-base sm:text-xl font-bold font-mono text-emerald-700 mt-0.5 block">€ {customer.ticket_medio.toFixed(2)}</span>
+            <span className="text-base sm:text-xl font-bold font-mono text-emerald-700 mt-0.5 block">R$ {customer.ticket_medio.toFixed(2)}</span>
           </div>
           <div className="bg-white p-2.5 sm:p-3 rounded-xl border border-stone-200 shadow-2xs">
             <span className="text-[10px] font-sans font-bold text-stone-500 uppercase tracking-wider block">Última Compra</span>
@@ -1421,7 +1421,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-xs text-stone-900">Pedido #{o.id}</span>
                           <span className="text-[10px] text-stone-400">
-                            {new Date(o.created_at).toLocaleString('pt-PT')}
+                            {new Date(o.created_at).toLocaleString('pt-BR')}
                           </span>
                           <span className="px-1.5 py-0.2 rounded text-[9.5px] font-semibold uppercase bg-stone-200/80 text-stone-700">
                             {o.order_type || 'Delivery'}
@@ -1438,7 +1438,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                             {o.status}
                           </span>
                           <span className="font-bold text-xs text-stone-900 font-mono">
-                            € {Number(o.total_amount || 0).toFixed(2)}
+                            R$ {Number(o.total_amount || 0).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -1461,7 +1461,7 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                               )}
                             </div>
                             <span className="font-semibold text-stone-600 shrink-0 font-mono">
-                              € {Number(it.priceCalculated || it.basePrice || 0).toFixed(2)}
+                              R$ {Number(it.priceCalculated || it.basePrice || 0).toFixed(2)}
                             </span>
                           </div>
                         ))}

@@ -1,14 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const fallbackUrl = 'https://yexlnjznkxthffklovql.supabase.co';
+const fallbackKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlleGxuanpua3h0aGZma2xvdnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5MTEwMjgsImV4cCI6MjEwNzQ4NzAyOH0.M6jNSqYTbPXuGmGMyETLR8UBA5Q4uk8NKqrSbk0Y3Cw';
 
-if (!supabaseUrl) {
-  throw new Error("Variável de ambiente VITE_SUPABASE_URL está ausente. Configure o arquivo .env corretamente.");
-}
-
-if (!supabaseAnonKey) {
-  throw new Error("Variável de ambiente VITE_SUPABASE_ANON_KEY está ausente. Configure o arquivo .env corretamente.");
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || fallbackUrl;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || fallbackKey;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+

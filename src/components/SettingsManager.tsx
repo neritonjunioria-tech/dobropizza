@@ -545,10 +545,10 @@ export default function SettingsManager({
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs font-semibold text-stone-700 block mb-1">
-                      Valor Mínimo para Entrega Grátis (€)
+                      Valor Mínimo para Entrega Grátis (R$)
                     </label>
                     <div className="relative max-w-xs">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-xs">€</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-xs">R$</span>
                       <input 
                         type="number" 
                         step="0.50" 

@@ -557,7 +557,7 @@ function App() {
               <span className="ml-1">Ver Sacola</span>
             </div>
             <span className="bg-white/20 px-2.5 py-1 rounded-lg text-sm tracking-wide">
-              €{totalCartPrice.toFixed(2)}
+              R$ {totalCartPrice.toFixed(2)}
             </span>
           </button>
         </div>

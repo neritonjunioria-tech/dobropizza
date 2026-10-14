@@ -73,7 +73,7 @@ const hasPermission = (key) => isOwner || !!userPermissions[key];
 ### 4. Moeda & Formatação
 ```tsx
 // Sempre
-€{(price || 0).toFixed(2)}
+R$ {(price || 0).toFixed(2)}
 // CSS
 font-mono tabular-nums text-[#1C1917]
 ```

@@ -47,7 +47,7 @@ export function useBusinessHours(): BusinessHoursStatus {
       if (storeStatus === 'paused' && pausedUntil) {
         const pauseEnd = new Date(pausedUntil);
         if (new Date() < pauseEnd) {
-           const timeStr = pauseEnd.toLocaleTimeString('pt-PT', {hour: '2-digit', minute:'2-digit'});
+           const timeStr = pauseEnd.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
            setStatus({ isOpen: false, loading: false, todayLabel: `Volta às ${timeStr}`, reason: 'paused', subscriptionStatus });
            return;
         } else {
@@ -64,8 +64,8 @@ export function useBusinessHours(): BusinessHoursStatus {
 
       let now = new Date();
       try {
-        const lisbonString = now.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' });
-        const parsed = new Date(lisbonString);
+        const brazilString = now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' });
+        const parsed = new Date(brazilString);
         if (!isNaN(parsed.getTime())) now = parsed;
       } catch (e) {}
 

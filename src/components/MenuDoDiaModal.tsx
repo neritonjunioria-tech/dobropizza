@@ -87,7 +87,7 @@ export default function MenuDoDiaModal({ isOpen, onClose, onSelectItem, menuItem
                       
                       <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                         <span className="font-extrabold text-[#8b0000] text-lg">
-                          €{item.priceSingle ? Number(item.priceSingle).toFixed(2) : '0.00'}
+                          R$ {item.priceSingle ? Number(item.priceSingle).toFixed(2) : '0.00'}
                         </span>
                         <button
                           onClick={() => {

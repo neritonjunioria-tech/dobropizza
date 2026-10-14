@@ -27,7 +27,7 @@ export default function Reviews() {
       id: 'rev-3',
       author: 'Ricardo Santos',
       rating: 5,
-      comment: 'Excelente relação qualidade-preço em Portugal! A pizza Grande é mesmo enorme e o facto de poder pedir meio-a-meio é fenomenal. E podermos Ganhar a entrega acima de €35 cumpre o prometido.',
+      comment: 'Excelente relação qualidade-preço em Portugal! A pizza Grande é mesmo enorme e o facto de poder pedir meio-a-meio é fenomenal. E podermos Ganhar a entrega acima de R$35 cumpre o prometido.',
       date: '2026-05-28',
       approved: true
     }

@@ -402,7 +402,7 @@ export default function MenuManager() {
                   <td className="py-3 px-4">
                     {item.price_single !== null ? (
                       <div className="flex items-center gap-1">
-                        <span className="text-stone-500 font-mono">€</span>
+                        <span className="text-stone-500 font-mono">R$</span>
                         <input 
                           type="text" 
                           defaultValue={item.price_single}
@@ -415,21 +415,21 @@ export default function MenuManager() {
                         <div className="flex flex-col">
                           <span className="text-[9px] font-mono text-stone-400">Peq</span>
                           <div className="flex items-center gap-0.5">
-                            <span className="text-stone-400 font-mono text-xs">€</span>
+                            <span className="text-stone-400 font-mono text-xs">R$</span>
                             <input type="text" defaultValue={item.price_p} onBlur={(e) => handleQuickPriceEdit(item.id, 'price_p', e.target.value)} className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold border border-stone-200 rounded-md outline-none focus:border-amber-500" />
                           </div>
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[9px] font-mono text-stone-400">Méd</span>
                           <div className="flex items-center gap-0.5">
-                            <span className="text-stone-400 font-mono text-xs">€</span>
+                            <span className="text-stone-400 font-mono text-xs">R$</span>
                             <input type="text" defaultValue={item.price_m} onBlur={(e) => handleQuickPriceEdit(item.id, 'price_m', e.target.value)} className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold border border-stone-200 rounded-md outline-none focus:border-amber-500" />
                           </div>
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[9px] font-mono text-stone-400">Grd</span>
                           <div className="flex items-center gap-0.5">
-                            <span className="text-stone-400 font-mono text-xs">€</span>
+                            <span className="text-stone-400 font-mono text-xs">R$</span>
                             <input type="text" defaultValue={item.price_g} onBlur={(e) => handleQuickPriceEdit(item.id, 'price_g', e.target.value)} className="w-12 px-1.5 py-0.5 text-xs font-mono font-bold border border-stone-200 rounded-md outline-none focus:border-amber-500" />
                           </div>
                         </div>
@@ -591,35 +591,35 @@ export default function MenuManager() {
                           <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
                             <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Pequena (P)</label>
                             <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">€</span>
+                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
                               <input type="number" step="0.01" value={editingItem.price_p ?? ''} onChange={e => setEditingItem({...editingItem, price_p: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
                             </div>
                           </div>
                           <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
                             <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Média (M)</label>
                             <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">€</span>
+                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
                               <input type="number" step="0.01" value={editingItem.price_m ?? ''} onChange={e => setEditingItem({...editingItem, price_m: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
                             </div>
                           </div>
                           <div className="p-2 rounded-lg bg-amber-50/50 border border-amber-300 space-y-1">
                             <label className="block text-[9.5px] font-mono font-bold text-amber-900 uppercase">Grande (G) *</label>
                             <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-amber-700">€</span>
+                              <span className="text-xs font-mono font-bold text-amber-700">R$</span>
                               <input type="number" step="0.01" value={editingItem.price_g ?? ''} onChange={e => setEditingItem({...editingItem, price_g: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-amber-400 rounded focus:border-amber-600 outline-none" />
                             </div>
                           </div>
                           <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
                             <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Big (Família)</label>
                             <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">€</span>
+                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
                               <input type="number" step="0.01" value={editingItem.price_big ?? ''} onChange={e => setEditingItem({...editingItem, price_big: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
                             </div>
                           </div>
                           <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 space-y-1">
                             <label className="block text-[9.5px] font-mono font-bold text-stone-600 uppercase">Super Big (GG)</label>
                             <div className="flex items-center gap-0.5">
-                              <span className="text-xs font-mono font-bold text-stone-400">€</span>
+                              <span className="text-xs font-mono font-bold text-stone-400">R$</span>
                               <input type="number" step="0.01" value={editingItem.price_super_big ?? ''} onChange={e => setEditingItem({...editingItem, price_super_big: e.target.value})} placeholder="0.00" className="w-full bg-white px-2 py-1 text-xs font-mono font-bold border border-stone-300 rounded focus:border-amber-500 outline-none" />
                             </div>
                           </div>
@@ -632,12 +632,12 @@ export default function MenuManager() {
                     <div className="p-3 bg-emerald-50/40 border border-emerald-200 rounded-xl space-y-1.5">
                       <div className="flex items-center justify-between">
                         <label className="block text-[10px] font-mono font-bold text-emerald-800 uppercase tracking-wider">
-                          Preço do Produto (€)
+                          Preço do Produto (R$)
                         </label>
                         <span className="text-[9.5px] font-mono text-emerald-700">Valor único para venda individual</span>
                       </div>
                       <div className="relative max-w-xs">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-emerald-700 text-sm">€</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-mono font-bold text-emerald-700 text-sm">R$</span>
                         <input
                           type="number"
                           step="0.01"
