@@ -290,7 +290,7 @@ export default function CustomersManager() {
 
         const primaryAddress = Array.from(entry.addresses)[0] || '';
         const primaryZone = Object.entries(entry.zones).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
-        const primaryPayment = Object.entries(entry.paymentMethods).sort((a, b) => b[1] - a[1])[0]?.[0] || 'MB Way';
+        const primaryPayment = Object.entries(entry.paymentMethods).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Pix';
 
         const deliveryCount = entry.orderTypes['delivery'] || 0;
         const totalTypeOrders = Object.values(entry.orderTypes).reduce((a, b) => a + b, 0) || 1;

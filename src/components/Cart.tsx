@@ -37,6 +37,8 @@ interface CartProps {
   onClose: () => void; // Used for mobile modal
 }
 
+const brl = (v: number) => (Number(v) || 0).toFixed(2).replace('.', ',');
+
 export default function Cart({
   items,
   onUpdateQuantity,
@@ -84,7 +86,8 @@ export default function Cart({
   const [savedTrackingCode, setSavedTrackingCode] = useState<string | null>(null);
 
   const [zonesFees, setZonesFees] = useState<Record<string, number>>(NEIGHBORHOOD_DELIVERY_FEES);
-  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(90);
+  // No free delivery unless a positive threshold is set in the admin (empty = always charge the zone fee)
+  const [freeDeliveryThreshold, setFreeDeliveryThreshold] = useState(Infinity);
   const [minDeliveryOrder, setMinDeliveryOrder] = useState(10);
   const [deliveryTimeEstimate, setDeliveryTimeEstimate] = useState('40 a 50 min');
   const [pickupTimeEstimate, setPickupTimeEstimate] = useState('25 a 35 min');
@@ -166,7 +169,7 @@ export default function Cart({
           .in('key', ['free_delivery_threshold', 'delivery_min_order', 'delivery_time_estimate', 'pickup_time_estimate']);
         if (settingsError) throw settingsError;
         settingsRows?.forEach((row: any) => {
-          if (row.key === 'free_delivery_threshold') setFreeDeliveryThreshold(Number(row.value));
+          if (row.key === 'free_delivery_threshold') setFreeDeliveryThreshold(Number(row.value) > 0 ? Number(row.value) : Infinity);
           if (row.key === 'delivery_min_order') setMinDeliveryOrder(Number(row.value));
           if (row.key === 'delivery_time_estimate') setDeliveryTimeEstimate(row.value);
           if (row.key === 'pickup_time_estimate') setPickupTimeEstimate(row.value);
@@ -224,19 +227,13 @@ export default function Cart({
     let newOrderId = null;
     let orderSavedSuccessfully = false;
     try {
-      const { data: activeSession } = await supabase
-        .from('cash_sessions')
-        .select('id')
-        .eq('status', 'aberto')
-        .maybeSingle();
-
-      const { data, error } = await supabase.from('orders').insert([{
-        cash_session_id: activeSession ? activeSession.id : null,
+      // The order goes through a database function: the public key cannot read orders or customers directly.
+      // It links the open cash session and updates the customer record (CRM) on the server side.
+      const { data, error } = await supabase.rpc('create_public_order', { p_order: {
         customer_name: name,
         customer_phone: telefone,
         order_type: orderType,
         payment_method: pagamento,
-        status: 'Pendente',
         total_amount: total,
         delivery_address: orderType === 'Delivery' ? morada : null,
         delivery_zone: orderType === 'Delivery' ? zona : null,
@@ -261,7 +258,7 @@ export default function Cart({
             notes: item.notes || ""
           };
         })
-      }]).select();
+      } });
 
       if (error) throw error;
       if (data && data.length > 0) {
@@ -269,35 +266,6 @@ export default function Cart({
         setSavedOrderId(newOrderId);
         setSavedTrackingCode(data[0].tracking_code);
         orderSavedSuccessfully = true;
-
-        try {
-          if (telefone) {
-            const { data: existingCustomer } = await supabase
-              .from('customers')
-              .select('id, total_orders, total_spent')
-              .eq('phone', telefone)
-              .maybeSingle();
-
-            if (existingCustomer) {
-              await supabase.from('customers').update({
-                name,
-                total_orders: (existingCustomer.total_orders || 0) + 1,
-                total_spent: (Number(existingCustomer.total_spent) || 0) + total,
-                last_order_at: new Date().toISOString(),
-              }).eq('id', existingCustomer.id);
-            } else {
-              await supabase.from('customers').insert([{
-                phone: telefone,
-                name,
-                total_orders: 1,
-                total_spent: total,
-                last_order_at: new Date().toISOString(),
-              }]);
-            }
-          }
-        } catch (custErr) {
-          console.warn('[Cart] Não foi possível atualizar o cadastro do cliente (CRM):', custErr);
-        }
       }
     } catch (err) {
       console.error("Error saving order:", err);
@@ -306,7 +274,7 @@ export default function Cart({
     }
 
     if (!orderSavedSuccessfully) {
-      setFormError("Não foi possível registar o seu pedido agora. Verifique a ligação e tente novamente.");
+      setFormError("Não foi possível registrar o seu pedido agora. Verifique sua conexão e tente novamente.");
       return;
     }
 
@@ -314,20 +282,20 @@ export default function Cart({
     text += `           DOBRO PIZZAS\n`;
     text += `-----------------------------------\n`;
     text += `Pedido Nº: ${newOrderId || orderNumber}\n`;
-    text += `Tipo: ${orderType === "Delivery" ? "Entrega" : "Takeaway"}\n\n`;
+    text += `Tipo: ${orderType === "Delivery" ? "Entrega" : "Retirada"}\n\n`;
 
     text += `[CLIENTE]\n`;
     text += `Nome: ${name}\n`;
     text += `Telefone: ${telefone}\n`;
     if (nif.trim()) {
-      text += `NIF: ${nif}\n`;
+      text += `CPF: ${nif}\n`;
     }
     text += `\n`;
 
     if (orderType === "Delivery") {
       text += `[ENDEREÇO DE ENTREGA]\n`;
-      text += `Morada: ${morada}\n`;
-      text += `Complemento: ${zona}\n`;
+      text += `Endereço: ${morada}\n`;
+      text += `Bairro: ${zona}\n`;
       text += `-----------------------------------\n`;
       text += `🛵 Tempo est. de entrega:\n   ${deliveryTimeEstimate}\n`;
     } else {
@@ -365,14 +333,14 @@ export default function Cart({
       
       const extrasTotalPrice = (item.extras || []).reduce((sum, e) => sum + e.price, 0);
       const basePrice = item.priceCalculated - extrasTotalPrice;
-      const priceStr = `R$ ${(basePrice * item.quantity).toFixed(2)}`;
+      const priceStr = `R$ ${brl(basePrice * item.quantity)}`;
       text += `*${item.quantity}x* ${desc} (${priceStr})\n`;
       
       if (item.extras && item.extras.length > 0) {
         item.extras.forEach((extra) => {
-          text += `   + ${extra.name} (+ R$ ${(extra.price * item.quantity).toFixed(2)})\n`;
+          text += `   + ${extra.name} (+ R$ ${brl(extra.price * item.quantity)})\n`;
         });
-        text += `   *Subtotal item: R$ ${(item.priceCalculated * item.quantity).toFixed(2)}*\n`;
+        text += `   *Subtotal item: R$ ${brl(item.priceCalculated * item.quantity)}*\n`;
       }
       if (item.notes) {
         text += `   📝 Obs: ${item.notes}\n`;
@@ -381,15 +349,15 @@ export default function Cart({
     });
 
     text += `-----------------------------------\n`;
-    text += `*Subtotal: R$ ${subtotal.toFixed(2)}*\n`;
+    text += `*Subtotal: R$ ${brl(subtotal)}*\n`;
     if (orderType === "Delivery") {
       if (subtotal >= freeDeliveryThreshold) {
-        text += `Taxa Entrega: R$ 0.00 (Grátis)\n`;
+        text += `Taxa Entrega: R$ 0,00 (Grátis)\n`;
       } else {
-        text += `Taxa Entrega: R$ ${deliveryFee.toFixed(2)}\n`;
+        text += `Taxa Entrega: R$ ${brl(deliveryFee)}\n`;
       }
     }
-    text += `*TOTAL: R$ ${total.toFixed(2)}*\n`;
+    text += `*TOTAL: R$ ${brl(total)}*\n`;
     text += `-----------------------------------\n`;
     text += `[PAGAMENTO]\n`;
     text += `Forma: ${pagamento}\n`;
@@ -560,19 +528,19 @@ export default function Cart({
         )}
 
         {/* FREE DELIVERY PROGRESS BAR IN CART */}
-        {items.length > 0 && (
+        {items.length > 0 && Number.isFinite(freeDeliveryThreshold) && (
           <div className="mt-2.5 pt-2 border-t border-gray-100">
             <div className="flex justify-between items-center text-[11px] font-bold mb-1">
               {subtotal >= freeDeliveryThreshold ? (
                 <span className="text-emerald-700 flex items-center gap-1">
-                  🎉 <strong>Entrega Grátis garantida!</strong>
+                  <strong>Entrega Grátis garantida!</strong>
                 </span>
               ) : (
                 <span className="text-stone-600">
-                  Falta <strong className="text-[#8b0000]">R$ {(freeDeliveryThreshold - subtotal).toFixed(2)}</strong> para <strong>Entrega Grátis</strong> 🛵
+                  Falta <strong className="text-[#8b0000]">R$ {brl(freeDeliveryThreshold - subtotal)}</strong> para <strong>Entrega Grátis</strong>
                 </span>
               )}
-              <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {freeDeliveryThreshold.toFixed(2)}</span>
+              <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {brl(freeDeliveryThreshold)}</span>
             </div>
             <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200/60">
               <div
@@ -639,7 +607,7 @@ export default function Cart({
                           {/* Extras */}
                           {item.extras && item.extras.length > 0 && (
                             <div className="text-[10px] text-gray-500 mt-0.5">
-                              {item.extras.map((ex) => `+ ${ex.name} (R$ ${ex.price.toFixed(2)})`).join(', ')}
+                              {item.extras.map((ex) => `+ ${ex.name} (R$ ${brl(ex.price)})`).join(', ')}
                             </div>
                           )}
 
@@ -653,7 +621,7 @@ export default function Cart({
 
                         {/* Price */}
                         <span className="font-black text-[#083d07] shrink-0 text-xs">
-                          R$ {(item.priceCalculated * item.quantity).toFixed(2)}
+                          R$ {brl(item.priceCalculated * item.quantity)}
                         </span>
                       </div>
 
@@ -698,7 +666,7 @@ export default function Cart({
                       return (
                         <div className="bg-gray-50 border border-gray-200/80 rounded-lg px-2 py-1.5 flex items-center justify-between text-[11px]">
                           <span className="text-gray-600 truncate">
-                            🥤 Coca-Cola por <strong>R$ {(sug.priceSingle || 0).toFixed(2)}</strong>?
+                            Coca-Cola por <strong>R$ {brl(sug.priceSingle || 0)}</strong>?
                           </span>
                           <button
                             onClick={() =>
@@ -724,7 +692,7 @@ export default function Cart({
                 <div className="pt-2 border-t border-gray-100 space-y-2">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-500 font-medium">Subtotal dos itens:</span>
-                    <span className="font-black text-[#083d07] text-sm">R$ {subtotal.toFixed(2)}</span>
+                    <span className="font-black text-[#083d07] text-sm">R$ {brl(subtotal)}</span>
                   </div>
 
                   <button
@@ -773,7 +741,7 @@ export default function Cart({
                     <span>Editar itens</span>
                   </button>
                   <span className="text-gray-500 font-medium">
-                    {totalItemCount} {totalItemCount === 1 ? 'item' : 'itens'} • Subtotal: R$ {subtotal.toFixed(2)}
+                    {totalItemCount} {totalItemCount === 1 ? 'item' : 'itens'} • Subtotal: R$ {brl(subtotal)}
                   </span>
                 </div>
 
@@ -884,7 +852,7 @@ export default function Cart({
                           <option value="">Selecione o bairro...</option>
                           {Object.keys(zonesFees).map((z) => (
                             <option key={z} value={z}>
-                              {z} ({zonesFees[z] === 0 || subtotal >= freeDeliveryThreshold ? "Entrega Grátis" : `+R$ ${zonesFees[z].toFixed(2)}`})
+                              {z} ({zonesFees[z] === 0 || subtotal >= freeDeliveryThreshold ? "Entrega Grátis" : `+R$ ${brl(zonesFees[z])}`})
                             </option>
                           ))}
                         </select>
@@ -989,14 +957,14 @@ export default function Cart({
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-gray-500">
                       {orderType === "Delivery" ? (
-                        <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${deliveryFee.toFixed(2)}`}</strong></>
+                        <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${brl(deliveryFee)}`}</strong></>
                       ) : (
                         'Retirada no balcão'
                       )}
                     </span>
                     <div className="flex items-center gap-1">
                       <span className="text-gray-500 font-medium">Total:</span>
-                      <span className="font-black text-[#083d07] text-base">R$ {total.toFixed(2)}</span>
+                      <span className="font-black text-[#083d07] text-base">R$ {brl(total)}</span>
                     </div>
                   </div>
 

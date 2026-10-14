@@ -290,42 +290,37 @@ function App() {
     );
   }
 
+  const storeStatusBadge = businessStatus.loading ? null : (
+    <div className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1 md:px-3.5 md:py-1.5 rounded-full text-xs font-semibold border ${
+      businessStatus.isOpen
+        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+        : "bg-amber-50 text-amber-800 border-amber-200"
+    }`}>
+      <span className={`w-2 h-2 rounded-full ${businessStatus.isOpen ? "bg-[#083d07] animate-pulse" : "bg-amber-600"}`} />
+      <span>{businessStatus.isOpen ? "Aberto" : "Fechado"}</span>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#fdfbf7] font-sans text-[#44210f] scroll-smooth pb-20 lg:pb-0">
       {/* Navbar Topo */}
       {/* DOBRO Pizzas Header */}
       <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-[#e8d8d1]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3 md:gap-0 md:flex-row md:items-center justify-between">
-          <div className="flex justify-between items-center w-full md:w-auto">
-            <div className="flex items-center gap-3">
+          <div className="flex justify-between items-center gap-2 w-full md:w-auto">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <img 
                 src="/dobro/logo-dobro.png" 
                 alt="DOBRO Pizzas" 
-                className="h-10 w-10 object-contain rounded-full border border-[#e8d8d1] bg-[#e8d8d1]/30 p-1"
+                className="h-10 w-10 shrink-0 object-contain rounded-full border border-[#e8d8d1] bg-[#e8d8d1]/30 p-1"
               />
-              <div className="font-bold text-2xl drop-shadow-sm text-[#083d07] tracking-tight flex items-baseline gap-1">
-                DOBRO <span className="text-[#d5af7a] text-lg font-medium">Pizzas</span>
+              <div className="font-bold text-xl sm:text-2xl drop-shadow-sm text-[#083d07] tracking-tight flex items-baseline gap-1 whitespace-nowrap">
+                DOBRO <span className="hidden min-[360px]:inline text-[#d5af7a] text-base sm:text-lg font-medium">Pizzas</span>
               </div>
-              {!businessStatus.loading && (
-                <div className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
-                  businessStatus.isOpen 
-                    ? "bg-emerald-50 text-emerald-800 border-emerald-200" 
-                    : "bg-amber-50 text-amber-800 border-amber-200"
-                }`}>
-                  <span className={`w-2 h-2 rounded-full ${
-                    businessStatus.isOpen ? "bg-[#083d07] animate-pulse" : "bg-amber-600"
-                  }`} />
-                  <span>{businessStatus.isOpen ? "Aberto • 35-45 min" : "Fechado"}</span>
-                </div>
-              )}
             </div>
-            
-            <button
-              onClick={() => setIsPromoOpen(true)}
-              className="md:hidden font-bold text-[#083d07] transition-colors text-xs border border-[#083d07] bg-[#f6e3df]/60 rounded-full px-3 py-1 hover:bg-[#083d07] hover:text-white"
-            >
-              DESTAQUES DO DIA
-            </button>
+
+            {/* Status da loja: no celular fica à direita do logo; no computador, ao lado da busca */}
+            <div className="md:hidden">{storeStatusBadge}</div>
           </div>
           
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -333,25 +328,20 @@ function App() {
                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#745240]/60" />
                <input 
                  type="text" 
-                 placeholder="Busque por sabores ou ingredientes"
+                 placeholder="Buscar sabor ou ingrediente"
                  className="w-full bg-[#fdfbf7] border border-[#e8d8d1] rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-[#083d07] focus:border-[#083d07] text-[#44210f] outline-none transition-all placeholder:text-[#745240]/50"
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
                />
             </div>
-            <button
-              onClick={() => setIsPromoOpen(true)}
-              className="hidden md:block font-bold text-[#083d07] bg-[#f6e3df]/70 hover:bg-[#083d07] hover:text-[#fdfbf7] border border-[#d5af7a]/50 rounded-full px-3.5 py-1.5 transition-all text-xs tracking-wide"
-            >
-              DESTAQUES DO DIA
-            </button>
+            <div className="hidden md:block">{storeStatusBadge}</div>
           </div>
         </div>
       </header>
 
       {!businessStatus.loading && !businessStatus.isOpen && (
         <div className="bg-[#44210f] text-[#fdfbf7] text-center py-2 px-4 text-sm font-medium border-b border-[#d5af7a]/30">
-          🌾 Estamos preparando a casa{businessStatus.todayLabel ? ` — hoje funcionamos das ${businessStatus.todayLabel}` : ''}. Você pode navegar pelo cardápio e preparar o seu pedido com calma!
+          Estamos preparando a casa{businessStatus.todayLabel ? ` — hoje funcionamos das ${businessStatus.todayLabel}` : ''}. Você pode navegar pelo cardápio e preparar o seu pedido com calma!
         </div>
       )}
 

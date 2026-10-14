@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { format, differenceInMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { normalizePaymentMethod, normalizeOrderType, isOrderActive } from '../../utils/paymentAndOrderHelper';
+import { normalizePaymentMethod, normalizeOrderType, isOrderActive, paymentLabel } from '../../utils/paymentAndOrderHelper';
 import { formatItemNameForPrint } from '../../utils/printHelpers';
 
 interface CashSessionDetailsModalProps {
@@ -272,12 +272,12 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                 <span className="font-mono text-white font-bold text-xs sm:text-sm leading-tight">R$ {summary.totalRevenue.toFixed(2)}</span>
               </div>
               <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
-                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Numerário</span>
+                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Dinheiro</span>
                 <span className="font-mono text-emerald-400 font-bold text-xs sm:text-sm leading-tight">R$ {summary.totalDinheiro.toFixed(2)}</span>
               </div>
               <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
-                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">MB Way</span>
-                <span className="font-mono text-blue-400 font-bold text-xs sm:text-sm leading-tight">R$ {(summary.paymentTotals['MB Way'] || summary.paymentTotals['MBWAY'] || summary.paymentTotals['mbway'] || 0).toFixed(2)}</span>
+                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Pix</span>
+                <span className="font-mono text-blue-400 font-bold text-xs sm:text-sm leading-tight">R$ {((summary.paymentTotals['Pix'] || 0) + (summary.paymentTotals['MB Way'] || 0)).toFixed(2)}</span>
               </div>
               <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
                 <span className="text-[9px] font-mono text-[#d5af7a]/70 uppercase tracking-wider">Caixa (Fundo + Vendas)</span>
@@ -322,7 +322,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                     </div>
                     <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
                       <span>{summary.entrega.count} pedidos</span>
-                      {summary.entrega.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.entrega.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `$R$ {pm}${val.toFixed(2)}`).join(' | ')}</span>}
+                      {summary.entrega.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.entrega.orders.reduce((acc, o) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} R$ ${val.toFixed(2).replace('.', ',')}`).join(' | ')}</span>}
                     </div>
                   </div>
 
@@ -336,7 +336,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                     </div>
                     <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
                       <span>{summary.mesa.count} pedidos</span>
-                      {summary.mesa.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.mesa.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `$R$ {pm}${val.toFixed(2)}`).join(' | ')}</span>}
+                      {summary.mesa.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.mesa.orders.reduce((acc, o) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} R$ ${val.toFixed(2).replace('.', ',')}`).join(' | ')}</span>}
                     </div>
                   </div>
 
@@ -350,7 +350,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                     </div>
                     <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
                       <span>{summary.retirada.count} pedidos</span>
-                      {summary.retirada.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.retirada.orders.reduce((acc, o) => { const pm = normalizePaymentMethod(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `$R$ {pm}${val.toFixed(2)}`).join(' | ')}</span>}
+                      {summary.retirada.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.retirada.orders.reduce((acc, o) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} R$ ${val.toFixed(2).replace('.', ',')}`).join(' | ')}</span>}
                     </div>
                   </div>
 

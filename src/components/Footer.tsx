@@ -3,7 +3,7 @@ import { Instagram, MapPin, Clock, ExternalLink, Phone } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#141b14] text-[#e8d8d1] border-t border-[#233124] pt-12 pb-8 px-4 mt-12">
+    <footer className="bg-[#141b14] text-[#e8d8d1] border-t border-[#233124] pt-12 pb-28 lg:pb-8 px-4 mt-12">
       <div className="max-w-7xl mx-auto">
         {/* Main Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[#233124]">
@@ -34,8 +34,7 @@ export default function Footer() {
             <div className="flex items-start gap-2 text-xs text-[#c4b5aa] leading-relaxed">
               <MapPin className="w-3.5 h-3.5 text-[#d5af7a] shrink-0 mt-0.5" />
               <span>
-                Rua Querino Zagonel, 500<br />
-                São José dos Pinhais — PR
+                Rua Quirino Zagonel - São José dos Pinhais
               </span>
             </div>
             <p className="text-[11px] text-[#8a7569]">

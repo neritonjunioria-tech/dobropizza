@@ -2,7 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '',
-  process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
+  // Server key: this function creates orders and updates customers, which the public key can no longer do
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
 );
 
 export default async (req, context) => {
@@ -23,9 +24,9 @@ export default async (req, context) => {
 
   // Validação de Segurança (Bearer Token)
   const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
-  const SECRET_TOKEN = process.env.WHATSAPP_API_TOKEN || 'SenhaSuperSecreta41Menus2026';
+  const SECRET_TOKEN = process.env.WHATSAPP_API_TOKEN;
 
-  if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
+  if (!SECRET_TOKEN || !authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
     return new Response(JSON.stringify({ success: false, message: 'Unauthorized. Invalid Token.' }), { status: 401, headers });
   }
 

@@ -26,34 +26,7 @@ export function useAnalytics() {
       };
 
       const { error } = await supabase.from('analytics_events').insert([payload]);
-
-      if (error) {
-        // Fallback resiliente na tabela settings para não perder métricas do funil
-        try {
-          const today = new Date().toISOString().split('T')[0];
-          const settingKey = `analytics_events_${today}`;
-          const { data: settingRow } = await supabase
-            .from('settings')
-            .select('value')
-            .eq('key', settingKey)
-            .maybeSingle();
-
-          let currentEvents: any[] = [];
-          try {
-            if (settingRow?.value) currentEvents = JSON.parse(settingRow.value);
-          } catch(e) {}
-          currentEvents.push(payload);
-          if (currentEvents.length > 500) currentEvents = currentEvents.slice(-500);
-
-          await supabase.from('settings').upsert({
-            key: settingKey,
-            value: JSON.stringify(currentEvents),
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'key' });
-        } catch (fbErr) {
-          // Silent fallback catch
-        }
-      }
+      if (error) console.warn('Analytics error:', error.message);
     } catch (err) {
       console.warn('Analytics error:', err);
     }

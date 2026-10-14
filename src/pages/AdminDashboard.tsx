@@ -62,7 +62,7 @@ import {
 import { ALL_MENU_ITEMS, MenuItem, ExtraIngredient, pizzaExtras } from "../data/menu";
 import { useMenu } from "../hooks/useMenu";
 import { supabase } from '../lib/supabase';
-import { normalizeOrderType, isOrderActive, normalizePaymentMethod } from '../utils/paymentAndOrderHelper';
+import { normalizeOrderType, isOrderActive, normalizePaymentMethod, paymentLabel } from '../utils/paymentAndOrderHelper';
 import { formatItemNameForPrint, getItemNameTextForPrint } from '../utils/printHelpers';
 import { motion } from 'framer-motion';
 import MenuManager from '../components/MenuManager';
@@ -262,7 +262,7 @@ export default function AdminDashboard() {
   const handleSaveOrderEdit = async (updatedOrder: any) => {
     // 1. Atualização Otimista Imediata no Estado React (Gestor, Comanda e Gráficos atualizam sem recarregar página)
     const normPm = (updatedOrder.payment_method || updatedOrder.paymentMethod || 'Dinheiro').toString().trim();
-    const normalizedPaymentMethod = (normPm.toLowerCase() === 'mbway' || normPm.toLowerCase() === 'mb way') ? 'MB Way' : normPm;
+    const normalizedPaymentMethod = (normPm.toLowerCase() === 'mbway' || normPm.toLowerCase() === 'mb way') ? 'Pix' : normPm;
 
     const formattedUpdatedOrder = {
       ...updatedOrder,
@@ -303,17 +303,14 @@ export default function AdminDashboard() {
       );
       
       // Recalcular distribuição de formas de pagamento em tempo real
-      const pmCounts: Record<string, { count: number, revenue: number }> = {
-        'MB Way': { count: 0, revenue: 0 },
-        'Numerário': { count: 0, revenue: 0 }
-      };
+      const pmCounts: Record<string, { count: number, revenue: number }> = {};
       let totalFat = 0;
       updatedRecent.forEach((o: any) => {
         if (o.status !== 'Cancelado' && o.status !== 'cancelado') {
           const pmRaw = (o.paymentMethod || o.payment_method || '').trim();
-          const pmNorm = normalizePaymentMethod(pmRaw);
-          const pm = (pmNorm === 'MB Way' || pmRaw.toLowerCase().includes('mb')) ? 'MB Way' : 'Numerário';
+          const pm = paymentLabel(pmRaw);
           const amt = Number(o.totalAmount || o.total_amount || 0);
+          pmCounts[pm] = pmCounts[pm] || { count: 0, revenue: 0 };
           pmCounts[pm].count += 1;
           pmCounts[pm].revenue += amt;
           totalFat += amt;
@@ -580,10 +577,7 @@ export default function AdminDashboard() {
       let totalPedidos = allOrdersAgg.length;
       let faturamentoNumerario = 0;
       let faturamentoMBWay = 0;
-      const paymentMethodCounts: Record<string, { count: number, revenue: number }> = {
-        'MB Way': { count: 0, revenue: 0 },
-        'Numerário': { count: 0, revenue: 0 }
-      };
+      const paymentMethodCounts: Record<string, { count: number, revenue: number }> = {};
       
       const itemCounts: Record<string, {qty: number, revenue: number}> = {};
       const categoryCounts: Record<string, {qty: number, revenue: number}> = {};
@@ -597,12 +591,12 @@ export default function AdminDashboard() {
         const amt = Number(order.totalAmount) || 0;
         faturamentoBruto += amt;
         const pmRaw = (order.paymentMethod || '').trim();
-        const pmNorm = normalizePaymentMethod(pmRaw);
-        const pm = (pmNorm === 'MB Way' || pmRaw.toLowerCase().includes('mb')) ? 'MB Way' : 'Numerário';
+        const pm = paymentLabel(pmRaw);
+        paymentMethodCounts[pm] = paymentMethodCounts[pm] || { count: 0, revenue: 0 };
         paymentMethodCounts[pm].count += 1;
         paymentMethodCounts[pm].revenue += amt;
-        if (pm === 'Numerário') faturamentoNumerario += amt;
-        if (pm === 'MB Way') faturamentoMBWay += amt;
+        if (pm === 'Dinheiro') faturamentoNumerario += amt;
+        if (pm === 'Pix') faturamentoMBWay += amt;
 
         const d = safeGetTime(order.createdAt);
         if (d) {
@@ -1289,8 +1283,8 @@ export default function AdminDashboard() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-all"
-                placeholder="Ex: dobro"
                 required
               />
             </div>
@@ -1300,8 +1294,8 @@ export default function AdminDashboard() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-all"
-                placeholder="Ex: dobro"
                 required
               />
             </div>
@@ -1313,9 +1307,6 @@ export default function AdminDashboard() {
             >
               Entrar no Dashboard
             </button>
-            <p className="text-xs text-stone-400 text-center mt-3">
-              Acesso: <span className="font-semibold text-stone-600">dobro</span> | Senha: <span className="font-semibold text-stone-600">dobro</span>
-            </p>
           </form>
         </div>
       </div>
@@ -3209,7 +3200,7 @@ export default function AdminDashboard() {
                               <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
                                 <div className="flex items-center gap-1.5 text-stone-600 font-mono">
                                   <CreditCard size={12} className="text-stone-400" />
-                                  <span className="font-bold text-stone-800">{order.paymentMethod || 'Numerário'}</span>
+                                  <span className="font-bold text-stone-800">{paymentLabel(order.paymentMethod) === 'Outros' ? (order.paymentMethod || 'Dinheiro') : paymentLabel(order.paymentMethod)}</span>
                                   {order.nif && (
                                     <span className="text-[10px] font-bold bg-stone-100 text-stone-600 px-1 rounded border border-stone-200">
                                       CPF: {order.nif}
@@ -4818,7 +4809,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
   const [deliveryAddress, setDeliveryAddress] = useState(order.deliveryAddress || order.delivery_address || '');
   const [deliveryZone, setDeliveryZone] = useState(order.deliveryZone || order.delivery_zone || '');
   const initialPm = (order.paymentMethod || order.payment_method || 'Dinheiro').toString().trim();
-  const [paymentMethod, setPaymentMethod] = useState(initialPm.toLowerCase() === 'mbway' ? 'MB Way' : initialPm);
+  const [paymentMethod, setPaymentMethod] = useState(['mbway', 'mb way'].includes(initialPm.toLowerCase()) ? 'Pix' : initialPm);
   const [orderType, setOrderType] = useState<string>(() => {
     const raw = (order.orderType || order.order_type || '').toString().toLowerCase().trim();
     if (raw === 'balcao' || raw === 'balcão') return 'balcao';
@@ -5573,9 +5564,10 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="w-full px-2 py-1 bg-stone-50 rounded border border-stone-200 text-[11px] font-bold text-stone-900 outline-none focus:border-[#083d07] focus:bg-white transition-colors cursor-pointer"
                   >
-                    <option value="MB Way">MB Way</option>
-                    <option value="Dinheiro">Dinheiro (Numerário)</option>
-                    <option value="Cartão">Cartão (Multibanco)</option>
+                    <option value="Pix">Pix</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    <option value="Cartão de Crédito">Cartão de Crédito</option>
+                    <option value="Cartão de Débito">Cartão de Débito</option>
                   </select>
                 </div>
               </div>
@@ -5588,7 +5580,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
                   {[
                     { key: 'entrega', label: 'Entrega', icon: Bike, desc: 'Delivery' },
-                    { key: 'retirada', label: 'Retirada', icon: ShoppingBag, desc: 'Takeaway' },
+                    { key: 'retirada', label: 'Retirada', icon: ShoppingBag, desc: 'Cliente busca' },
                     { key: 'balcao', label: 'Balcão', icon: Store, desc: 'Balcão' },
                     { key: 'mesa', label: 'Mesa', icon: UtensilsCrossed, desc: 'Consumo Local' }
                   ].map((btn) => {
@@ -5622,7 +5614,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                     {/* Endereço / Morada */}
                     <div className="sm:col-span-6 space-y-0.5">
                       <label className="block text-[8px] font-mono font-bold text-sky-950 uppercase tracking-wider flex items-center gap-1">
-                        <MapPin size={11} className="text-sky-600" /> Morada / Endereço de Entrega
+                        <MapPin size={11} className="text-sky-600" /> Endereço de Entrega
                       </label>
                       <input
                         type="text"

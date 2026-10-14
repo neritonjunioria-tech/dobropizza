@@ -827,7 +827,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                     <th className="py-3 px-4">Motoboy</th>
                     <th className="py-3 px-4">Entregas</th>
                     <th className="py-3 px-4">Extra / Desconto</th>
-                    <th className="py-3 px-4">Numerário cobrado</th>
+                    <th className="py-3 px-4">Dinheiro cobrado</th>
                     <th className="py-3 px-4">Total pago</th>
                     <th className="py-3 px-4 text-right">Ações</th>
                   </tr>
@@ -1041,7 +1041,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                 </div>
                 {settlementTotals.cashCollected > 0 && (
                   <div className="flex items-center justify-between pt-2 border-t border-[#d3c8bb] text-amber-700">
-                    <span>Numerário cobrado nas entregas (a prestar contas)</span>
+                    <span>Dinheiro cobrado nas entregas (a prestar contas)</span>
                     <span className="tabular-nums">{formatMoney(settlementTotals.cashCollected)}</span>
                   </div>
                 )}

@@ -47,7 +47,7 @@ const SUGGESTIONS = [
 
 const PAYMENT_METHODS = [
   { id: 'Dinheiro', label: 'Dinheiro', icon: DollarSign },
-  { id: 'MB Way', label: 'MB Way', icon: Smartphone },
+  { id: 'Pix', label: 'Pix', icon: Smartphone },
   { id: 'Cartão', label: 'Cartão / TPA', icon: CreditCard },
   { id: 'Transferência', label: 'Transferência', icon: Building }
 ];
@@ -147,7 +147,7 @@ export default function ExpensesManager({ expenses = [], onExpenseChange }: Expe
 
   // Distinct payment methods available
   const availablePaymentMethods = useMemo(() => {
-    const methods = new Set<string>(['Dinheiro', 'MB Way', 'Cartão', 'Transferência']);
+    const methods = new Set<string>(['Dinheiro', 'Pix', 'Cartão', 'Transferência']);
     expenses.forEach(e => {
       if (e.payment_method && e.payment_method.trim()) {
         methods.add(e.payment_method.trim());

@@ -361,7 +361,7 @@ export default function PDVModal({
       setErrorMessage(null);
       setSearchQuery('');
       setSelectedCategory('all');
-      setPaymentMethod('MB Way');
+      setPaymentMethod('Pix');
       setOrderNotes('');
       setCustomPromoFlavor('');
       setCustomPromoFlavor2('');
@@ -1721,14 +1721,14 @@ export default function PDVModal({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
               <button
                 type="button"
-                onClick={() => setPaymentMethod('MB Way')}
+                onClick={() => setPaymentMethod('Pix')}
                 className={`py-2 px-2 rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center gap-1 transition-all cursor-pointer border ${
-                  paymentMethod === 'MB Way'
+                  paymentMethod === 'Pix'
                     ? 'border-[#D5AF7A] bg-[#F6E3DF] text-[#44210F] shadow-sm ring-1 ring-[#D5AF7A]'
                     : 'border-stone-200 bg-white text-stone-700 hover:bg-stone-50'
                 }`}
               >
-                <Smartphone size={14} className={paymentMethod === 'MB Way' ? 'text-[#44210F]' : 'text-stone-400'} />
+                <Smartphone size={14} className={paymentMethod === 'Pix' ? 'text-[#44210F]' : 'text-stone-400'} />
                 <span>Pix</span>
               </button>
               <button

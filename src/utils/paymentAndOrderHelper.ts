@@ -71,6 +71,17 @@ export function normalizePaymentMethod(method?: string | null): CanonicalPayment
 }
 
 /**
+ * Nome exibido na tela para cada forma de pagamento (padrão brasileiro).
+ * 'Numerário' continua sendo a chave interna de dinheiro; na tela aparece "Dinheiro".
+ */
+export function paymentLabel(method?: string | null): string {
+  const canonical = normalizePaymentMethod(method);
+  if (canonical === 'Numerário' || canonical === 'Dinheiro') return 'Dinheiro';
+  if (canonical === 'MB Way') return 'Pix';
+  return canonical;
+}
+
+/**
  * Normaliza o tipo de atendimento (Delivery vs Entrega, Takeaway vs Retirada, Mesa, Balcão).
  */
 export function normalizeOrderType(type?: string | null): CanonicalOrderType {

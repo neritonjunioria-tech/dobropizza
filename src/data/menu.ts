@@ -148,7 +148,7 @@ export const RESTAURANT_WHATSAPP_PHONE = "5541995984072";
 // Dobro não possui entrega grátis independente do valor do pedido
 export const FREE_DELIVERY_THRESHOLD = Infinity;
 
-// Bairros atendidos até ~5km de São José dos Pinhais (Rua Querino Zagonel, 500)
+// Bairros atendidos até ~5km de São José dos Pinhais (Rua Quirino Zagonel)
 export const NEIGHBORHOOD_DELIVERY_FEES: Record<string, number> = {
   "Itália (Bairro da Casa)": 0,
   "Braga": 0,

@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co',
-  process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_71P_V0V6Q7x-FEw4tCFDCg_qCOwUMat'
+  process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '',
+  // Server key: this function writes chat history, which the public key can no longer do
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
 );
 
 export default async (req: Request) => {
@@ -23,9 +24,9 @@ export default async (req: Request) => {
 
   // Token de autenticação opcional / de segurança
   const authHeader = req.headers.get('authorization') || req.headers.get('Authorization');
-  const SECRET_TOKEN = process.env.WHATSAPP_API_TOKEN || 'SenhaSuperSecreta41Menus2026';
+  const SECRET_TOKEN = process.env.WHATSAPP_API_TOKEN;
 
-  if (!authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
+  if (!SECRET_TOKEN || !authHeader || authHeader !== `Bearer ${SECRET_TOKEN}`) {
     return new Response(JSON.stringify({ success: false, message: 'Unauthorized. Invalid Token.' }), { status: 401, headers });
   }
 

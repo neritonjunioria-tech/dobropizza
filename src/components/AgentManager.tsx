@@ -1606,7 +1606,7 @@ export default function AgentManager() {
               </span>
               {[
                 { label: '🍕 No Forno', text: 'Seu pedido já está no forno e logo sai para entrega!' },
-                { label: '🛵 Saiu p/ Entrega', text: 'Seu pedido acabou de sair com o estafeta para entrega!' },
+                { label: '🛵 Saiu p/ Entrega', text: 'Seu pedido acabou de sair com o motoboy para entrega!' },
                 { label: '🪙 Precisa de Troco?', text: 'Com certeza! Você tem o valor exato ou precisa de troco para alguma nota (ex: R$ 20, R$ 50)?' },
                 { label: '✅ PIX Confirmado', text: 'Confirmamos o recebimento do seu PIX com sucesso! Muito obrigado!' },
                 { label: '💳 Chave PIX', text: `Nossa chave PIX oficial (telefone) é: ${formattedActivePix}` }

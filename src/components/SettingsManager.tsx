@@ -159,7 +159,7 @@ export default function SettingsManager({
         id: 'TESTE',
         customerName: 'Cliente de Teste',
         orderType: 'Delivery',
-        paymentMethod: 'Numerário',
+        paymentMethod: 'Dinheiro',
         totalAmount: 20.90,
         createdAt: new Date().toISOString(),
         items: [
@@ -201,7 +201,7 @@ export default function SettingsManager({
 
   // Categorias do menu lateral de navegação
   const navItems = [
-    { id: 'empresa' as SettingsTab, label: 'Empresa & Marca', icon: Building2, desc: 'Nome, NIF, morada e logo' },
+    { id: 'empresa' as SettingsTab, label: 'Empresa & Marca', icon: Building2, desc: 'Nome, CNPJ, endereço e logo' },
     { id: 'horarios' as SettingsTab, label: 'Horários de Funcionamento', icon: Clock, desc: 'Turnos e dias operacionais' },
     { id: 'impressao' as SettingsTab, label: 'Impressão Térmica', icon: Printer, desc: 'Auto-impressão e atrasos' },
     { id: 'entregas' as SettingsTab, label: 'Entregas & Prazos', icon: Truck, desc: 'Tempo de espera e frete grátis' },
@@ -338,7 +338,7 @@ export default function SettingsManager({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs font-semibold text-stone-700 block mb-1">NIF / CNPJ</label>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1">CNPJ</label>
                       <input 
                         type="text" 
                         value={companyInfo.nif} 
@@ -348,7 +348,7 @@ export default function SettingsManager({
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-semibold text-stone-700 block mb-1">Morada / Endereço</label>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1">Endereço</label>
                       <input 
                         type="text" 
                         value={companyInfo.address} 

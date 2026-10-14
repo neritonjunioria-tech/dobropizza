@@ -220,8 +220,8 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
         validCount++;
         const norm = normalizePaymentMethod(o.payment_method);
         if (norm === 'Numerário') numerario += amt;
-        else if (norm === 'MB Way') mbway += amt;
-        else if (norm === 'Cartão') cartao += amt;
+        else if (norm === 'Pix' || norm === 'MB Way') mbway += amt;
+        else if (norm === 'Cartão' || norm === 'Cartão de Crédito' || norm === 'Cartão de Débito') cartao += amt;
         else outros += amt;
       });
 
