@@ -16,7 +16,7 @@ Configurar o botão de Human Handover (Liga/Desliga do robô) e integrar os pedi
    - Inserir nó de consulta HTTP ou Postgres para ler `bot_active` na tabela `settings`.
    - Inserir nó IF para barrar a continuação do fluxo se `bot_active == false`.
 3. **Atualização n8n (Tool de Pedido)**:
-   - Adicionar HTTP Request Tool para enviar payload estruturado JSON do pedido para `https://tipnhvpivhaerumetona.supabase.co/rest/v1/orders`.
+   - Adicionar HTTP Request Tool para enviar payload estruturado JSON do pedido para `https://yexlnjznkxthffklovql.supabase.co/rest/v1/orders`.
 4. **Testes**:
    - Testar o liga/desliga bloqueando o fluxo no n8n.
    - Testar simulação de pedido e conferir se ele aparece na aba do gestor de pedidos.

@@ -11,3 +11,4 @@ bun.lockb
 backups/
 
 .tmp/
+.netlify/
