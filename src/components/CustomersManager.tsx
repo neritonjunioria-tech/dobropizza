@@ -201,7 +201,7 @@ export default function CustomersManager() {
         entry.orders.push(o);
 
         // Atualiza melhor nome disponível
-        if (o.customer_name && o.customer_name.length > entry.name.length && !o.customer_name.toLowerCase().includes('41 menu')) {
+        if (o.customer_name && o.customer_name.length > entry.name.length && !o.customer_name.toLowerCase().includes('dobro pizza')) {
           entry.name = o.customer_name.trim();
         }
 
@@ -494,7 +494,7 @@ export default function CustomersManager() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `clientes_crm_41menus_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `clientes_crm_dobropizza_${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -1203,22 +1203,22 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
     {
       title: '🎁 Reativação / Sentimos sua Falta',
       desc: 'Para clientes em risco ou inativos (+30 dias sem pedir).',
-      text: `Olá ${firstName}! Tudo bem? 🍕\nSentimos sua falta aqui na 41 Menu's! Preparamos um mimo especial para o seu próximo pedido hoje. Gostaria de dar uma olhada no nosso cardápio atualizado?`
+      text: `Olá ${firstName}! Tudo bem? 🍕\nSentimos sua falta aqui na DOBRO Pizzas! Preparamos um mimo especial para o seu próximo pedido hoje. Gostaria de dar uma olhada no nosso cardápio atualizado?`
     },
     {
       title: '🌟 Reconhecimento VIP',
       desc: 'Para estreitar laços com os clientes mais frequentes.',
-      text: `Olá ${firstName}! Passando para agradecer pela sua preferência de sempre como cliente VIP da 41 Menu's! ⭐\nNa sua próxima pizza grande, a sobremesa ou a borda recheada é por nossa conta. Vamos pedir hoje?`
+      text: `Olá ${firstName}! Passando para agradecer pela sua preferência de sempre como cliente VIP da DOBRO Pizzas! ⭐\nNa sua próxima pizza grande, a sobremesa ou a borda recheada é por nossa conta. Vamos pedir hoje?`
     },
     {
       title: '🌱 Pós-Venda (Novo Cliente)',
       desc: 'Para quem realizou o 1º pedido recente.',
-      text: `Olá ${firstName}, tudo bem? Aqui é da equipe da 41 Menu's. Passando para saber como foi a sua experiência com a nossa pizza! Seu feedback é muito importante para nós. Esperamos que tenha adorado! 😊`
+      text: `Olá ${firstName}, tudo bem? Aqui é da equipe da DOBRO Pizzas. Passando para saber como foi a sua experiência com a nossa pizza! Seu feedback é muito importante para nós. Esperamos que tenha adorado! 😊`
     },
     {
       title: '🍕 Oferta do Sabor Favorito',
       desc: `Oferecer diretamente ${favoritePizza}.`,
-      text: `Olá ${firstName}! Hoje o forno da 41 Menu's já está a todo vapor e lembrei de você! Que tal pedir aquela ${favoritePizza} quentinha hoje para o jantar? 🍕`
+      text: `Olá ${firstName}! Hoje o forno da DOBRO Pizzas já está a todo vapor e lembrei de você! Que tal pedir aquela ${favoritePizza} quentinha hoje para o jantar? 🍕`
     }
   ];
 

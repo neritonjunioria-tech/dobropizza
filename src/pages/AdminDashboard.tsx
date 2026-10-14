@@ -1110,13 +1110,13 @@ export default function AdminDashboard() {
       let pass = password.trim();
 
       let email = trimmedUser;
-      if (trimmedUser === 'admin' || trimmedUser === 'admin@41menus.com' || trimmedUser === '41menus') {
-        email = '41menus@41menus.com';
+      if (trimmedUser === 'admin' || trimmedUser === 'admin@dobropizza.com' || trimmedUser === 'dobropizza') {
+        email = 'admin@dobropizza.com';
         if (pass === 'admin') {
           pass = '123456';
         }
       } else if (!email.includes('@')) {
-        email = email + '@41menus.com';
+        email = email + '@dobropizza.com';
       }
 
       let { error } = await supabase.auth.signInWithPassword({
@@ -1124,9 +1124,9 @@ export default function AdminDashboard() {
         password: pass,
       });
 
-      if (error && (trimmedUser === 'admin' || trimmedUser === '41menus')) {
+      if (error && (trimmedUser === 'admin' || trimmedUser === 'dobropizza')) {
         const fallback = await supabase.auth.signInWithPassword({
-          email: '41menus@41menus.com',
+          email: 'admin@dobropizza.com',
           password: '123456',
         });
         error = fallback.error;
@@ -1414,7 +1414,7 @@ export default function AdminDashboard() {
             <Menu size={20} />
           </button>
           <div>
-            <h2 className="text-sm font-bold text-white tracking-tight leading-none">41 Menu's</h2>
+            <h2 className="text-sm font-bold text-white tracking-tight leading-none">DOBRO Pizzas</h2>
             <span className="text-[10px] text-stone-400 font-mono uppercase tracking-wider">
               {activeTab === 'visao-geral' && 'Visão Geral'}
               {activeTab === 'pedidos' && 'Pedidos'}
@@ -1603,7 +1603,7 @@ export default function AdminDashboard() {
             <div>
               <div className="flex justify-between items-center pb-4 mb-4 border-b border-stone-800">
                 <div>
-                  <h2 className="text-sm font-bold text-white tracking-tight">41 Menu's</h2>
+                  <h2 className="text-sm font-bold text-white tracking-tight">DOBRO Pizzas</h2>
                   <p className="text-[10px] text-stone-400 uppercase tracking-wider font-mono mt-0.5">Pizzas e Esfirras</p>
                 </div>
                 <button 
@@ -1753,11 +1753,11 @@ export default function AdminDashboard() {
         <div className="py-3 px-3.5 border-b border-stone-800/80 bg-stone-950 shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-black border border-stone-800 shrink-0 flex items-center justify-center shadow-sm">
-              <img src={adminLogoUrl || "/logo.png"} alt="41 Menus" className="w-full h-full object-cover rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = "/logo.png"; }} />
+              <img src={adminLogoUrl || "/dobro/logo-dobro.png"} alt="DOBRO Pizzas" className="w-full h-full object-cover rounded-lg" onError={(e) => { (e.target as HTMLImageElement).src = "/dobro/logo-dobro.png"; }} />
             </div>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-extrabold text-white tracking-tight leading-tight truncate">41 Menu's</h2>
+                <h2 className="text-sm font-extrabold text-white tracking-tight leading-tight truncate">DOBRO Pizzas</h2>
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 leading-none">Online</span>
               </div>
               <span className="text-[10px] font-mono text-stone-400 uppercase tracking-wider block mt-1 leading-none">Pizzas e Esfirras</span>
@@ -4512,7 +4512,7 @@ export default function AdminDashboard() {
               <div className="print-receipt-content" style={{ fontFamily: 'Arial, Helvetica, sans-serif', color: '#000' }}>
                 {/* Store Name + Order Type */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '4px' }}>
-                  <h2 style={{ margin: 0, fontSize: '15px', fontWeight: '900' }}>41 Menu's</h2>
+                  <h2 style={{ margin: 0, fontSize: '15px', fontWeight: '900' }}>DOBRO Pizzas</h2>
                   <span style={{ fontSize: '14px', fontWeight: '800' }}>
                     {printOrder.orderType === 'Delivery' || printOrder.orderType === 'entrega' ? 'ENTREGA' : 'RETIRADA'}
                   </span>
@@ -4632,7 +4632,7 @@ export default function AdminDashboard() {
 
                 {/* Footer */}
                 <div style={{ textAlign: 'center', marginTop: '8px', paddingTop: '4px', borderTop: '1px solid #000', fontSize: '10px', fontWeight: 'normal' }}>
-                  <p style={{ margin: 0 }}>Obrigado por fazer um pedido de 41Menu's Pizzas e Esfihas</p>
+                  <p style={{ margin: 0 }}>Obrigado por fazer um pedido de DOBRO Pizzas</p>
                 </div>
               </div>
             </div>
@@ -4661,7 +4661,7 @@ export default function AdminDashboard() {
           <div className="print-receipt-content">
             {/* Store Name + Order Type */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '6px' }}>
-              <h2 style={{ margin: 0, fontSize: '14pt', fontWeight: '900', letterSpacing: '0.5px' }}>41 Menu's</h2>
+              <h2 style={{ margin: 0, fontSize: '14pt', fontWeight: '900', letterSpacing: '0.5px' }}>DOBRO Pizzas</h2>
               <span style={{ fontSize: '12pt', fontWeight: '800' }}>
                 {printOrder.orderType === 'Delivery' || printOrder.orderType === 'entrega' ? 'ENTREGA' : 'RETIRADA'}
               </span>
@@ -4781,7 +4781,7 @@ export default function AdminDashboard() {
 
             {/* Footer */}
             <div style={{ textAlign: 'center', marginTop: '10px', paddingTop: '6px', borderTop: '1px solid #000', fontSize: '10pt', fontWeight: 'normal' }}>
-              <p style={{ margin: 0 }}>Obrigado por fazer um pedido de 41Menu's Pizzas e Esfihas</p>
+              <p style={{ margin: 0 }}>Obrigado por fazer um pedido de DOBRO Pizzas</p>
             </div>
           </div>
         </div>

@@ -339,7 +339,7 @@ export default function Cart({
     }
 
     let text = `-----------------------------------\n`;
-    text += `           41 MENU'S\n`;
+    text += `           DOBRO PIZZAS\n`;
     text += `-----------------------------------\n`;
     text += `Pedido Nº: ${newOrderId || orderNumber}\n`;
     text += `Tipo: ${orderType === "Delivery" ? "Entrega" : "Takeaway"}\n\n`;

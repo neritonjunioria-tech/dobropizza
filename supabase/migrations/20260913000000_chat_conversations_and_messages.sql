@@ -1,6 +1,6 @@
 -- ==============================================================================
 -- Migração: Tabelas de Histórico e Conversas do Agente IA (WhatsApp)
--- Execute este script no SQL Editor do Supabase (https://supabase.com/dashboard/project/tipnhvpivhaerumetona/sql)
+-- Aplicada pela CLI do Supabase (supabase db push) ou pelo SQL Editor do projeto
 -- ==============================================================================
 
 -- 1. Tabela de Conversas (1 linha por telefone)

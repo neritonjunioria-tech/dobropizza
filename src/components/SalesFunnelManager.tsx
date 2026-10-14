@@ -200,7 +200,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
     fetchFunnelData();
   }, [period, startDate, endDate]);
 
-  // PALETA DA MARCA 41 MENUS (Amarelo Ouro, Âmbar, Caramelo e Dourado Institucional)
+  // PALETA DA MARCA DOBRO PIZZAS (Amarelo Ouro, Âmbar, Caramelo e Dourado Institucional)
   const stages = [
     {
       id: 1,
@@ -209,7 +209,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
       subtitle: 'Acessos únicos ao cardápio digital',
       count: data.visitors,
       unit: 'Acessos',
-      primaryHex: '#EAB308', // Amarelo Marca 41 Menus
+      primaryHex: '#EAB308', // Amarelo Marca DOBRO Pizzas
       accentHex: '#FACC15',
       textBadge: 'bg-yellow-50 text-yellow-900 border-yellow-200',
       iconEmoji: '🧲',
@@ -277,7 +277,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
       subtitle: 'Pedidos confirmados e faturados no caixa',
       count: data.purchases,
       unit: 'Fechados',
-      primaryHex: '#CA8A04', // Dourado Ouro da Marca 41 Menus
+      primaryHex: '#CA8A04', // Dourado Ouro da Marca DOBRO Pizzas
       accentHex: '#EAB308',
       textBadge: 'bg-yellow-50 text-yellow-900 border-yellow-200',
       iconEmoji: '🛒',
@@ -311,7 +311,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                 </span>
               </div>
               <p className="text-xs text-stone-500 font-sans mt-0.5">
-                Acompanhamento da jornada de compra no cardápio digital oficial 41 Menus
+                Acompanhamento da jornada de compra no cardápio digital oficial DOBRO Pizzas
               </p>
             </div>
           </div>
@@ -436,7 +436,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             <div className="flex items-center gap-2">
               <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
                 <Layers size={13} className="text-[#fdde58]" />
-                Funil Tridimensional • 41 Menu's
+                Funil Tridimensional • DOBRO Pizzas
               </span>
             </div>
             <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-800/40">
@@ -457,7 +457,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                   <feDropShadow dx="0" dy="1.5" stdDeviation="1.5" floodColor="#000000" floodOpacity="0.85"/>
                 </filter>
 
-                {/* Nível 1: Amarelo Oficial da Marca 41 Menus (#fdde58) */}
+                {/* Nível 1: Amarelo Oficial da Marca DOBRO Pizzas (#fdde58) */}
                 <linearGradient id="brand-l1-left" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#d8ba39"/>
                   <stop offset="100%" stopColor="#b49721"/>
@@ -512,7 +512,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                 </linearGradient>
               </defs>
 
-              {/* ═══════════ NÍVEL 1: AMARELO MARCA 41 MENUS (ATRAIR - TRÁFEGO) ═══════════ */}
+              {/* ═══════════ NÍVEL 1: AMARELO MARCA DOBRO PIZZAS (ATRAIR - TRÁFEGO) ═══════════ */}
               <g 
                 className="cursor-pointer transition-all hover:opacity-95"
                 onClick={() => setSelectedStage(1)}
@@ -659,7 +659,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
                 </g>
               </g>
 
-              {/* ═══════════ NÍVEL 5: OURO DOURADO 41 MENUS (PEDIDOS CONVERTIDOS) ═══════════ */}
+              {/* ═══════════ NÍVEL 5: OURO DOURADO DOBRO PIZZAS (PEDIDOS CONVERTIDOS) ═══════════ */}
               <g 
                 className="cursor-pointer transition-all hover:opacity-95"
                 onClick={() => setSelectedStage(5)}
@@ -704,7 +704,7 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               Retenção Geral: <strong className="text-white">{data.conversionRate.toFixed(1)}%</strong>
             </span>
             <a 
-              href="https://41menuspizzaria.netlify.app" 
+              href="/" 
               target="_blank" 
               rel="noreferrer"
               className="text-stone-400 hover:text-white flex items-center gap-1 transition-colors"

@@ -1,5 +1,5 @@
 ---
-name: 41 Menus - PDV & Cardápio
+name: DOBRO Pizzas - PDV & Cardápio
 description: Sistema unificado de PDV, painel de controle e cardápio digital para restaurantes.
 colors:
   primary: "#fdde58"
@@ -24,7 +24,7 @@ spacing:
   md: "1rem"
 ---
 
-# Design System: 41 Menus
+# Design System: DOBRO Pizzas
 
 ## Overview
 
@@ -43,7 +43,7 @@ O design do sistema (painel admin e PDV) prioriza a alta eficiência da operaç�
 O sistema de cores gira em torno de uma identidade neutra limpa com toques fortes da cor da marca.
 
 ### Primary
-- **Amarelo Fosco Oficial** (#fdde58): Cor de destaque e identidade da marca "41 Menus". Usado em botões de ação principal, barras de rolagem ativas, botões de confirmar e focos de interação.
+- **Amarelo Fosco Oficial** (#fdde58): Cor de destaque e identidade da marca "DOBRO Pizzas". Usado em botões de ação principal, barras de rolagem ativas, botões de confirmar e focos de interação.
 
 ### Neutral
 - **Fundo Principal** (#f8fafc): Fundo suave do PDV e painel.

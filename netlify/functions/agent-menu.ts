@@ -2,7 +2,7 @@ import { Handler } from '@netlify/functions';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://tipnhvpivhaerumetona.supabase.co',
+  process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co',
   process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || ''
 );
 

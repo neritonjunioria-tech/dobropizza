@@ -881,7 +881,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
             {/* Conteúdo do Cupom Térmico */}
             <div className="p-5 overflow-y-auto bg-white font-mono text-stone-950 space-y-3 print-receipt-content">
               <div className="text-center pb-2 border-b border-dashed border-stone-300">
-                <h2 className="text-lg font-black tracking-tight uppercase">41 Menu's</h2>
+                <h2 className="text-lg font-black tracking-tight uppercase">DOBRO Pizzas</h2>
                 <p className="text-[10px] text-stone-500 mt-0.5">Pizzaria & Esfiharia Delivery</p>
                 <div className="mt-1 text-[11px] font-bold text-stone-800">
                   {format(new Date(selectedReceiptOrder.created_at || selectedReceiptOrder.createdAt), "dd/MM/yyyy HH:mm:ss")}

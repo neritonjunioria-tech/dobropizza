@@ -26,7 +26,7 @@ export default async (req: Request) => {
 
     const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://funnyeagle-evolution.cloudfy.live';
     const evolutionApiKey = process.env.EVOLUTION_API_KEY || '1E0FE7D2CCFB-4757-B948-F350F94E227F';
-    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agente41menus';
+    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agentedobropizza';
     const pizzeriaPhone = '351938360931';
 
     // 1. Enviar para o número da pizzaria (garante que a pizzaria recebe o resumo inalterável)

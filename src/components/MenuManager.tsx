@@ -157,10 +157,10 @@ export default function MenuManager() {
       setFeedback("Fazendo upload da imagem...");
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-      const filePath = `41menus/produtos/${fileName}`;
+      const filePath = `dobropizza/produtos/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('Cardapio41menus')
+        .from('cardapio-dobropizza')
         .upload(filePath, file);
 
       if (uploadError) {
@@ -168,14 +168,14 @@ export default function MenuManager() {
       }
 
       const { data } = supabase.storage
-        .from('Cardapio41menus')
+        .from('cardapio-dobropizza')
         .getPublicUrl(filePath);
 
       setEditingItem({ ...editingItem, image_url: data.publicUrl });
       setFeedback("Upload de imagem concluído com sucesso!");
     } catch (error: any) {
       console.error(error);
-      setFeedback("Erro no upload (certifique-se de que criou um bucket 'Cardapio41menus' público no Supabase): " + error.message);
+      setFeedback("Erro no upload (certifique-se de que criou um bucket 'cardapio-dobropizza' público no Supabase): " + error.message);
     } finally {
       setUploadingImage(false);
     }
@@ -188,7 +188,7 @@ export default function MenuManager() {
     let finalImageUrl = editingItem.image_url || null;
     if (finalImageUrl && !finalImageUrl.startsWith('http') && !finalImageUrl.startsWith('/')) {
       // É só um nome de arquivo solto (veio do Storage do Supabase), então montamos a URL pública.
-      finalImageUrl = `https://tipnhvpivhaerumetona.supabase.co/storage/v1/object/public/Cardapio41menus/${finalImageUrl}`;
+      finalImageUrl = `${import.meta.env.VITE_SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co'}/storage/v1/object/public/cardapio-dobropizza/${finalImageUrl}`;
     }
 
     const isPizza = ['pizzas', 'tradicionais', 'especiais', 'gourmet', 'doces'].includes(editingItem.category) || editingItem.id?.startsWith('p-');

@@ -24,27 +24,27 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
   onZoom,
 }) => {
   const prices = [];
-  if (item.priceM) prices.push(`M €${item.priceM.toFixed(2)}`);
-  if (item.priceG) prices.push(`G €${item.priceG.toFixed(2)}`);
-  if (item.priceP && !item.priceM && !item.priceG) prices.push(`P €${item.priceP.toFixed(2)}`);
+  if (item.priceM) prices.push(`M R$ ${item.priceM.toFixed(2).replace('.', ',')}`);
+  if (item.priceG) prices.push(`G R$ ${item.priceG.toFixed(2).replace('.', ',')}`);
+  if (item.priceP && !item.priceM && !item.priceG) prices.push(`P R$ ${item.priceP.toFixed(2).replace('.', ',')}`);
 
   let priceDisplay: React.ReactNode = null;
   if (prices.length > 2) {
     priceDisplay = (
-      <span className="font-medium text-gray-900 text-[15px]">
-        A partir de €{(item.priceP || item.priceM || item.priceG || 0).toFixed(2)}
+      <span className="font-semibold text-[#083d07] text-[15px]">
+        A partir de R$ {(item.priceP || item.priceM || item.priceG || 0).toFixed(2).replace('.', ',')}
       </span>
     );
   } else if (prices.length > 0) {
     priceDisplay = (
-      <span className="font-medium text-gray-900 text-[14px] tracking-tight">
+      <span className="font-semibold text-[#083d07] text-[14px] tracking-tight">
         {prices.join(" · ")}
       </span>
     );
   } else {
     priceDisplay = (
-      <span className="font-medium text-gray-900 text-[15px]">
-        €{(item.priceSingle || 0).toFixed(2)}
+      <span className="font-bold text-[#083d07] text-[15px]">
+        R$ {(item.priceSingle || 0).toFixed(2).replace('.', ',')}
       </span>
     );
   }
@@ -118,7 +118,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
           </p>
           <div className="mt-auto flex items-center justify-between">
             <span className="font-extrabold text-[#083d07] text-lg">
-              €{(item.priceSingle || item.priceM || item.priceG || item.priceP || 0).toFixed(2)}
+              R$ {(item.priceSingle || item.priceM || item.priceG || item.priceP || 0).toFixed(2).replace('.', ',')}
             </span>
             <span className="text-[#083d07] font-bold text-sm hover:underline">
               Pedir Agora
@@ -145,8 +145,8 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
         </div>
       )}
       {item.isMaisPedido && catId === "mais-pedidos" && (
-        <div className="absolute top-0 right-0 bg-[#745240] text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10">
-          ⭐ Assinatura
+        <div className="absolute top-0 right-0 bg-[#083d07] text-[#fdfbf7] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-xs">
+          🔥 Mais Pedido
         </div>
       )}
       <div className={`flex-1 flex flex-col justify-between h-full ${hasPhoto ? "min-h-[92px] sm:min-h-[112px]" : "min-h-[76px] sm:min-h-[88px]"}`}>

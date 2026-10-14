@@ -24,7 +24,7 @@ export default {
         return new Response(JSON.stringify({ error: 'Preencha usuário, senha e função.' }), { status: 400 });
       }
 
-      const email = username.includes('@') ? username : `${username}@41menus.com`;
+      const email = username.includes('@') ? username : `${username}@dobropizza.com`;
 
       const { data: newUser, error: createError } = await ctx.supabaseAdmin.auth.admin.createUser({
         email,

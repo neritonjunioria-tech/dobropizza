@@ -1259,7 +1259,7 @@ export default function AgentManager() {
             ) : (
               filteredConversations.map(c => {
                 const isSelected = selectedPhone === c.phone;
-                const isPizzeriaName = c.name && c.name.toLowerCase().includes("41 menu");
+                const isPizzeriaName = c.name && c.name.toLowerCase().includes("dobro pizza");
                 const displayName = (!c.name || isPizzeriaName) ? (c.phone || 'Cliente') : c.name;
                 return (
                   <button
@@ -1346,7 +1346,7 @@ export default function AgentManager() {
           <div className={`flex-1 flex-col h-full min-w-0 bg-[#efeae2] ${selectedPhone ? 'flex' : 'hidden md:flex'}`}>
             {/* Topo do Chat Selecionado com Controle Imediato */}
             {(() => {
-              const isHeaderPizzeriaName = selectedConversation.name && selectedConversation.name.toLowerCase().includes("41 menu");
+              const isHeaderPizzeriaName = selectedConversation.name && selectedConversation.name.toLowerCase().includes("dobro pizza");
               const headerDisplayName = (!selectedConversation.name || isHeaderPizzeriaName) ? (selectedConversation.phone || 'Cliente') : selectedConversation.name;
               return (
                 <div className="px-3 sm:px-4 py-3 bg-white border-b border-stone-200 flex items-center justify-between gap-2 sm:gap-3 shrink-0">

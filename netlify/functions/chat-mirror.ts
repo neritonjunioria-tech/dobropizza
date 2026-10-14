@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://tipnhvpivhaerumetona.supabase.co',
+  process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co',
   process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'sb_publishable_71P_V0V6Q7x-FEw4tCFDCg_qCOwUMat'
 );
 
@@ -44,7 +44,7 @@ export default async (req: Request) => {
 
     // 1. Gravar nas tabelas relacionais dedicadas (chat_conversations e chat_messages)
     try {
-      const isAttendant = sender === 'human' || name.toLowerCase().includes('41 menu') || name.toLowerCase() === 'você';
+      const isAttendant = sender === 'human' || name.toLowerCase().includes('dobro pizza') || name.toLowerCase() === 'você';
       
       const convPayload: any = {
         phone: rawPhone,
@@ -96,7 +96,7 @@ export default async (req: Request) => {
 
     const updatedValue = {
       phone: rawPhone,
-      name: existingData.name && existingData.name !== 'Cliente' && !existingData.name.toLowerCase().includes('41 menu') ? existingData.name : (!isAttendant && name && name !== 'Cliente' ? name : (existingData.name || 'Cliente')),
+      name: existingData.name && existingData.name !== 'Cliente' && !existingData.name.toLowerCase().includes('dobro pizza') ? existingData.name : (!isAttendant && name && name !== 'Cliente' ? name : (existingData.name || 'Cliente')),
       paused: Boolean(existingData.paused ?? false),
       paused_at: existingData.paused_at ?? null,
       last_message: text,

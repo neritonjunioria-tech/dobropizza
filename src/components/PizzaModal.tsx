@@ -176,22 +176,22 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                 <div className="flex flex-col gap-3">
                    <button
                      onClick={() => setSelectedVariant('Normal')}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${selectedVariant === 'Normal' ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300 bg-white'}`}
+                     className={`p-3 rounded-xl border-2 text-left transition-all ${selectedVariant === 'Normal' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white'}`}
                    >
                       <div className="flex justify-between items-center">
                          <span className="font-bold text-sm">Normal</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedVariant === 'Normal' ? 'border-[#8b0000] bg-[#8b0000]' : 'border-gray-300'}`}>
+                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedVariant === 'Normal' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
                             {selectedVariant === 'Normal' && <Check className="w-3 h-3 text-white" />}
                          </div>
                       </div>
                    </button>
                    <button
                      onClick={() => setSelectedVariant('Zero')}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${selectedVariant === 'Zero' ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300 bg-white'}`}
+                     className={`p-3 rounded-xl border-2 text-left transition-all ${selectedVariant === 'Zero' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white'}`}
                    >
                       <div className="flex justify-between items-center">
                          <span className="font-bold text-sm">Zero</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedVariant === 'Zero' ? 'border-[#8b0000] bg-[#8b0000]' : 'border-gray-300'}`}>
+                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedVariant === 'Zero' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
                             {selectedVariant === 'Zero' && <Check className="w-3 h-3 text-white" />}
                          </div>
                       </div>
@@ -207,7 +207,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                 <select
                   value={promoFlavor}
                   onChange={(e) => setPromoFlavor(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b0000] text-sm"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
                 >
                   <option value="">Selecione o sabor...</option>
                   {mondayPromoFlavors.map(flavor => (
@@ -224,7 +224,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                   <select
                     value={promoFlavor}
                     onChange={(e) => setPromoFlavor(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b0000] text-sm"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
                   >
                     <option value="">Selecione o sabor 1...</option>
                     {tuesdayPromoFlavors.map(flavor => (
@@ -237,7 +237,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                   <select
                     value={promoFlavor2}
                     onChange={(e) => setPromoFlavor2(e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b0000] text-sm"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
                   >
                     <option value="">Selecione o sabor 2...</option>
                     {tuesdayPromoFlavors.map(flavor => (
@@ -262,7 +262,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                           newArr[idx] = e.target.value;
                           setEsfihaTradicionais(newArr);
                         }}
-                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b0000] text-sm"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
                       >
                         <option value="">Selecione o sabor...</option>
                         {tradEsfihas.map(flavor => (
@@ -284,7 +284,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                           newArr[idx] = e.target.value;
                           setEsfihaDoces(newArr);
                         }}
-                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b0000] text-sm"
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
                       >
                         <option value="">Selecione o sabor...</option>
                         {doceEsfihas.map(flavor => (
@@ -304,46 +304,46 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                    {calculatedPriceP !== undefined && <button 
                      onClick={() => { hapticLight(); setSelectedSize('P'); }}
                      disabled={pausedItems?.includes(`${item?.id}-P`)}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-P`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'P' ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
+                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-P`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'P' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
                    >
                       <div className="flex justify-between items-center">
                          <span className="font-bold text-sm">Pequena (P)</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'P' ? 'border-[#8b0000] bg-[#8b0000]' : 'border-gray-300'}`}>
+                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'P' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
                             {selectedSize === 'P' && <Check className="w-3 h-3 text-white" />}
                          </div>
                       </div>
                       <span className="text-[11px] text-gray-500 block mt-1">6 fatias | 1 sabor</span>
-                      <span className="text-[#8b0000] font-bold mt-2 block text-lg">€ {calculatedPriceP.toFixed(2)}</span>
+                      <span className="text-[#083d07] font-bold mt-2 block text-lg">R$ {calculatedPriceP.toFixed(2)}</span>
                    </button>}
 
                    <button 
                      onClick={() => { hapticLight(); setSelectedSize('M'); setIsHalf(false); }}
                      disabled={pausedItems?.includes(`${item?.id}-M`)}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-M`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'M' ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
+                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-M`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'M' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
                    >
                       <div className="flex justify-between items-center">
                          <span className="font-bold text-sm">Média (M)</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'M' ? 'border-[#8b0000] bg-[#8b0000]' : 'border-gray-300'}`}>
+                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'M' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
                             {selectedSize === 'M' && <Check className="w-3 h-3 text-white" />}
                          </div>
                       </div>
                       <span className="text-[11px] text-gray-500 block mt-1">8 fatias | 1 sabor</span>
-                      <span className="text-[#8b0000] font-bold mt-2 block text-lg">€ {item.priceM?.toFixed(2)}</span>
+                      <span className="text-[#083d07] font-bold mt-2 block text-lg">R$ {item.priceM?.toFixed(2)}</span>
                    </button>
 
                    <button 
                      onClick={() => { hapticLight(); setSelectedSize('G'); }}
                      disabled={pausedItems?.includes(`${item?.id}-G`)}
-                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-G`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'G' ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
+                     className={`p-3 rounded-xl border-2 text-left transition-all ${pausedItems?.includes(`${item?.id}-G`) ? 'opacity-50 grayscale cursor-not-allowed bg-gray-100' : (selectedSize === 'G' ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300 bg-white')}`}
                    >
                       <div className="flex justify-between items-center">
                          <span className="font-bold text-sm">Grande (G)</span>
-                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'G' ? 'border-[#8b0000] bg-[#8b0000]' : 'border-gray-300'}`}>
+                         <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${selectedSize === 'G' ? 'border-[#083d07] bg-[#083d07]' : 'border-gray-300'}`}>
                             {selectedSize === 'G' && <Check className="w-3 h-3 text-white" />}
                          </div>
                       </div>
                       <span className="text-[11px] text-gray-500 block mt-1">10 fatias | até 2 sabores</span>
-                      <span className="text-[#8b0000] font-bold mt-2 block text-lg">€ {item.priceG?.toFixed(2)}</span>
+                      <span className="text-[#083d07] font-bold mt-2 block text-lg">R$ {item.priceG?.toFixed(2)}</span>
                    </button>
                 </div>
              </div>
@@ -356,7 +356,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                     type="checkbox" 
                     checked={isHalf}
                     onChange={(e) => { setIsHalf(e.target.checked); if(!e.target.checked) setSecondFlavorId(''); }}
-                    className="w-5 h-5 accent-[#8b0000] rounded"
+                    className="w-5 h-5 accent-[#083d07] rounded"
                   />
                   <div>
                     <span className="font-bold block text-sm">Adicionar 2º Sabor (Opcional)</span>
@@ -369,12 +369,12 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                     <select
                       value={secondFlavorId}
                       onChange={(e) => setSecondFlavorId(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8b0000] text-sm"
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm"
                     >
                       <option value="">Selecione o 2º sabor...</option>
                       {menuPizzas.filter(p => p.id !== item.id && p.id !== 'p-61' && p.priceG !== undefined).map(p => (
                         <option key={p.id} value={p.id}>
-                          MEIA {p.name} (Tira-teima: €{Math.max(p.priceG || 0, item.priceG || 0).toFixed(2)})
+                          MEIA {p.name} (Tira-teima: R$ {Math.max(p.priceG || 0, item.priceG || 0).toFixed(2)})
                         </option>
                       ))}
                     </select>
@@ -388,14 +388,14 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
              <div className="mb-6">
                <h4 className="font-bold mb-3 text-sm uppercase tracking-wide text-gray-800">Borda Recheada (Opcional):</h4>
                <div className="flex flex-col gap-2">
-                 <label className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${!selectedBorda ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                 <label className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${!selectedBorda ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                    <div className="flex items-center gap-3">
                      <input 
                        type="radio" 
                        name="borda"
                        checked={!selectedBorda}
                        onChange={() => setSelectedBorda(null)}
-                       className="w-5 h-5 accent-[#8b0000]"
+                       className="w-5 h-5 accent-[#083d07]"
                      />
                      <span className="font-medium text-sm">Sem Borda</span>
                    </div>
@@ -403,18 +403,18 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                  {menuBordas.filter(borda => !pausedItems?.includes(borda.id)).map((borda) => {
                    const isSelected = selectedBorda?.id === borda.id;
                    return (
-                     <label key={borda.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                     <label key={borda.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                        <div className="flex items-center gap-3">
                          <input 
                            type="radio" 
                            name="borda"
                            checked={isSelected}
                            onChange={() => setSelectedBorda(borda)}
-                           className="w-5 h-5 accent-[#8b0000]"
+                           className="w-5 h-5 accent-[#083d07]"
                          />
                          <span className="font-medium text-sm">{borda.name}</span>
                        </div>
-                       <span className="text-[#8b0000] font-bold text-sm">+ € {borda.priceSingle!.toFixed(2)}</span>
+                       <span className="text-[#083d07] font-bold text-sm">+ R$ {borda.priceSingle!.toFixed(2)}</span>
                      </label>
                    );
                  })}
@@ -430,17 +430,17 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                  {extrasList.map((extra) => {
                    const isSelected = selectedExtras.some(e => e.id === extra.id);
                    return (
-                     <label key={extra.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                     <label key={extra.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                        <div className="flex items-center gap-3 pr-4">
                          <input 
                            type="checkbox" 
                            checked={isSelected}
                            onChange={() => handleToggleExtra(extra)}
-                           className="w-5 h-5 accent-[#8b0000] rounded flex-shrink-0"
+                           className="w-5 h-5 accent-[#083d07] rounded flex-shrink-0"
                          />
                          <span className="font-medium text-sm">{extra.name}</span>
                        </div>
-                       <span className="text-[#8b0000] font-bold text-sm whitespace-nowrap flex-shrink-0">+ €{extra.price.toFixed(2)}</span>
+                       <span className="text-[#083d07] font-bold text-sm whitespace-nowrap flex-shrink-0">+ R$ {extra.price.toFixed(2)}</span>
                      </label>
                    );
                  })}
@@ -456,7 +456,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                  {menuBebidas.map((drink) => {
                    const isSelected = selectedDrinks.some(d => d.id === drink.id);
                    return (
-                     <label key={drink.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#8b0000] bg-[#8b0000]/5' : 'border-gray-200 hover:border-gray-300'}`}>
+                     <label key={drink.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300'}`}>
                        <div className="flex items-center gap-3 pr-4">
                          <input 
                            type="checkbox" 
@@ -468,11 +468,11 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                                setSelectedDrinks(prev => [...prev, drink]);
                              }
                            }}
-                           className="w-5 h-5 accent-[#8b0000] rounded flex-shrink-0"
+                           className="w-5 h-5 accent-[#083d07] rounded flex-shrink-0"
                          />
                          <span className="font-medium text-sm">{drink.name}</span>
                        </div>
-                       <span className="text-[#8b0000] font-bold text-sm whitespace-nowrap flex-shrink-0">+ €{(drink.priceSingle || 0).toFixed(2)}</span>
+                       <span className="text-[#083d07] font-bold text-sm whitespace-nowrap flex-shrink-0">+ R$ {(drink.priceSingle || 0).toFixed(2)}</span>
                      </label>
                    );
                  })}
@@ -496,7 +496,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                  maxLength={250}
                  rows={3}
                  placeholder={item.id === 'md-2-esfirra' ? "Escreva aqui os sabores das esfirras (ex: 3 carne, 2 queijo, 5 chocolate)..." : "Ex.: Sem cebola, sem queijo, massa bem assada, cortar em 8 pedaços..."}
-                 className="w-full p-3 text-sm border-2 border-gray-200 rounded-xl focus:border-[#8b0000] focus:outline-none transition-colors resize-none placeholder:text-gray-400"
+                 className="w-full p-3 text-sm border-2 border-gray-200 rounded-xl focus:border-[#083d07] focus:outline-none transition-colors resize-none placeholder:text-gray-400"
                />
              </div>
            )}
@@ -508,7 +508,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                    hapticLight();
                    setQuantity(Math.max(1, quantity - 1));
                  }}
-                 className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#8b0000] font-bold text-xl hover:bg-gray-100 active:scale-95 transition-all shadow-sm"
+                 className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#083d07] font-bold text-xl hover:bg-gray-100 active:scale-95 transition-all shadow-sm"
                >
                  -
                </button>
@@ -518,14 +518,14 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                    hapticLight();
                    setQuantity(quantity + 1);
                  }}
-                 className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#8b0000] font-bold text-xl hover:bg-gray-100 active:scale-95 transition-all shadow-sm"
+                 className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#083d07] font-bold text-xl hover:bg-gray-100 active:scale-95 transition-all shadow-sm"
                >
                  +
                </button>
              </div>
              <div className="text-right">
                <div className="text-xs text-gray-500 font-bold uppercase tracking-wide mb-1">Total</div>
-               <div className="text-[#8b0000] font-bold text-2xl">€ {((currentPrice || 0) * quantity).toFixed(2)}</div>
+               <div className="text-[#083d07] font-bold text-2xl">R$ {((currentPrice || 0) * quantity).toFixed(2)}</div>
              </div>
            </div>
 
@@ -533,7 +533,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
              <button 
                onClick={() => handleAdd(true)}
                disabled={(isHalf && !secondFlavorId) || (isMondayPromoPizza && !promoFlavor) || (isTuesdayPromoPizza && (!promoFlavor || !promoFlavor2)) || isEsfirrasIncomplete}
-               className="w-full bg-[#8b0000] hover:bg-[#660000] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl transition-transform active:scale-[0.98] shadow-md flex justify-center items-center gap-2"
+               className="w-full bg-[#083d07] hover:bg-[#052904] disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-4 px-4 rounded-xl transition-transform active:scale-[0.98] shadow-md flex justify-center items-center gap-2"
              >
                <ShoppingBag className="w-5 h-5" />
                Adicionar e ver pedido
@@ -541,7 +541,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
              <button 
                onClick={() => handleAdd(false)}
                disabled={(isHalf && !secondFlavorId) || (isMondayPromoPizza && !promoFlavor) || (isTuesdayPromoPizza && (!promoFlavor || !promoFlavor2)) || isEsfirrasIncomplete}
-               className="w-full bg-white text-[#8b0000] border-2 border-[#8b0000] disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed font-bold py-3.5 px-4 rounded-xl transition-transform active:scale-[0.98] flex justify-center items-center gap-2"
+               className="w-full bg-white text-[#083d07] border-2 border-[#083d07] disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed font-bold py-3.5 px-4 rounded-xl transition-transform active:scale-[0.98] flex justify-center items-center gap-2"
              >
                Adicionar e continuar comprando
              </button>

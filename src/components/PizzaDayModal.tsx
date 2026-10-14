@@ -39,7 +39,7 @@ export default function PizzaDayModal({ isOpen, onClose, onAction }: PizzaDayMod
         
         <div className="relative w-full h-[40vh] sm:h-[350px] bg-[#8b0000] overflow-hidden">
           <img
-            src="/logo.png"
+            src="/dobro/logo-dobro.png"
             alt="Dia da Pizza"
             className="w-full h-full object-cover object-center"
           />

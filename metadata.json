@@ -1,5 +1,5 @@
 {
-  "name": "41 Menus",
+  "name": "DOBRO Pizzas",
   "description": "Premium Pizza & Esfiha landing page with an interactive half-and-half builder, smart shopping cart, and seamless WhatsApp order generator, localized for the Portuguese market.",
   "requestFramePermissions": ["geolocation"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

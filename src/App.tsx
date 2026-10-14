@@ -309,13 +309,12 @@ function App() {
         if (itemExt.groupOverride) {
           return cat.group.includes(itemExt.groupOverride);
         }
-        // Se a pizza está nos 'mais pedidos' (sem ser o override em si), não mostrar na aba original
-        if (maisPedidosIds.includes(item.id)) {
+        // Se for a seção de mais-pedidos, não repete itens comuns aqui (já tratados pelo override)
+        if (cat.id === "mais-pedidos") {
           return false;
         }
         
         let isMatch = cat.group.includes(item.category);
-        
         return isMatch;
       }) as (MenuItem & { isMaisPedido?: boolean; groupOverride?: string })[];
       
@@ -422,28 +421,32 @@ function App() {
       )}
 
       {/* Hero Banner */}
-      <div className="relative h-[220px] md:h-[280px] w-full bg-[#1b140e] max-w-7xl mx-auto md:mt-4 md:rounded-2xl overflow-hidden shadow-sm">
-        <img
-          src="/capa.png"
-          className="w-full h-full object-cover opacity-75"
-          alt="DOBRO Pizzas Forno e Ingredientes"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1b140e]/90 via-[#1b140e]/30 to-transparent"></div>
-        <div className="absolute bottom-6 left-6 md:left-12 flex items-center gap-4">
-          <div className="w-24 h-24 bg-[#e8d8d1] rounded-full border-4 border-white flex items-center justify-center scale-110 shadow-2xl overflow-hidden drop-shadow-2xl relative p-2">
-            <img
-              src="/dobro/logo-dobro.png"
-              alt="DOBRO Pizzas"
-              className="w-full h-full object-contain relative z-20"
-            />
-          </div>
-          <div className="text-white drop-shadow-md hidden sm:block">
-            <h2 className="text-2xl font-bold text-white tracking-wide">DOBRO Pizzas</h2>
-            <p className="text-xs text-[#d5af7a] font-medium">Fermentação Lenta • Receitas Autorais • Forno Artesanal</p>
-          </div>
-        </div>
+      <div className="relative h-[220px] md:h-[280px] w-full bg-[#ede3d5] max-w-7xl mx-auto md:mt-4 md:rounded-2xl overflow-hidden shadow-sm">
+        <h1 className="sr-only">DOBRO Pizzas — Pizzas Artesanais, Longa Fermentação, Receitas Autorais</h1>
+        {/* A arte já traz o logo no centro: versão 2:1 no celular, 4:1 a partir de md.
+            Cada tela baixa só o tamanho de que precisa (WebP, com JPEG de reserva). */}
+        <picture>
+          <source
+            media="(min-width: 768px)"
+            type="image/webp"
+            srcSet="/dobro/capa-linho-1280.webp 1280w, /dobro/capa-linho-1920.webp 1920w, /dobro/capa-linho-2560.webp 2560w, /dobro/capa-linho-3840.webp 3840w"
+            sizes="(min-width: 1280px) 1280px, 100vw"
+          />
+          <source media="(min-width: 768px)" srcSet="/dobro/capa-linho-2560.jpg" />
+          <source
+            type="image/webp"
+            srcSet="/dobro/capa-linho-celular-720.webp 720w, /dobro/capa-linho-celular-1440.webp 1440w"
+            sizes="max(100vw, 440px)"
+          />
+          <img
+            src="/dobro/capa-linho-celular-1440.jpg"
+            className="w-full h-full object-cover"
+            alt="DOBRO Pizzas"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
       </div>
-
       {/* Categories Bar Sticky */}
       <div 
         id="categories-bar"

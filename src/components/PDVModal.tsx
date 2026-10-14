@@ -912,11 +912,11 @@ export default function PDVModal({
           <div className="flex items-center gap-2.5 pr-3 border-r border-gray-200">
             <div className="w-10 h-10 rounded-xl overflow-hidden bg-black border border-stone-800 shrink-0 flex items-center justify-center p-0.5 shadow-sm">
               <img 
-                src={adminLogoUrl || "/logo.png"} 
-                alt="41 Menu's" 
+                src={adminLogoUrl || "/dobro/logo-dobro.png"} 
+                alt="DOBRO Pizzas" 
                 className="w-full h-full object-contain rounded-lg"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = "/logo.png";
+                  (e.target as HTMLImageElement).src = "/dobro/logo-dobro.png";
                 }}
               />
             </div>

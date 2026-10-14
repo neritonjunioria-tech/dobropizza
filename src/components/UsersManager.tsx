@@ -51,7 +51,7 @@ export default function UsersManager() {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
       const token = sessionData.session?.access_token;
-      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tipnhvpivhaerumetona.supabase.co';
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co';
       const response = await fetch(
         `${baseUrl}/functions/v1/manage-staff`,
         {
@@ -103,7 +103,7 @@ export default function UsersManager() {
       }
 
       // 2. Tenta remover via Edge Function de Auth se disponível
-      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://tipnhvpivhaerumetona.supabase.co';
+      const baseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://yexlnjznkxthffklovql.supabase.co';
       try {
         const { data: sessionData } = await supabase.auth.getSession();
         const token = sessionData.session?.access_token;

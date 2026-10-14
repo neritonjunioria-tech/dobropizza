@@ -500,7 +500,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
           </style>
         </head>
         <body>
-          <h2>41 MENU'S</h2>
+          <h2>DOBRO PIZZAS</h2>
           <p style="text-align:center;font-weight:bold;">RELATÓRIO DE FECHAMENTO DE CAIXA</p>
           <div class="line"></div>
           <p><b>Abertura:</b> ${new Date(report.openedAt).toLocaleString('pt-PT')}</p>

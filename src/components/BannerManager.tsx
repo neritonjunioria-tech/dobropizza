@@ -8,7 +8,7 @@ export default function BannerManager() {
   const [promoConfig, setPromoConfig] = useState({
     active: false,
     image_url: '',
-    title: '🎉 Bem-vindo(a) ao 41 Menu\'s!',
+    title: '🎉 Bem-vindo(a) ao DOBRO Pizzas!',
     message: 'Agradecemos a sua visita e é com grande alegria que o(a) recebemos.\nSou a Giovanna e estou pronta para o(a) atender. 😊\nEnvie-nos uma mensagem pelo WhatsApp e teremos todo o gosto em ajudá-lo(a)!',
     button_text: 'Falar no WhatsApp'
   });
@@ -37,16 +37,16 @@ export default function BannerManager() {
       setFeedback("Fazendo upload da imagem...");
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-      const filePath = `41menus/promocoes/${fileName}`;
+      const filePath = `dobropizza/promocoes/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('Cardapio41menus')
+        .from('cardapio-dobropizza')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
-        .from('Cardapio41menus')
+        .from('cardapio-dobropizza')
         .getPublicUrl(filePath);
 
       setPromoConfig(prev => ({ ...prev, image_url: data.publicUrl }));

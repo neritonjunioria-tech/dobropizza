@@ -34,7 +34,7 @@ export default async (req: Request) => {
     // Se a Evolution API URL estiver configurada:
     const evolutionUrl = process.env.EVOLUTION_API_URL || 'https://funnyeagle-evolution.cloudfy.live';
     const evolutionApiKey = process.env.EVOLUTION_API_KEY || '1E0FE7D2CCFB-4757-B948-F350F94E227F';
-    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agente41menus';
+    const instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'agentedobropizza';
 
     let evolutionResult = null;
     try {

@@ -40,13 +40,13 @@ export default function SettingsManager({
   };
 
   // ────────────────── ESTADO: EMPRESA & IDENTIDADE ──────────────────
-  const [companyInfo, setCompanyInfo] = useState({ name: "41 Menu's", nif: '', address: '' });
+  const [companyInfo, setCompanyInfo] = useState({ name: "DOBRO Pizzas", nif: '', address: '' });
   const [savingCompany, setSavingCompany] = useState(false);
 
   useEffect(() => {
     async function loadCompany() {
       const { data } = await supabase.from('settings').select('key, value').in('key', ['company_name', 'company_nif', 'company_address']);
-      const info = { name: "41 Menu's", nif: '', address: '' };
+      const info = { name: "DOBRO Pizzas", nif: '', address: '' };
       data?.forEach((row: any) => {
         if (row.key === 'company_name') info.name = row.value;
         if (row.key === 'company_nif') info.nif = row.value;
@@ -88,9 +88,9 @@ export default function SettingsManager({
       const fileExt = file.name.split('.').pop();
       const fileName = `admin-logo-${Date.now()}.${fileExt}`;
       const filePath = `admin/logo/${fileName}`;
-      const { error: uploadError } = await supabase.storage.from('Cardapio41menus').upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from('cardapio-dobropizza').upload(filePath, file);
       if (uploadError) throw uploadError;
-      const { data } = supabase.storage.from('Cardapio41menus').getPublicUrl(filePath);
+      const { data } = supabase.storage.from('cardapio-dobropizza').getPublicUrl(filePath);
       const newUrl = data.publicUrl;
       setAdminLogoUrl(newUrl);
       await supabase.from('settings').upsert({ key: 'admin_logo_url', value: newUrl, updated_at: new Date().toISOString() });
