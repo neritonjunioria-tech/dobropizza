@@ -21,8 +21,6 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
   const menuBordas = allMenuItems.filter(i => i.id.startsWith('bd-') && !pausedItems.includes(i.id));
   const menuBebidas = allMenuItems.filter(i => i.id.startsWith('b-') && !i.id.startsWith('bd-'));
   const [selectedSize, setSelectedSize] = useState<'P' | 'M' | 'G'>(initialSize);
-  const [isHalf, setIsHalf] = useState(false);
-  const [secondFlavorId, setSecondFlavorId] = useState<string>('');
   const [selectedExtras, setSelectedExtras] = useState<ExtraIngredient[]>([]);
   const [selectedBorda, setSelectedBorda] = useState<MenuItem | null>(null);
   const [selectedDrinks, setSelectedDrinks] = useState<MenuItem[]>([]);
@@ -37,8 +35,6 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
   useEffect(() => {
     if (isOpen && item) {
        setSelectedSize(item.priceM === undefined ? 'G' : initialSize);
-       setIsHalf(false);
-       setSecondFlavorId('');
        setSelectedExtras([]);
        setSelectedBorda(null);
        setSelectedDrinks([]);
@@ -80,14 +76,8 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
   const isPizza = item.id.startsWith('p-') || item.category === 'mais-pedidos' || item.category === 'tradicionais';
   const hasSizes = false;
   
-  // Calculate display price based on single size and half-and-half
-  let basePrice = item.priceSingle || item.priceG || item.priceM || 0;
-  const selectedSecondFlavor = menuPizzas.find(p => p.id === secondFlavorId);
-  if (isPizza && isHalf && selectedSecondFlavor) {
-    const secondPrice = selectedSecondFlavor.priceSingle || selectedSecondFlavor.priceG || 0;
-    basePrice = Math.max(basePrice, secondPrice);
-  }
-  let currentPrice = basePrice;
+  // Calculate display price based on single size (28cm)
+  let currentPrice = item.priceSingle || item.priceG || item.priceM || 0;
 
   // Add the price of selected extras
   const extrasTotalPrice = selectedExtras.reduce((sum, extra) => sum + extra.price, 0);
@@ -138,8 +128,8 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
       menuItem: item,
       quantity: quantity,
       size: isPizza ? '28cm' : undefined,
-      isHalfAndHalf: (isPizza && isHalf && !!selectedSecondFlavor),
-      halfAndHalfFlavor: selectedSecondFlavor,
+      isHalfAndHalf: false,
+      halfAndHalfFlavor: undefined,
       extras: finalExtras,
       priceCalculated: currentPrice!,
       notes: notesToSave ? notesToSave : undefined
@@ -308,45 +298,6 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                   </div>
                   <span className="text-xs px-2.5 py-1 rounded-full bg-[#083d07] text-[#fdfbf7] font-semibold">28cm</span>
                 </div>
-              </div>
-           )}
-
-           {isPizza && (
-              <div className="mb-6 p-4 rounded-xl border border-gray-200 bg-gray-50">
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={isHalf}
-                    onChange={(e) => { setIsHalf(e.target.checked); if(!e.target.checked) setSecondFlavorId(''); }}
-                    className="w-5 h-5 accent-[#083d07] rounded"
-                  />
-                  <div>
-                    <span className="font-bold block text-sm text-gray-800">Pizza Meio a Meio (2 Sabores)</span>
-                    <span className="text-xs text-gray-500">Cobrado pelo sabor de maior valor</span>
-                  </div>
-                </label>
-
-                {isHalf && (
-                  <div className="mt-4">
-                    <select
-                      value={secondFlavorId}
-                      onChange={(e) => setSecondFlavorId(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#083d07] text-sm bg-white"
-                    >
-                      <option value="">Selecione o 2º sabor...</option>
-                      {menuPizzas.filter(p => p.id !== item.id).map(p => {
-                        const pPrice = p.priceSingle || p.priceG || 0;
-                        const itemPrice = item.priceSingle || item.priceG || 0;
-                        const finalP = Math.max(pPrice, itemPrice);
-                        return (
-                          <option key={p.id} value={p.id}>
-                            MEIA {p.name} (Total: R$ {finalP.toFixed(2)})
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                )}
               </div>
            )}
 

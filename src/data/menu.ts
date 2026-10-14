@@ -178,8 +178,7 @@ export const pizzaExtras: ExtraIngredient[] = [
   { id: 'ex-2', name: 'Extra Calabresa Defumada', price: 7.00 },
   { id: 'ex-3', name: 'Extra Cream Cheese', price: 7.00 },
   { id: 'ex-4', name: 'Fio de Hot Honey (Mel Picante)', price: 7.00 },
-  { id: 'ex-5', name: 'Tomatinhos Confit', price: 7.00, onlyFor: ['sandubas'] },
-  { id: 'ex-6', name: 'Cebola Roxa Fininha', price: 7.00 }
+  { id: 'ex-5', name: 'Tomatinhos Confit', price: 7.00, onlyFor: ['sandubas'] }
 ];
 
 export const menuDoDia: MenuItem[] = [
