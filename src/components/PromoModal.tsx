@@ -13,7 +13,7 @@ export default function PromoModal({ isOpen, onClose }: PromoModalProps) {
     active: false,
     image_url: '/promocao3-new.webp',
     title: '🎉 Bem-vindo(a) ao DOBRO Pizzas!',
-    message: 'Agradecemos a sua visita e é com grande alegria que o(a) recebemos.\\nSou a Giovanna e estou pronta para o(a) atender. 😊\\nEnvie-nos uma mensagem pelo WhatsApp e teremos todo o gosto em ajudá-lo(a)!',
+    message: 'Agradecemos a sua visita e é com grande alegria que o(a) recebemos.\\nSou a Jéssica e estou pronta para o(a) atender. 😊\\nEnvie-nos uma mensagem pelo WhatsApp e teremos todo o gosto em ajudá-lo(a)!',
     button_text: 'Falar no WhatsApp'
   });
   const [loaded, setLoaded] = useState(false);

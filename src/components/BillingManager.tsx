@@ -64,13 +64,13 @@ export const BillingManager: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6 pb-12">
       
       {/* Bloco de Fatura Atual */}
-      <div className="bg-[#083d07] border border-[#0b520a] rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-[#FDFBF7] border border-[#E8D8D1] rounded-xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
         <div>
           <span className="text-[11px] font-mono text-stone-400 uppercase tracking-wider block mb-1">
             Fatura Atual • Vencimento todo dia 16
           </span>
           <div className="flex items-baseline gap-3">
-            <span className="text-3xl font-extrabold font-mono text-stone-100 tracking-tight">
+            <span className="text-3xl font-extrabold font-mono text-[#083D07] tracking-tight">
               R$ 490,00
             </span>
             <span className="text-xs text-stone-400">/mês</span>
@@ -105,16 +105,14 @@ export const BillingManager: React.FC = () => {
       </div>
 
       {/* Caixa de Pagamento */}
-      <div className="bg-[#083d07] border border-[#0b520a] rounded-xl overflow-hidden">
+      <div className="bg-[#FDFBF7] border border-[#E8D8D1] rounded-xl overflow-hidden shadow-2xs">
         
         {/* Seletor Segmentado PIX / Cartão */}
-        <div className="flex border-b border-[#0b520a] bg-[#062b06]/60 p-1.5 gap-1.5">
+        <div className="flex border-b border-[#E8D8D1] bg-[#F6E3DF]/50 p-1.5 gap-1.5">
           <button
             onClick={() => setPaymentMethod('pix')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-              paymentMethod === 'pix'
-                ? 'bg-[#0b520a] text-stone-100 shadow-xs'
-                : 'text-stone-400 hover:text-stone-200'
+              paymentMethod === 'pix' ? 'bg-[#E8D8D1] text-[#083D07] border border-[#D5AF7A] font-bold shadow-xs' : 'text-[#745240] hover:text-[#083D07]'
             }`}
           >
             <QrCode size={14} className={paymentMethod === 'pix' ? 'text-[#d5af7a]' : ''} />
@@ -124,9 +122,7 @@ export const BillingManager: React.FC = () => {
           <button
             onClick={() => setPaymentMethod('card')}
             className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer ${
-              paymentMethod === 'card'
-                ? 'bg-[#0b520a] text-stone-100 shadow-xs'
-                : 'text-stone-400 hover:text-stone-200'
+              paymentMethod === 'card' ? 'bg-[#E8D8D1] text-[#083D07] border border-[#D5AF7A] font-bold shadow-xs' : 'text-[#745240] hover:text-[#083D07]'
             }`}
           >
             <CreditCard size={14} className={paymentMethod === 'card' ? 'text-[#d5af7a]' : ''} />
@@ -226,7 +222,7 @@ export const BillingManager: React.FC = () => {
       </div>
 
       {/* Histórico Simples */}
-      <div className="bg-[#083d07] border border-[#0b520a] rounded-xl p-5 space-y-3">
+      <div className="bg-[#FDFBF7] border border-[#E8D8D1] rounded-xl p-5 space-y-3 shadow-2xs">
         <h3 className="text-xs font-mono text-stone-400 uppercase tracking-wider">
           Histórico de Pagamentos
         </h3>

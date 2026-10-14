@@ -1043,10 +1043,10 @@ export default function PDVModal({
               let buttonStyle = '';
               if (isExtrasCat) {
                 buttonStyle = isActive
-                  ? 'bg-purple-600 text-white border-purple-700 shadow-xs'
-                  : 'bg-purple-50 text-purple-800 border-purple-200 hover:bg-purple-100 hover:text-purple-900 font-extrabold';
+                  ? 'bg-[#D5AF7A] text-[#44210F] border-[#D5AF7A] shadow-xs font-black'
+                  : 'bg-[#F6E3DF] text-[#44210F] border-[#E4C5B9] hover:bg-[#E8D8D1] hover:text-[#44210F] font-extrabold';
               } else if (isActive) {
-                buttonStyle = 'bg-[var(--pdv-brand)] text-stone-950 border-[#d5af7a]/60 shadow-xs';
+                buttonStyle = 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-xs font-bold';
               } else {
                 buttonStyle = 'bg-[var(--pdv-surface)] text-[var(--pdv-text-secondary)] border-[var(--pdv-border)] hover:bg-[var(--pdv-surface-hover)] hover:text-[var(--pdv-text-primary)]';
               }
@@ -1105,9 +1105,9 @@ export default function PDVModal({
                     {/* Image / Thumbnail (4:5 para Promoção do Dia, 1:1 Quadrado para os demais itens) */}
                     <div className={`w-full ${isPromoItem ? 'aspect-[4/5]' : 'aspect-square'} bg-stone-50 rounded-lg mb-1.5 overflow-hidden flex items-center justify-center relative shadow-inner border border-stone-200/50`}>
                       {isExtraItem ? (
-                        <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-200/70 flex flex-col items-center justify-center text-purple-700 p-2">
-                          <Sparkles size={24} className="text-purple-600 mb-1" />
-                          <span className="text-[8.5px] font-black uppercase tracking-wider text-purple-900 text-center">Adicional</span>
+                        <div className="w-full h-full bg-gradient-to-br from-[#F6E3DF] to-[#E8D8D1] flex flex-col items-center justify-center text-[#44210F] p-2">
+                          <Sparkles size={24} className="text-[#D5AF7A] mb-1" />
+                          <span className="text-[8.5px] font-black uppercase tracking-wider text-[#44210F] text-center">Adicional</span>
                         </div>
                       ) : (
                         <PDVProductImage 
@@ -1441,7 +1441,7 @@ export default function PDVModal({
                           </span>
                         )}
                         {item.selectedExtras && item.selectedExtras.map(extra => (
-                          <span key={extra.id} className="px-1 py-0.2 rounded bg-purple-100/90 text-purple-900 border border-purple-200/80 text-[8.5px] font-mono font-bold">
+                          <span key={extra.id} className="px-1 py-0.2 rounded bg-[#F6E3DF] text-[#44210F] border border-[#E4C5B9] text-[8.5px] font-mono font-bold">
                             + {extra.name} (€ {extra.price.toFixed(2)})
                           </span>
                         ))}
@@ -1602,12 +1602,12 @@ export default function PDVModal({
                 onClick={() => setPaymentMethod('MB Way')}
                 className={`flex-1 min-w-[70px] py-1.5 px-2 rounded-[var(--pdv-radius-md)] text-[10.5px] font-mono font-bold flex items-center justify-center gap-1 transition-all cursor-pointer border ${
                   paymentMethod === 'MB Way'
-                    ? 'border-purple-500 bg-purple-50 text-purple-800 shadow-[var(--pdv-shadow-sm)]'
+                    ? 'border-[#D5AF7A] bg-[#F6E3DF] text-[#44210F] shadow-[var(--pdv-shadow-sm)] font-bold'
                     : 'border-[var(--pdv-border)] bg-[var(--pdv-surface)] text-[var(--pdv-text-secondary)] hover:bg-[var(--pdv-surface-hover)] hover:text-[var(--pdv-text-primary)]'
                 }`}
               >
-                <Smartphone size={12} className={paymentMethod === 'MB Way' ? 'text-purple-600' : 'text-stone-400'} />
-                <span>MB Way</span>
+                <Smartphone size={12} className={paymentMethod === 'MB Way' ? 'text-[#44210F]' : 'text-stone-400'} />
+                <span>Pix</span>
               </button>
               <button
                 onClick={() => setPaymentMethod('Numerário')}
@@ -2264,7 +2264,7 @@ export default function PDVModal({
                       Adicionais Extras
                     </label>
                     {customExtras.length > 0 && (
-                      <span className="text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-md">
+                      <span className="text-[10px] font-bold text-[#44210F] bg-[#F6E3DF] border border-[#E4C5B9] px-1.5 py-0.5 rounded-md">
                         {customExtras.length} selecionado{customExtras.length > 1 ? 's' : ''} (+ € {customExtras.reduce((s, e) => s + e.price, 0).toFixed(2)})
                       </span>
                     )}
@@ -2279,8 +2279,8 @@ export default function PDVModal({
                           onClick={() => handleToggleExtra(extra)}
                           className={`py-2 px-3 rounded-xl text-left border transition-all cursor-pointer shadow-2xs flex items-center justify-between ${
                             isSelected
-                              ? 'bg-purple-50 border-purple-400 text-purple-950 ring-1 ring-purple-400'
-                              : 'bg-white border-gray-200 text-gray-700 hover:border-purple-200 hover:bg-purple-50/30'
+                              ? 'bg-[#F6E3DF] border-[#D5AF7A] text-[#44210F] ring-1 ring-[#D5AF7A]'
+                              : 'bg-white border-gray-200 text-gray-700 hover:border-[#D5AF7A] hover:bg-[#F6E3DF]/30'
                           }`}
                         >
                           <div className="flex flex-col min-w-0 pr-1">
@@ -2288,7 +2288,7 @@ export default function PDVModal({
                             <span className="text-[10px] font-bold text-gray-500 font-mono">+ € {extra.price.toFixed(2)}</span>
                           </div>
                           <div className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                            isSelected ? 'bg-purple-600 border-purple-600 text-white' : 'border-gray-300 bg-white'
+                            isSelected ? 'bg-[#083D07] border-[#083D07] text-white' : 'border-gray-300 bg-white'
                           }`}>
                             {isSelected && <Check size={10} className="stroke-[3]" />}
                           </div>

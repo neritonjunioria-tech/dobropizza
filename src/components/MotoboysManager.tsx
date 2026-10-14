@@ -453,15 +453,14 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
   const pillClass = (active: boolean) =>
     `px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
       active
-        ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
+        ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold'
         : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
     }`;
 
   const providerBadgeClass = (provider: DeliveryProvider | null) =>
     provider === 'proprio'
       ? 'bg-stone-100 text-stone-800 border-stone-200'
-      : provider === 'uber'
-      ? 'bg-[#083d07] text-white border-[#083d07]'
+      : provider === 'uber' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] font-bold'
       : provider === 'ifood'
       ? 'bg-rose-50 text-rose-800 border-rose-200'
       : 'bg-amber-100 text-amber-900 border-amber-300';

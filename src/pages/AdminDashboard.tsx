@@ -2155,9 +2155,7 @@ export default function AdminDashboard() {
                     onClick={() => setOverviewViewMode('cockpit')}
                     title="Modo Cockpit"
                     className={`h-6 px-2 rounded-md text-[10px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                      overviewViewMode === 'cockpit'
-                        ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
-                        : 'text-stone-500 hover:text-stone-800'
+                      overviewViewMode === 'cockpit' ? 'bg-[#E8D8D1] text-[#083D07] shadow-xs border border-[#D5AF7A] font-bold' : 'text-stone-500 hover:text-stone-800'
                     }`}
                   >
                     <Layers size={10} />
@@ -2167,9 +2165,7 @@ export default function AdminDashboard() {
                     onClick={() => setOverviewViewMode('grid')}
                     title="Modo Grade"
                     className={`h-6 px-2 rounded-md text-[10px] font-mono font-bold transition-all cursor-pointer flex items-center gap-1 ${
-                      overviewViewMode === 'grid'
-                        ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
-                        : 'text-stone-500 hover:text-stone-800'
+                      overviewViewMode === 'grid' ? 'bg-[#E8D8D1] text-[#083D07] shadow-xs border border-[#D5AF7A] font-bold' : 'text-stone-500 hover:text-stone-800'
                     }`}
                   >
                     <BarChart3 size={10} />
@@ -2933,9 +2929,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setOrdersStatusFilter('todos')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'todos'
-                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
-                            : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
+                          ordersStatusFilter === 'todos' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
                         <span>Todos</span>
@@ -2946,9 +2940,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setOrdersStatusFilter('Pendente')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Pendente'
-                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
-                            : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
+                          ordersStatusFilter === 'Pendente' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
@@ -2960,9 +2952,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setOrdersStatusFilter('Em Preparo')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Em Preparo'
-                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
-                            : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
+                          ordersStatusFilter === 'Em Preparo' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-stone-700 shrink-0" />
@@ -2974,9 +2964,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setOrdersStatusFilter('Saiu para Entrega')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Saiu para Entrega'
-                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
-                            : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
+                          ordersStatusFilter === 'Saiu para Entrega' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-stone-500 shrink-0" />
@@ -2988,9 +2976,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setOrdersStatusFilter('Finalizado')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Finalizado'
-                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
-                            : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
+                          ordersStatusFilter === 'Finalizado' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
@@ -3002,9 +2988,7 @@ export default function AdminDashboard() {
                         type="button"
                         onClick={() => setOrdersStatusFilter('Cancelado')}
                         className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Cancelado'
-                            ? 'bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs font-black'
-                            : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
+                          ordersStatusFilter === 'Cancelado' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
                         }`}
                       >
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
@@ -5508,7 +5492,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
         </div>
 
         {/* Real-time total summary bar Compacto */}
-        <div className="bg-[#083d07] px-3.5 py-1.5 border-b border-[#0b520a] flex items-center justify-between text-xs shrink-0">
+        <div className="bg-[#E8D8D1] px-3.5 py-1.5 border-b border-[#D5AF7A] flex items-center justify-between text-xs text-[#083D07] font-bold shrink-0">
           <div className="flex items-center gap-2.5 font-mono text-[10px] flex-wrap">
             <span className="text-stone-300">
               Subtotal: <strong className="text-white font-bold">€ {subtotal.toFixed(2)}</strong>

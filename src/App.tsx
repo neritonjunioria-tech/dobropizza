@@ -412,7 +412,7 @@ function App() {
               }}
               className={`py-0.5 md:py-1 px-2.5 md:px-3 rounded-full text-[11px] md:text-xs whitespace-nowrap font-medium tracking-tight transition-all duration-150 active:scale-95 cursor-pointer border ${
                 activeCategory === cat.id
-                  ? "bg-[#083d07] text-[#fdfbf7] border-[#083d07] shadow-sm ring-1 ring-[#d5af7a]/50 font-bold"
+                  ? "bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-sm font-bold"
                   : "bg-white text-[#745240] border-[#e8d8d1] hover:bg-[#f6e3df]/40 hover:text-[#44210f]"
               } ${cat.id === "promocoes" && activeCategory !== cat.id ? "animate-pulse text-[#083d07] border-[#083d07] bg-[#f6e3df]/30 font-semibold" : ""}`}
               title={cat.label}
@@ -525,7 +525,7 @@ function App() {
               hapticMedium();
               setIsCartOpen(true);
             }}
-            className="w-full bg-[#083d07] text-[#fdfbf7] font-bold text-[15px] py-3.5 px-4 rounded-xl flex items-center justify-between shadow-xl active:scale-[0.98] transition-all hover:bg-[#052904]"
+            className="w-full bg-[#E8D8D1] hover:bg-[#D5AF7A] text-[#083D07] border border-[#D5AF7A] font-bold text-[15px] py-3.5 px-4 rounded-xl flex items-center justify-between shadow-xl active:scale-[0.98] transition-all"
           >
             <div className="flex items-center gap-2">
               <div className={`relative transition-transform duration-300 ${cartBounce ? 'scale-125 rotate-6' : 'scale-100'}`}>

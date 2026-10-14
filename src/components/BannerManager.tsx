@@ -9,7 +9,7 @@ export default function BannerManager() {
     active: false,
     image_url: '',
     title: '🎉 Bem-vindo(a) ao DOBRO Pizzas!',
-    message: 'Agradecemos a sua visita e é com grande alegria que o(a) recebemos.\nSou a Giovanna e estou pronta para o(a) atender. 😊\nEnvie-nos uma mensagem pelo WhatsApp e teremos todo o gosto em ajudá-lo(a)!',
+    message: 'Agradecemos a sua visita e é com grande alegria que o(a) recebemos.\nSou a Jéssica e estou pronta para o(a) atender. 😊\nEnvie-nos uma mensagem pelo WhatsApp e teremos todo o gosto em ajudá-lo(a)!',
     button_text: 'Falar no WhatsApp'
   });
 

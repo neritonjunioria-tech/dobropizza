@@ -871,7 +871,7 @@ export default function AgentManager() {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-3">
         <Loader2 className="w-7 h-7 animate-spin text-amber-500" />
-        <span className="text-xs font-mono text-stone-500">Sincronizando com a Giovanna...</span>
+        <span className="text-xs font-mono text-stone-500">Sincronizando com a Jéssica...</span>
       </div>
     );
   }
@@ -903,7 +903,7 @@ export default function AgentManager() {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h2 className="text-base sm:text-lg font-black text-stone-900 tracking-tight leading-none font-sans">
-                Giovanna
+                Jéssica
               </h2>
               <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border transition-all ${
                 isActive 
@@ -966,13 +966,13 @@ export default function AgentManager() {
       {/* Seletor da Chave PIX Ativa no Atendimento */}
       <div className="bg-white rounded-xl border border-stone-200/90 shadow-2xs p-3 sm:p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-[#E8D8D1] border border-[#D5AF7A]/60 text-[#083D07] flex items-center justify-center shrink-0">
             <CreditCard size={16} />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold text-stone-900 font-sans">Chave PIX Oficial do Atendimento</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F6E3DF] text-[#44210F] border border-[#E4C5B9] font-semibold">
                 Enviada nos Pedidos
               </span>
             </div>
@@ -983,8 +983,8 @@ export default function AgentManager() {
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 bg-emerald-600 text-white border border-emerald-600 shadow-2xs">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+          <div className="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 bg-[#E8D8D1] text-[#083D07] border border-[#D5AF7A] shadow-2xs font-bold">
+            <span className="w-2 h-2 rounded-full bg-[#083D07] animate-pulse" />
             <span>Chave PIX (Telefone): (41) 99598-4072</span>
           </div>
         </div>
@@ -1091,11 +1091,11 @@ export default function AgentManager() {
             <div className="bg-amber-500/5 rounded-xl p-3 border border-amber-500/20 space-y-2 animate-in fade-in duration-150 max-h-48 overflow-y-auto">
               <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 uppercase tracking-wide">
                 <Sparkles size={13} className="text-amber-600" />
-                <span>Diretrizes e Regras Operacionais da Giovanna</span>
+                <span>Diretrizes e Regras Operacionais da Jéssica</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-stone-700">
-                <div className="p-2.5 rounded-lg bg-emerald-50/70 border border-emerald-200/90 shadow-2xs flex gap-2.5 text-stone-700">
-                  <div className="w-7 h-7 rounded-md bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <div className="p-2.5 rounded-lg bg-[#F6E3DF]/60 border border-[#E4C5B9] shadow-2xs flex gap-2.5 text-stone-700">
+                  <div className="w-7 h-7 rounded-md bg-[#E8D8D1] text-[#083D07] border border-[#D5AF7A]/60 flex items-center justify-center shrink-0 shadow-2xs">
                     <CreditCard size={14} />
                   </div>
                   <div>
@@ -1449,7 +1449,7 @@ export default function AgentManager() {
                         {/* Nome do remetente interno */}
                         {!isClient && !isSticker && (
                           <div className={`text-[11px] font-bold mb-1 leading-none ${isBot ? 'text-emerald-700' : 'text-sky-700'}`}>
-                            {isBot ? 'Giovanna' : 'Você (Atendente)'}
+                            {isBot ? 'Jéssica' : 'Você (Atendente)'}
                           </div>
                         )}
                         {isClient && !isSticker && selectedConversation.name && (
@@ -1460,7 +1460,7 @@ export default function AgentManager() {
 
                         {/* Selo especial para comprovantes de pagamento / PIX */}
                         {parsed.isReceipt && (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-2 rounded-lg bg-emerald-600 text-white text-xs font-bold shadow-xs">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-2 rounded-lg bg-[#E8D8D1] text-[#083D07] border border-[#D5AF7A] text-xs font-bold shadow-xs">
                             <ShieldCheck size={14} className="text-white shrink-0" />
                             <span>Comprovante de Pagamento PIX</span>
                           </div>
@@ -1474,7 +1474,7 @@ export default function AgentManager() {
                                 onClick={() => setSelectedImage({
                                   url: parsed.mediaUrl!,
                                   caption: parsed.caption || undefined,
-                                  sender: isClient ? (selectedConversation.name || 'Cliente') : (isBot ? 'Giovanna' : 'Você'),
+                                  sender: isClient ? (selectedConversation.name || 'Cliente') : (isBot ? 'Jéssica' : 'Você'),
                                   timestamp: m.timestamp
                                 })}
                                 className="group relative rounded-lg overflow-hidden cursor-pointer border border-stone-200 bg-stone-100 hover:shadow-md transition-all max-w-[280px]"
@@ -1654,7 +1654,7 @@ export default function AgentManager() {
                 Central de Atendimento no WhatsApp
               </h3>
               <p className="text-xs text-stone-500 leading-relaxed mb-5">
-                A Giovanna atende clientes, tira dúvidas sobre o cardápio e lança pedidos diretamente no sistema. Selecione qualquer conversa na lista lateral para acompanhar o diálogo em tempo real ou intervir com atendimento manual.
+                A Jéssica atende clientes, tira dúvidas sobre o cardápio e lança pedidos diretamente no sistema. Selecione qualquer conversa na lista lateral para acompanhar o diálogo em tempo real ou intervir com atendimento manual.
               </p>
               <div className="w-full grid grid-cols-2 gap-2 text-left mb-4">
                 <div className="p-3 rounded-xl bg-stone-50 border border-stone-200/80">

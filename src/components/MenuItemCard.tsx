@@ -125,17 +125,17 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
       className={`${catId === "promocoes" ? "bg-[#f6e3df]/40 border-[#d5af7a]" : (catId === "menu-do-dia" && item.dayOfWeek === getLisbonDate().getDay() ? "bg-emerald-50/50 border-[#083d07]" : "bg-white border-[#e8d8d1]")} border rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all duration-200 group relative bg-white`}
     >
       {catId === "promocoes" && (
-        <div className="absolute top-0 right-0 bg-[#083d07] text-[#fdfbf7] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10">
+        <div className="absolute top-0 right-0 bg-[#E8D8D1] text-[#083D07] border-b border-l border-[#D5AF7A]/60 text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-2xs">
           Destaque
         </div>
       )}
       {catId === "menu-do-dia" && item.dayOfWeek === getLisbonDate().getDay() && (
-        <div className="absolute top-0 right-0 bg-[#083d07] text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-sm animate-pulse">
+        <div className="absolute top-0 right-0 bg-[#F6E3DF] text-[#44210F] border-b border-l border-[#E4C5B9] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-2xs animate-pulse">
           🔥 HOJE
         </div>
       )}
       {(item.isBestseller || catId === "mais-pedidos" || item.category === "mais-pedidos") && (
-        <div className="absolute top-0 right-0 bg-[#083d07] text-[#fdfbf7] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-xs">
+        <div className="absolute top-0 right-0 bg-[#E8D8D1] text-[#083D07] border-b border-l border-[#D5AF7A]/60 text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-2xs">
           🔥 Mais Vendida
         </div>
       )}
