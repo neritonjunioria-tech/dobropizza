@@ -2867,180 +2867,148 @@ export default function AdminDashboard() {
               const countAtivos = countPendente + countPreparo + countEntrega;
 
               return (
-                <div className="bg-white p-4 sm:p-5 rounded-xl border border-stone-200 shadow-2xs space-y-4">
-                  {/* Topo do Gestor: Título, Modo de Visão e Botão PDV */}
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-3 border-b border-stone-100">
+                <div className="bg-white p-4 sm:p-6 rounded-2xl border border-[#E8D8D1] shadow-xs space-y-5">
+                  {/* Topo do Gestor: Título, Status Geral, Alternador e Botão Novo Pedido */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-[#E8D8D1]">
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h2 className="text-base font-black text-stone-900 tracking-tight">Gestor de Pedidos</h2>
+                      <div className="flex items-center gap-2.5">
+                        <h2 className="text-xl font-bold text-[#44210F] tracking-tight">Pedidos</h2>
                         {countAtivos > 0 ? (
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#F6E3DF] text-[#745240] border border-[#E8D8D1]">
                             {countAtivos} em andamento
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-stone-100 text-stone-600 border border-stone-200">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600 border border-stone-200">
                             Cozinha em dia
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-stone-500 font-mono mt-0.5">
-                        Total de <span className="font-bold text-stone-800 tabular-nums">{countAll}</span> pedidos no período selecionado
+                      <p className="text-xs text-[#745240]/80 mt-0.5 font-sans">
+                        {countAll} {countAll === 1 ? 'pedido registrado' : 'pedidos registrados'} no período
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                      {/* Alternador de Modo: Tabela vs Cards */}
-                      <div className="flex items-center bg-stone-100 rounded-lg p-0.5 border border-stone-200">
+                    <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+                      {/* Alternador de Modo: Tabela vs Comandas */}
+                      <div className="flex items-center bg-[#FDFBF7] rounded-lg p-0.5 border border-[#E8D8D1]">
                         <button
                           type="button"
                           onClick={() => setOrdersViewMode('table')}
-                          title="Visualização em Tabela (Principal)"
-                          className={`h-7 px-2.5 rounded-md text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          className={`h-8 px-3 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                             ordersViewMode === 'table'
-                              ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
-                              : 'text-stone-500 hover:text-stone-800'
+                              ? 'bg-[#E5DDD4] text-[#44210F] shadow-xs font-bold border border-[#D5AF7A]/60'
+                              : 'text-[#745240] hover:text-[#44210F]'
                           }`}
                         >
-                          <List size={13} />
+                          <List size={14} />
                           <span>Tabela</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => setOrdersViewMode('cards')}
-                          title="Visualização em Comandas (Cards)"
-                          className={`h-7 px-2.5 rounded-md text-xs font-mono font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                          className={`h-8 px-3 rounded-md text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
                             ordersViewMode === 'cards'
-                              ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs border border-[#d5af7a]/60'
-                              : 'text-stone-500 hover:text-stone-800'
+                              ? 'bg-[#E5DDD4] text-[#44210F] shadow-xs font-bold border border-[#D5AF7A]/60'
+                              : 'text-[#745240] hover:text-[#44210F]'
                           }`}
                         >
-                          <LayoutGrid size={13} />
-                          <span>Cards</span>
+                          <LayoutGrid size={14} />
+                          <span>Comandas</span>
                         </button>
                       </div>
 
-                      {/* Botão Novo Pedido PDV */}
+                      {/* Botão Novo Pedido (PDV) */}
                       <button
                         onClick={() => setShowPDVModal(true)}
-                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] rounded-lg text-xs font-black font-mono tracking-wide shadow-xs transition-all cursor-pointer border border-[#d5af7a]/60"
+                        className="flex items-center gap-1.5 px-3.5 h-8 bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] rounded-lg text-xs font-bold tracking-wide shadow-xs transition-all cursor-pointer border border-[#D5AF7A]/40"
                       >
                         <Plus size={15} className="stroke-[2.5]" />
-                        <span>NOVO PEDIDO (PDV)</span>
+                        <span>Novo Pedido</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* Barra de Filtros por Status e Campo de Busca (Minimalista Padrão da Empresa) */}
-                  <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5">
-                    {/* Filtros em Pílulas Clean */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
-                      <button
-                        type="button"
-                        onClick={() => setOrdersStatusFilter('todos')}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'todos' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                        }`}
-                      >
-                        <span>Todos</span>
-                        <span className="opacity-70 tabular-nums font-normal">({countAll})</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setOrdersStatusFilter('Pendente')}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Pendente' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                        <span>Pendentes</span>
-                        <span className="opacity-70 tabular-nums font-normal">({countPendente})</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setOrdersStatusFilter('Em Preparo')}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Em Preparo' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-stone-700 shrink-0" />
-                        <span>Em Preparo</span>
-                        <span className="opacity-70 tabular-nums font-normal">({countPreparo})</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setOrdersStatusFilter('Saiu para Entrega')}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Saiu para Entrega' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-stone-500 shrink-0" />
-                        <span>Em Rota</span>
-                        <span className="opacity-70 tabular-nums font-normal">({countEntrega})</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setOrdersStatusFilter('Finalizado')}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Finalizado' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                        <span>Concluídos</span>
-                        <span className="opacity-70 tabular-nums font-normal">({countFinalizado})</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setOrdersStatusFilter('Cancelado')}
-                        className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all shrink-0 cursor-pointer border flex items-center gap-1.5 ${
-                          ordersStatusFilter === 'Cancelado' ? 'bg-[#E8D8D1] text-[#083D07] border-[#D5AF7A] shadow-2xs font-bold' : 'bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900'
-                        }`}
-                      >
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
-                        <span>Cancelados</span>
-                        <span className="opacity-70 tabular-nums font-normal">({countCancelado})</span>
-                      </button>
-                    </div>
-
-                    {/* Busca Inteligente */}
-                    <div className="relative w-full lg:w-72 shrink-0">
-                      <Search size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-stone-400" />
-                      <input
-                        type="text"
-                        value={ordersSearchTerm}
-                        onChange={(e) => setOrdersSearchTerm(e.target.value)}
-                        placeholder="Buscar por Nº, cliente, CPF..."
-                        className="w-full pl-8 pr-7 py-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-mono text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-stone-400 transition-all"
-                      />
-                      {ordersSearchTerm && (
+                  {/* CARDS DE CLIQUE POR STATUS (Cor predominante do fundo da logo: #E5DDD4 / #E8D8D1) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
+                    {[
+                      { id: 'todos', label: 'Todos', count: countAll, dot: 'bg-[#745240]' },
+                      { id: 'Pendente', label: 'Pendentes', count: countPendente, dot: 'bg-amber-500' },
+                      { id: 'Em Preparo', label: 'Em Preparo', count: countPreparo, dot: 'bg-[#083D07]' },
+                      { id: 'Saiu para Entrega', label: 'Em Rota', count: countEntrega, dot: 'bg-sky-600' },
+                      { id: 'Finalizado', label: 'Concluídos', count: countFinalizado, dot: 'bg-emerald-600' },
+                      { id: 'Cancelado', label: 'Cancelados', count: countCancelado, dot: 'bg-rose-500' },
+                    ].map((st) => {
+                      const isSelected = ordersStatusFilter === st.id;
+                      return (
                         <button
-                          onClick={() => setOrdersSearchTerm('')}
-                          className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                          key={st.id}
+                          type="button"
+                          onClick={() => setOrdersStatusFilter(st.id as any)}
+                          className={`relative text-left p-3 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] shadow-xs ring-1 ring-[#D5AF7A]/50'
+                              : 'bg-white hover:bg-[#FDFBF7] text-stone-700 border-[#E8D8D1] hover:border-[#D5AF7A]/40'
+                          }`}
                         >
-                          <X size={13} />
+                          <div className="flex items-center justify-between gap-1.5">
+                            <span className="text-[11px] font-semibold tracking-wide flex items-center gap-1.5">
+                              <span className={`w-2 h-2 rounded-full ${st.dot} shrink-0`} />
+                              <span className={isSelected ? 'font-bold text-[#44210F]' : 'text-stone-600'}>{st.label}</span>
+                            </span>
+                            {isSelected && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#083D07]" />
+                            )}
+                          </div>
+                          <div className="mt-2 flex items-baseline justify-between">
+                            <span className={`text-2xl font-bold font-mono tabular-nums leading-none ${
+                              isSelected ? 'text-[#44210F]' : 'text-stone-900'
+                            }`}>
+                              {st.count}
+                            </span>
+                            <span className={`text-[10px] font-medium ${isSelected ? 'text-[#745240]' : 'text-stone-400'}`}>
+                              {st.count === 1 ? 'pedido' : 'pedidos'}
+                            </span>
+                          </div>
                         </button>
-                      )}
-                    </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Barra de Busca Rápida */}
+                  <div className="relative">
+                    <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+                    <input
+                      type="text"
+                      value={ordersSearchTerm}
+                      onChange={(e) => setOrdersSearchTerm(e.target.value)}
+                      placeholder="Buscar por nº do pedido, nome do cliente, telefone, endereço..."
+                      className="w-full pl-10 pr-8 py-2 bg-[#FDFBF7] border border-[#E8D8D1] rounded-xl text-xs font-sans text-[#44210F] placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-[#745240] focus:ring-1 focus:ring-[#745240]/20 transition-all"
+                    />
+                    {ordersSearchTerm && (
+                      <button
+                        onClick={() => setOrdersSearchTerm('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                        title="Limpar busca"
+                      >
+                        <X size={13} />
+                      </button>
+                    )}
                   </div>
 
                   {/* Estado Vazio */}
                   {filteredList.length === 0 && (
-                    <div className="py-12 text-center flex flex-col items-center justify-center text-stone-400 bg-stone-50/50 rounded-xl border border-dashed border-stone-200">
-                      <ShoppingBag size={36} className="mb-2 opacity-40 text-stone-500" />
-                      <p className="font-bold text-stone-700 text-sm">Nenhum pedido encontrado</p>
-                      <p className="text-stone-500 font-mono text-xs mt-0.5 max-w-sm">
+                    <div className="py-14 text-center flex flex-col items-center justify-center text-stone-400 bg-[#FDFBF7] rounded-2xl border border-dashed border-[#E8D8D1]">
+                      <ShoppingBag size={32} className="mb-2 text-[#745240]/40" />
+                      <p className="font-bold text-[#44210F] text-sm">Nenhum pedido encontrado</p>
+                      <p className="text-[#745240]/70 text-xs mt-0.5 max-w-sm">
                         {ordersSearchTerm || ordersStatusFilter !== 'todos'
-                          ? 'Tente ajustar os filtros ou o termo de busca para visualizar os pedidos.'
+                          ? 'Ajuste os filtros ou o termo de busca para visualizar outros pedidos.'
                           : 'Aguardando novos pedidos entrarem pelo cardápio digital ou balcão.'}
                       </p>
                       {(ordersSearchTerm || ordersStatusFilter !== 'todos') && (
                         <button
                           onClick={() => { setOrdersSearchTerm(''); setOrdersStatusFilter('todos'); }}
-                          className="mt-3 px-3 py-1 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-md text-xs font-mono font-bold transition-colors cursor-pointer border border-stone-200"
+                          className="mt-3 px-3 py-1.5 bg-white hover:bg-stone-50 text-[#44210F] rounded-lg text-xs font-semibold transition-colors cursor-pointer border border-[#E8D8D1]"
                         >
                           Limpar Filtros
                         </button>
@@ -3048,12 +3016,13 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
-                  {/* VISUALIZAÇÃO EM CARDS (COMANDA OPERACIONAL DE ALTA USABILIDADE) */}
+                  {/* VISUALIZAÇÃO EM COMANDAS (CARDS) */}
                   {ordersViewMode === 'cards' && filteredList.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pt-1">
                       {filteredList.map((order: any) => {
                         const elapsed = getElapsedTime(order.createdAt);
-                        const isDelivery = order.orderType === 'entrega' || order.orderType === 'Delivery';
+                        const rawType = order.orderType || order.order_type;
+                        const isDelivery = isDeliveryOrderType(rawType);
                         const items = safeParseItems(order.items);
                         const isPending = order.status === 'Pendente';
                         const isInPrep = order.status === 'Em Preparo';
@@ -3061,45 +3030,45 @@ export default function AdminDashboard() {
                         const isDone = order.status === 'Finalizado';
                         const isCanceled = order.status === 'Cancelado';
 
-                        // Cores de status de alta legibilidade para operação de cozinha/balcão
-                        const statusColor = isPending
-                          ? 'border-t-amber-400'
+                        // Linha de acento de status no topo do card
+                        const statusAccent = isPending
+                          ? 'bg-amber-400'
                           : isInPrep
-                          ? 'border-t-amber-500'
+                          ? 'bg-[#083D07]'
                           : isInRoute
-                          ? 'border-t-sky-500'
+                          ? 'bg-sky-500'
                           : isDone
-                          ? 'border-t-emerald-500'
-                          : 'border-t-rose-400';
+                          ? 'bg-emerald-500'
+                          : 'bg-rose-400';
 
                         return (
                           <div
                             key={order.id}
-                            className={`bg-white rounded-xl border border-stone-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden border-t-4 ${statusColor}`}
+                            className="bg-white rounded-2xl border border-[#E8D8D1] shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden relative"
                           >
-                            {/* Topo da Comanda: ID, Tipo de Pedido, Horário e Valor */}
-                            <div className="p-3.5 pb-3 border-b border-stone-100 bg-stone-50/40 space-y-2">
+                            {/* Barra sutil de acento de status */}
+                            <div className={`h-1 w-full ${statusAccent}`} />
+
+                            {/* Topo do Card: ID, Tipo de Pedido, Horário e Valor */}
+                            <div className="p-4 pb-3 border-b border-[#E8D8D1]/70 bg-[#FDFBF7]/50 space-y-2">
                               <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-center gap-2">
-                                  <span className="font-mono font-black text-sm text-stone-900 bg-white px-2 py-0.5 rounded-md border border-stone-200 shadow-2xs">
+                                  <span className="font-mono font-bold text-sm text-[#44210F] bg-white px-2 py-0.5 rounded-md border border-[#E8D8D1]">
                                     #{order.id}
                                   </span>
 
-                                  {/* Badge Tipo: Entrega, Retirada, Balcão, Mesa */}
+                                  {/* Badge Tipo: Entrega, Retirada, Balcão */}
                                   {(() => {
-                                    const normType = normalizeOrderType(order.orderType || order.order_type);
+                                    const normType = normalizeOrderType(rawType);
                                     const isDel = normType === 'entrega';
                                     const isRet = normType === 'retirada';
-                                    const isMesa = normType === 'mesa';
                                     return (
                                       <span
-                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold border ${
+                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
                                           isDel
                                             ? 'bg-sky-50 text-sky-800 border-sky-200'
                                             : isRet
                                             ? 'bg-amber-50 text-amber-800 border-amber-200'
-                                            : isMesa
-                                            ? 'bg-purple-50 text-purple-800 border-purple-200'
                                             : 'bg-stone-100 text-stone-800 border-stone-200'
                                         }`}
                                       >
@@ -3107,60 +3076,54 @@ export default function AdminDashboard() {
                                           <Bike size={12} className="text-sky-600" />
                                         ) : isRet ? (
                                           <ShoppingBag size={12} className="text-amber-600" />
-                                        ) : isMesa ? (
-                                          <UtensilsCrossed size={12} className="text-purple-600" />
                                         ) : (
                                           <Store size={12} className="text-stone-600" />
                                         )}
-                                        <span>
-                                          {isDel ? 'Entrega' : isRet ? 'Retirada' : isMesa ? 'Mesa' : 'Balcão'}
-                                        </span>
+                                        <span>{isDel ? 'Entrega' : isRet ? 'Retirada' : 'Balcão'}</span>
                                       </span>
                                     );
                                   })()}
 
-                                  {/* Badge Editado */}
                                   {(order.isEdited || order.is_edited) && (
-                                    <span className="text-[10px] font-mono font-black px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
-                                      EDITADO
+                                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
+                                      Editado
                                     </span>
                                   )}
                                 </div>
 
                                 {/* Valor Total em Destaque */}
                                 <div className="text-right">
-                                  <span className="font-mono font-black text-lg text-stone-900 tabular-nums">
-                                    R$ {Number(order.totalAmount || 0).toFixed(2)}
+                                  <span className="font-mono font-black text-lg text-[#44210F] tabular-nums">
+                                    R$ {Number(order.totalAmount || order.total_amount || 0).toFixed(2).replace('.', ',')}
                                   </span>
                                 </div>
                               </div>
 
-                              {/* Linha de Horário, Tempo Decorrido e Status */}
-                              <div className="flex items-center justify-between gap-2 flex-wrap">
-                                <div className="flex items-center gap-1.5 text-xs text-stone-500 font-mono">
+                              {/* Linha de Horário, Tempo e Tag de Status */}
+                              <div className="flex items-center justify-between gap-2 text-xs">
+                                <div className="flex items-center gap-1.5 text-stone-500 font-mono">
                                   <Clock size={12} className="text-stone-400" />
-                                  <span className="font-bold text-stone-700">
+                                  <span className="font-semibold text-stone-700">
                                     {new Date(order.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                   </span>
                                   {order.status !== 'Finalizado' && order.status !== 'Cancelado' && elapsed.text && (
-                                    <span className="text-[11px] font-bold px-1.5 py-0.2 rounded bg-stone-100 text-stone-700 border border-stone-200">
+                                    <span className="text-[11px] font-medium px-1.5 py-0.2 rounded bg-stone-100 text-stone-700">
                                       {elapsed.text}
                                     </span>
                                   )}
                                 </div>
 
-                                {/* Tag de Status */}
                                 <span
-                                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+                                  className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                                     isPending
-                                      ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                      ? 'bg-amber-50 text-amber-900 border-amber-300'
                                       : isInPrep
-                                      ? 'bg-[#083d07] text-[#d5af7a] border-[#0b520a]'
+                                      ? 'bg-[#E5DDD4] text-[#083D07] border-[#D5AF7A]'
                                       : isInRoute
-                                      ? 'bg-sky-100 text-sky-900 border-sky-300'
+                                      ? 'bg-sky-50 text-sky-900 border-sky-300'
                                       : isDone
-                                      ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                                      : 'bg-rose-100 text-rose-900 border-rose-300'
+                                      ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                                      : 'bg-rose-50 text-rose-900 border-rose-300'
                                   }`}
                                 >
                                   <span
@@ -3168,7 +3131,7 @@ export default function AdminDashboard() {
                                       isPending
                                         ? 'bg-amber-500'
                                         : isInPrep
-                                        ? 'bg-[#083d07]'
+                                        ? 'bg-[#083D07]'
                                         : isInRoute
                                         ? 'bg-sky-500'
                                         : isDone
@@ -3181,124 +3144,127 @@ export default function AdminDashboard() {
                               </div>
                             </div>
 
-                            {/* Informações do Cliente e Pagamento */}
-                            <div className="p-3.5 py-2.5 space-y-2 border-b border-stone-100">
+                            {/* Informações do Cliente, Endereço e Motoboy */}
+                            <div className="p-4 py-3 space-y-2.5 border-b border-[#E8D8D1]/70">
                               <div className="flex items-center justify-between gap-2">
-                                <span className="font-black text-stone-900 text-sm truncate">{order.customerName}</span>
-                                {order.customerPhone && (
+                                <span className="font-bold text-[#44210F] text-sm truncate">
+                                  {order.customerName || order.customer_name || 'Cliente'}
+                                </span>
+                                {(order.customerPhone || order.customer_phone) && (
                                   <a
-                                    href={`tel:${order.customerPhone}`}
-                                    className="text-stone-700 hover:text-stone-950 font-mono font-bold text-xs flex items-center gap-1 bg-stone-100 hover:bg-stone-200 px-2 py-0.5 rounded border border-stone-200 transition-colors"
-                                    title="Ligar para cliente"
+                                    href={`tel:${order.customerPhone || order.customer_phone}`}
+                                    className="text-stone-600 hover:text-[#44210F] font-mono text-xs flex items-center gap-1 bg-[#FDFBF7] hover:bg-stone-100 px-2 py-0.5 rounded-md border border-[#E8D8D1] transition-colors"
                                   >
-                                    <Phone size={11} className="text-stone-500" />
-                                    <span>{order.customerPhone}</span>
+                                    <Phone size={11} className="text-[#745240]" />
+                                    <span>{order.customerPhone || order.customer_phone}</span>
                                   </a>
                                 )}
                               </div>
 
-                              {/* Endereço de Entrega Resumido & Limpo */}
-                              {isDelivery && order.deliveryAddress && (
-                                <div className="flex items-start gap-1.5 text-xs text-stone-700 bg-sky-50/50 p-2 rounded-lg border border-sky-100">
-                                  <MapPin size={13} className="text-sky-600 shrink-0 mt-0.5" />
+                              {/* Endereço de Entrega */}
+                              {isDelivery && (order.deliveryAddress || order.delivery_address) && (
+                                <div className="flex items-start gap-1.5 text-xs text-stone-700 bg-[#FDFBF7] p-2 rounded-lg border border-[#E8D8D1]">
+                                  <MapPin size={13} className="text-[#745240] shrink-0 mt-0.5" />
                                   <div className="leading-snug">
-                                    <span className="font-medium text-stone-800">{order.deliveryAddress}</span>
-                                    {order.deliveryZone && (
-                                      <span className="block text-[11px] font-bold text-sky-800 mt-0.5">
-                                        Zona: {order.deliveryZone}
+                                    <span className="font-medium text-stone-800">
+                                      {order.deliveryAddress || order.delivery_address}
+                                    </span>
+                                    {(order.deliveryZone || order.delivery_zone) && (
+                                      <span className="block text-[11px] font-bold text-[#745240] mt-0.5">
+                                        {order.deliveryZone || order.delivery_zone}
                                       </span>
                                     )}
                                   </div>
                                 </div>
                               )}
 
+                              {/* Atalho Rápido de Motoboy */}
                               {renderMotoboyBadge(order)}
 
-                              {/* Pagamento e Troco */}
+                              {/* Forma de Pagamento */}
                               <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
                                 <div className="flex items-center gap-1.5 text-stone-600 font-mono">
                                   <CreditCard size={12} className="text-stone-400" />
-                                  <span className="font-bold text-stone-800">{paymentLabel(order.paymentMethod) === 'Outros' ? (order.paymentMethod || 'Dinheiro') : paymentLabel(order.paymentMethod)}</span>
-                                  {order.nif && (
-                                    <span className="text-[10px] font-bold bg-stone-100 text-stone-600 px-1 rounded border border-stone-200">
-                                      CPF: {order.nif}
+                                  <span className="font-semibold text-stone-800">
+                                    {paymentLabel(order.paymentMethod || order.payment_method) === 'Outros'
+                                      ? (order.paymentMethod || order.payment_method || 'Dinheiro')
+                                      : paymentLabel(order.paymentMethod || order.payment_method)}
+                                  </span>
+                                  {(order.nif || order.customer_nif) && (
+                                    <span className="text-[10px] font-semibold bg-stone-100 text-stone-600 px-1.5 rounded border border-stone-200">
+                                      CPF: {order.nif || order.customer_nif}
                                     </span>
                                   )}
                                 </div>
 
                                 {order.changeFor && Number(order.changeFor) > 0 && (
-                                  <span className="text-[11px] font-mono font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                                    Troco p/ R$ {Number(order.changeFor).toFixed(2)}
+                                  <span className="text-[11px] font-mono font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                    Troco p/ R$ {Number(order.changeFor).toFixed(2).replace('.', ',')}
                                   </span>
                                 )}
                               </div>
                             </div>
 
-                            {/* Comanda de Produção: Lista dos Itens com Alta Clareza */}
-                            <div className="p-3.5 py-2.5 flex-1">
-                              <div className="space-y-2">
-                                {items.map((item: any, idx: number) => {
-                                  const qty = item.quantity || item.qty || 1;
-                                  const isPizza = item.type === 'pizza' || item.isPizza || (item.flavors && item.flavors.length > 0);
-                                  const flavors = item.flavors || [];
-                                  const itemPrice = Number(item.price || 0) * qty;
+                            {/* Comanda de Cozinha: Itens com Clareza Visual */}
+                            <div className="p-4 py-3 flex-1 space-y-2">
+                              {items.map((item: any, idx: number) => {
+                                const qty = item.quantity || item.qty || 1;
+                                const isPizza = item.type === 'pizza' || item.isPizza || (item.flavors && item.flavors.length > 0);
+                                const flavors = item.flavors || [];
+                                const itemPrice = Number(item.price || 0) * qty;
 
-                                  return (
-                                    <div key={idx} className="border-b border-stone-100 last:border-b-0 pb-1.5 last:pb-0">
-                                      <div className="flex items-start justify-between gap-2">
-                                        <div className="flex items-start gap-2 min-w-0">
-                                          {/* Quantidade em Destaque Real de Cozinha */}
-                                          <span className="font-mono font-black text-[#fdfbf7] bg-[#083d07] px-1.5 py-0.5 rounded text-xs shrink-0 border border-[#d5af7a]/60 shadow-2xs">
-                                            {qty}x
-                                          </span>
-                                          <div className="min-w-0">
-                                            <div className="font-black text-stone-900 text-xs sm:text-sm leading-snug">
-                                              {item.name || 'Produto'}
-                                            </div>
-
-                                            {/* Sabores Meio a Meio */}
-                                            {isPizza && flavors.length > 0 && (
-                                              <div className="mt-1 space-y-0.5">
-                                                {flavors.map((fl: any, fIdx: number) => {
-                                                  const fraction = flavors.length === 2 ? '1/2' : flavors.length === 3 ? '1/3' : flavors.length === 4 ? '1/4' : '1/1';
-                                                  const flName = typeof fl === 'string' ? fl : fl.name;
-                                                  return (
-                                                    <div key={fIdx} className="flex items-center gap-1.5 text-xs text-stone-700 font-medium">
-                                                      <span className="text-[10px] font-mono font-bold bg-stone-100 text-stone-800 px-1 rounded border border-stone-200">
-                                                        {fraction}
-                                                      </span>
-                                                      <span className="truncate">{flName}</span>
-                                                    </div>
-                                                  );
-                                                })}
-                                              </div>
-                                            )}
-
-                                            {/* Borda Recheada */}
-                                            {(item.crust || item.borda) && (
-                                              <div className="text-[11px] text-amber-900 font-bold mt-0.5 flex items-center gap-1">
-                                                <span>🧀 Borda:</span>
-                                                <span>{item.crust || item.borda}</span>
-                                              </div>
-                                            )}
+                                return (
+                                  <div key={idx} className="border-b border-stone-100 last:border-b-0 pb-1.5 last:pb-0">
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div className="flex items-start gap-2 min-w-0">
+                                        <span className="font-mono font-bold text-[#FDFBF7] bg-[#083D07] px-1.5 py-0.5 rounded text-xs shrink-0 shadow-2xs">
+                                          {qty}x
+                                        </span>
+                                        <div className="min-w-0">
+                                          <div className="font-bold text-[#44210F] text-xs sm:text-sm leading-snug">
+                                            {item.name || 'Produto'}
                                           </div>
+
+                                          {/* Sabores Meio a Meio */}
+                                          {isPizza && flavors.length > 0 && (
+                                            <div className="mt-0.5 space-y-0.5">
+                                              {flavors.map((fl: any, fIdx: number) => {
+                                                const fraction = flavors.length === 2 ? '1/2' : flavors.length === 3 ? '1/3' : flavors.length === 4 ? '1/4' : '1/1';
+                                                const flName = typeof fl === 'string' ? fl : fl.name;
+                                                return (
+                                                  <div key={fIdx} className="flex items-center gap-1.5 text-xs text-stone-700">
+                                                    <span className="text-[10px] font-mono font-semibold bg-[#FDFBF7] text-[#745240] px-1 rounded border border-[#E8D8D1]">
+                                                      {fraction}
+                                                    </span>
+                                                    <span className="truncate">{flName}</span>
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          )}
+
+                                          {/* Borda Recheada */}
+                                          {(item.crust || item.borda) && (
+                                            <div className="text-[11px] text-amber-900 font-medium mt-0.5 flex items-center gap-1">
+                                              <span>🧀 Borda:</span>
+                                              <span>{item.crust || item.borda}</span>
+                                            </div>
+                                          )}
                                         </div>
-
-                                        {/* Preço só é exibido se for maior que 0 (evita R$0.00 confuso de IA) */}
-                                        {itemPrice > 0 && (
-                                          <span className="font-mono text-stone-700 text-xs font-bold tabular-nums shrink-0">
-                                            R$ {itemPrice.toFixed(2)}
-                                          </span>
-                                        )}
                                       </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
 
-                              {/* Observação Geral com Alerta em Destaque */}
+                                      {itemPrice > 0 && (
+                                        <span className="font-mono text-stone-600 text-xs font-semibold tabular-nums shrink-0">
+                                          R$ {itemPrice.toFixed(2).replace('.', ',')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+
                               {order.notes && order.notes.trim() && (
-                                <div className="mt-2.5 bg-amber-50 border border-amber-300 px-2.5 py-1.5 rounded-lg text-xs font-bold text-amber-950 flex items-start gap-1.5">
+                                <div className="mt-2.5 bg-amber-50/70 border border-amber-200 px-2.5 py-1.5 rounded-lg text-xs font-medium text-amber-950 flex items-start gap-1.5">
                                   <AlertCircle size={14} className="text-amber-700 shrink-0 mt-0.5" />
                                   <span className="break-words leading-tight">
                                     Obs: {order.notes}
@@ -3307,17 +3273,17 @@ export default function AdminDashboard() {
                               )}
                             </div>
 
-                            {/* Rodapé do Card: Ações Operacionais */}
-                            <div className="p-3 pt-2 border-t border-stone-100 bg-stone-50/50 space-y-2">
+                            {/* Rodapé do Card: Ação Operacional Primária & Ações Rápidas */}
+                            <div className="p-3.5 pt-2.5 border-t border-[#E8D8D1] bg-[#FDFBF7]/50 space-y-2">
                               {/* Botão de Avanço Rápido */}
                               {isPending && (
                                 <button
                                   type="button"
                                   onClick={() => changeOrderStatus(order, 'Em Preparo')}
-                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#fdfbf7] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#d5af7a]/60"
+                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] font-semibold text-xs shadow-xs transition-all cursor-pointer border border-[#D5AF7A]/40"
                                 >
                                   <Flame size={14} />
-                                  <span>INICIAR PREPARO</span>
+                                  <span>Iniciar Preparo</span>
                                   <ArrowRight size={14} />
                                 </button>
                               )}
@@ -3326,10 +3292,10 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
-                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#062b06] active:bg-black text-[#d5af7a] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#0b520a]"
+                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] font-semibold text-xs shadow-xs transition-all cursor-pointer border border-[#D5AF7A]/40"
                                 >
                                   {isDelivery ? <Bike size={14} /> : <Check size={14} />}
-                                  <span>{isDelivery ? 'DESPACHAR (MOTOBOY)' : 'FINALIZAR PEDIDO'}</span>
+                                  <span>{isDelivery ? 'Despachar Entrega' : 'Finalizar Pedido'}</span>
                                   <ArrowRight size={14} />
                                 </button>
                               )}
@@ -3338,22 +3304,22 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => changeOrderStatus(order, 'Finalizado')}
-                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#083d07] hover:bg-[#062b06] active:bg-black text-white font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#0b520a]"
+                                  className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] font-semibold text-xs shadow-xs transition-all cursor-pointer border border-[#D5AF7A]/40"
                                 >
-                                  <Check size={14} className="text-[#d5af7a]" />
-                                  <span>CONCLUIR ENTREGA</span>
+                                  <Check size={14} />
+                                  <span>Concluir Entrega</span>
                                 </button>
                               )}
 
                               {isDone && (
-                                <div className="text-center py-1.5 text-xs font-mono font-bold text-emerald-800 bg-emerald-50 rounded-lg border border-emerald-200">
-                                  ✓ PEDIDO CONCLUÍDO
+                                <div className="text-center py-1.5 text-xs font-semibold text-emerald-800 bg-emerald-50 rounded-lg border border-emerald-200">
+                                  ✓ Pedido Concluído
                                 </div>
                               )}
 
                               {isCanceled && (
-                                <div className="text-center py-1.5 text-xs font-mono font-bold text-rose-800 bg-rose-50 rounded-lg border border-rose-200">
-                                  ✕ PEDIDO CANCELADO
+                                <div className="text-center py-1.5 text-xs font-semibold text-rose-800 bg-rose-50 rounded-lg border border-rose-200">
+                                  ✕ Pedido Cancelado
                                 </div>
                               )}
 
@@ -3362,8 +3328,8 @@ export default function AdminDashboard() {
                                 <select
                                   value={order.status}
                                   onChange={(e) => changeOrderStatus(order, e.target.value)}
-                                  className="text-[11px] font-mono font-bold px-2 py-1 bg-white rounded border border-stone-200 text-stone-800 cursor-pointer outline-none hover:bg-stone-50 transition-colors"
-                                  title="Mudar status manualmente"
+                                  className="text-[11px] font-semibold px-2 py-1 bg-white rounded-lg border border-[#E8D8D1] text-[#44210F] cursor-pointer outline-none hover:bg-stone-50 transition-colors"
+                                  title="Alterar status"
                                 >
                                   <option value="Pendente">Pendente</option>
                                   <option value="Em Preparo">Em Preparo</option>
@@ -3375,15 +3341,15 @@ export default function AdminDashboard() {
                                 <div className="flex items-center gap-1">
                                   <button
                                     onClick={() => handlePrintOrder(order)}
-                                    className="p-1.5 text-stone-700 hover:text-stone-950 bg-white hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
-                                    title="Imprimir Cupom Térmico"
+                                    className="p-1.5 text-stone-600 hover:text-[#44210F] bg-white hover:bg-stone-100 border border-[#E8D8D1] rounded-md transition-colors cursor-pointer"
+                                    title="Imprimir Cupom"
                                   >
                                     <Printer size={13} />
                                   </button>
 
                                   <button
                                     onClick={() => setEditingOrder(order)}
-                                    className="p-1.5 text-stone-700 hover:text-stone-950 bg-white hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
+                                    className="p-1.5 text-stone-600 hover:text-[#44210F] bg-white hover:bg-stone-100 border border-[#E8D8D1] rounded-md transition-colors cursor-pointer"
                                     title="Editar Pedido"
                                   >
                                     <Edit2 size={13} />
@@ -3392,11 +3358,11 @@ export default function AdminDashboard() {
                                   {order.status !== 'Finalizado' && order.status !== 'Cancelado' && (
                                     <button
                                       onClick={() => {
-                                        if (window.confirm(`Deseja realmente CANCELAR o Pedido #${order.id}?`)) {
+                                        if (window.confirm(`Deseja realmente cancelar o Pedido #${order.id}?`)) {
                                           changeOrderStatus(order, 'Cancelado');
                                         }
                                       }}
-                                      className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 rounded-md transition-colors cursor-pointer"
+                                      className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-[#E8D8D1] hover:border-rose-200 rounded-md transition-colors cursor-pointer"
                                       title="Cancelar Pedido"
                                     >
                                       <X size={13} />
@@ -3419,39 +3385,40 @@ export default function AdminDashboard() {
                     </div>
                   )}
 
-                  {/* VISUALIZAÇÃO EM TABELA (LIMPA, SEM ENDEREÇOS POLUINDO A PÁGINA PRINCIPAL) */}
+                  {/* VISUALIZAÇÃO EM TABELA */}
                   {ordersViewMode === 'table' && filteredList.length > 0 && (
-                    <div className="overflow-x-auto rounded-lg border border-stone-200">
+                    <div className="overflow-x-auto rounded-xl border border-[#E8D8D1]">
                       <table className="min-w-full text-left">
                         <thead>
-                          <tr className="border-b border-stone-200 text-[11px] font-mono font-bold text-stone-600 uppercase tracking-wider bg-stone-50">
+                          <tr className="border-b border-[#E8D8D1] text-[11px] font-mono font-bold text-[#745240] uppercase tracking-wider bg-[#FDFBF7]">
                             <th className="py-3 px-4">Nº / Hora</th>
                             <th className="py-3 px-4">Cliente / Contato</th>
-                            <th className="py-3 px-4">Tipo</th>
+                            <th className="py-3 px-4">Tipo & Motoboy</th>
                             <th className="py-3 px-4">Pagamento</th>
                             <th className="py-3 px-4">Valor</th>
                             <th className="py-3 px-4 text-center">Status</th>
                             <th className="py-3 px-4 text-right">Ações</th>
                           </tr>
                         </thead>
-                        <tbody className="text-xs font-mono divide-y divide-stone-100">
+                        <tbody className="text-xs divide-y divide-[#E8D8D1]/60">
                           {filteredList.map((order: any) => {
                             const elapsed = getElapsedTime(order.createdAt);
-                            const isDelivery = order.orderType === 'entrega' || order.orderType === 'Delivery';
+                            const rawType = order.orderType || order.order_type;
+                            const isDelivery = isDeliveryOrderType(rawType);
 
                             return (
-                              <tr key={order.id} className="hover:bg-stone-50/80 transition-colors">
+                              <tr key={order.id} className="hover:bg-[#FDFBF7]/80 transition-colors">
                                 <td className="py-3 px-4">
                                   <div className="flex items-center gap-1.5">
-                                    <span className="font-black text-stone-900 tabular-nums">#{order.id}</span>
+                                    <span className="font-mono font-bold text-[#44210F] tabular-nums">#{order.id}</span>
                                     {(order.isEdited || order.is_edited) && (
                                       <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
-                                        EDITADO
+                                        Editado
                                       </span>
                                     )}
                                   </div>
-                                  <div className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1">
-                                    <span className="font-bold text-stone-700">
+                                  <div className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1 font-mono">
+                                    <span className="font-semibold text-stone-700">
                                       {new Date(order.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                     {order.status !== 'Finalizado' && order.status !== 'Cancelado' && elapsed.text && (
@@ -3460,21 +3427,23 @@ export default function AdminDashboard() {
                                   </div>
                                 </td>
 
-                                {/* Cliente & Contato: Limpo e objetivo, sem endereço poluindo */}
+                                {/* Cliente & Contato */}
                                 <td className="py-3 px-4">
-                                  <div className="font-black text-stone-900 text-xs sm:text-sm">{order.customerName}</div>
-                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-stone-500">
-                                    {order.customerPhone && (
+                                  <div className="font-bold text-[#44210F] text-xs sm:text-sm">
+                                    {order.customerName || order.customer_name || 'Cliente'}
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-stone-500 font-mono">
+                                    {(order.customerPhone || order.customer_phone) && (
                                       <a
-                                        href={`tel:${order.customerPhone}`}
-                                        className="hover:text-stone-900 font-bold transition-colors"
+                                        href={`tel:${order.customerPhone || order.customer_phone}`}
+                                        className="hover:text-[#44210F] font-semibold transition-colors"
                                       >
-                                        {order.customerPhone}
+                                        {order.customerPhone || order.customer_phone}
                                       </a>
                                     )}
-                                    {order.nif && (
-                                      <span className="px-1 bg-stone-100 rounded text-[10px] font-bold border border-stone-200">
-                                        CPF: {order.nif}
+                                    {(order.nif || order.customer_nif) && (
+                                      <span className="px-1 bg-stone-100 rounded text-[10px] font-semibold border border-stone-200">
+                                        CPF: {order.nif || order.customer_nif}
                                       </span>
                                     )}
                                   </div>
@@ -3482,20 +3451,16 @@ export default function AdminDashboard() {
 
                                 <td className="py-3 px-4">
                                   {(() => {
-                                    const normType = normalizeOrderType(order.orderType || order.order_type);
+                                    const normType = normalizeOrderType(rawType);
                                     const isDel = normType === 'entrega';
                                     const isRet = normType === 'retirada';
-                                    const isMesa = normType === 'mesa';
                                     return (
                                       <span
-                                        title={isDel && order.deliveryAddress ? `Endereço: ${order.deliveryAddress}` : undefined}
-                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border ${
+                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
                                           isDel
                                             ? 'bg-sky-50 text-sky-800 border-sky-200'
                                             : isRet
                                             ? 'bg-amber-50 text-amber-800 border-amber-200'
-                                            : isMesa
-                                            ? 'bg-purple-50 text-purple-800 border-purple-200'
                                             : 'bg-stone-100 text-stone-700 border-stone-200'
                                         }`}
                                       >
@@ -3503,44 +3468,40 @@ export default function AdminDashboard() {
                                           <Bike size={12} className="text-sky-600" />
                                         ) : isRet ? (
                                           <ShoppingBag size={12} className="text-amber-600" />
-                                        ) : isMesa ? (
-                                          <UtensilsCrossed size={12} className="text-purple-600" />
                                         ) : (
                                           <Store size={12} className="text-stone-500" />
                                         )}
-                                        <span>
-                                          {isDel ? 'Entrega' : isRet ? 'Retirada' : isMesa ? 'Mesa' : 'Balcão'}
-                                        </span>
+                                        <span>{isDel ? 'Entrega' : isRet ? 'Retirada' : 'Balcão'}</span>
                                       </span>
                                     );
                                   })()}
-                                  {isDeliveryOrderType(order.orderType) && (
+                                  {isDelivery && (
                                     <div className="mt-1">{renderMotoboyBadge(order)}</div>
                                   )}
                                 </td>
 
                                 <td className="py-3 px-4">
                                   <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold font-mono bg-stone-100 text-stone-800 border border-stone-200">
-                                      {order.paymentMethod || 'Numerário'}
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold font-mono bg-[#FDFBF7] text-[#44210F] border border-[#E8D8D1]">
+                                      {order.paymentMethod || order.payment_method || 'Dinheiro'}
                                     </span>
                                     {order.changeFor && Number(order.changeFor) > 0 && (
-                                      <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                                      <span className="text-[10px] font-semibold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
                                         Troco R$ {Number(order.changeFor).toFixed(0)}
                                       </span>
                                     )}
                                   </div>
                                 </td>
 
-                                <td className="py-3 px-4 font-black tabular-nums text-stone-900 text-sm">
-                                  R$ {Number(order.totalAmount || 0).toFixed(2)}
+                                <td className="py-3 px-4 font-bold font-mono tabular-nums text-[#44210F] text-sm">
+                                  R$ {Number(order.totalAmount || order.total_amount || 0).toFixed(2).replace('.', ',')}
                                 </td>
 
                                 <td className="py-3 px-4 text-center">
                                   <select
                                     value={order.status}
                                     onChange={(e) => changeOrderStatus(order, e.target.value)}
-                                    className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold border border-stone-200 bg-white text-stone-800 cursor-pointer outline-none hover:bg-stone-50 transition-all"
+                                    className="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-[#E8D8D1] bg-white text-[#44210F] cursor-pointer outline-none hover:bg-stone-50 transition-all"
                                     style={{ textAlignLast: 'center' }}
                                     title="Alterar status"
                                   >
@@ -3557,40 +3518,40 @@ export default function AdminDashboard() {
                                     {order.status === 'Pendente' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, 'Em Preparo')}
-                                        className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] transition-colors cursor-pointer border border-[#d5af7a]/60 shadow-2xs"
+                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-[#FDFBF7] transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
                                         title="Iniciar Preparo"
                                       >
-                                        PREPARAR
+                                        Preparo
                                       </button>
                                     )}
                                     {order.status === 'Em Preparo' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
-                                        className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-[#083d07] hover:bg-[#062b06] text-[#d5af7a] transition-colors cursor-pointer border border-[#0b520a] shadow-2xs"
-                                        title={isDelivery ? 'Despachar Motoboy' : 'Finalizar Pedido'}
+                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-[#FDFBF7] transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
+                                        title={isDelivery ? 'Despachar' : 'Finalizar'}
                                       >
-                                        {isDelivery ? 'DESPACHAR' : 'FINALIZAR'}
+                                        {isDelivery ? 'Despachar' : 'Finalizar'}
                                       </button>
                                     )}
                                     {order.status === 'Saiu para Entrega' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, 'Finalizado')}
-                                        className="text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-[#083d07] hover:bg-[#062b06] text-white transition-colors cursor-pointer border border-[#0b520a] shadow-2xs"
+                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-white transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
                                         title="Concluir Pedido"
                                       >
-                                        CONCLUIR
+                                        Concluir
                                       </button>
                                     )}
                                     <button
                                       onClick={() => handlePrintOrder(order)}
-                                      className="p-1.5 text-stone-700 hover:text-stone-950 bg-white hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
+                                      className="p-1.5 text-stone-600 hover:text-[#44210F] bg-white hover:bg-stone-100 border border-[#E8D8D1] rounded-md transition-colors cursor-pointer"
                                       title="Imprimir Cupom"
                                     >
                                       <Printer size={13} />
                                     </button>
                                     <button
                                       onClick={() => setEditingOrder(order)}
-                                      className="p-1.5 text-stone-700 hover:text-stone-950 bg-white hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
+                                      className="p-1.5 text-stone-600 hover:text-[#44210F] bg-white hover:bg-stone-100 border border-[#E8D8D1] rounded-md transition-colors cursor-pointer"
                                       title="Editar Pedido"
                                     >
                                       <Edit2 size={13} />
@@ -3602,7 +3563,7 @@ export default function AdminDashboard() {
                                             changeOrderStatus(order, 'Cancelado');
                                           }
                                         }}
-                                        className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 rounded-md transition-colors cursor-pointer"
+                                        className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-[#E8D8D1] hover:border-rose-200 rounded-md transition-colors cursor-pointer"
                                         title="Cancelar Pedido"
                                       >
                                         <X size={13} />

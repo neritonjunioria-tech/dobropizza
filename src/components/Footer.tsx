@@ -32,7 +32,7 @@ export default function Footer() {
             <div className="flex items-start gap-2 text-xs text-[#c4b5aa] leading-relaxed">
               <MapPin className="w-3.5 h-3.5 text-[#d5af7a] shrink-0 mt-0.5" />
               <span>
-                Rua Quirino Zagonel - São José dos Pinhais
+                Rua Quirino Zagonel 500 - São José dos Pinhais
               </span>
             </div>
             <p className="text-[11px] text-[#8a7569]">
