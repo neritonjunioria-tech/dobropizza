@@ -1113,11 +1113,10 @@ export default function AdminDashboard() {
       let pass = password.trim();
 
       let email = trimmedUser;
-      if (trimmedUser === 'admin' || trimmedUser === 'admin@dobropizza.com' || trimmedUser === 'dobropizza') {
-        email = 'admin@dobropizza.com';
-        if (pass === 'admin') {
-          pass = '123456';
-        }
+      if (trimmedUser === 'dobro' || trimmedUser === 'dobropizza' || trimmedUser === 'dobro@dobropizza.com') {
+        email = 'dobro@dobropizza.com';
+      } else if (trimmedUser === 'admin' || trimmedUser === 'admin@dobropizza.com') {
+        email = 'dobro@dobropizza.com';
       } else if (!email.includes('@')) {
         email = email + '@dobropizza.com';
       }
@@ -1127,10 +1126,12 @@ export default function AdminDashboard() {
         password: pass,
       });
 
-      if (error && (trimmedUser === 'admin' || trimmedUser === 'dobropizza')) {
+      // Se falhar e for dobro ou admin, tenta a conta alternativa com a mesma senha
+      if (error && (email === 'dobro@dobropizza.com' || email === 'admin@dobropizza.com')) {
+        const altEmail = email === 'dobro@dobropizza.com' ? 'admin@dobropizza.com' : 'dobro@dobropizza.com';
         const fallback = await supabase.auth.signInWithPassword({
-          email: 'admin@dobropizza.com',
-          password: '123456',
+          email: altEmail,
+          password: pass,
         });
         error = fallback.error;
       }
@@ -1289,7 +1290,7 @@ export default function AdminDashboard() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-all"
-                placeholder="Ex: admin"
+                placeholder="Ex: dobro"
                 required
               />
             </div>
@@ -1300,7 +1301,7 @@ export default function AdminDashboard() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-[#083d07] focus:border-transparent outline-none transition-all"
-                placeholder="Ex: admin"
+                placeholder="Ex: dobro"
                 required
               />
             </div>
@@ -1312,6 +1313,9 @@ export default function AdminDashboard() {
             >
               Entrar no Dashboard
             </button>
+            <p className="text-xs text-stone-400 text-center mt-3">
+              Acesso: <span className="font-semibold text-stone-600">dobro</span> | Senha: <span className="font-semibold text-stone-600">dobro</span>
+            </p>
           </form>
         </div>
       </div>

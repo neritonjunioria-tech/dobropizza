@@ -38,7 +38,7 @@ export interface ParsedMessage {
 }
 
 export function parseMessageContent(text: string, mediaUrlProp?: string | null, mediaTypeProp?: string | null, captionProp?: string | null): ParsedMessage {
-  const isReceiptPattern = /(?:comprovante|mb\s*way|mbway|transfer[eê]ncia|paguei|pago|recibo)/i;
+  const isReceiptPattern = /(?:comprovante|pix|mb\s*way|mbway|transfer[eê]ncia|paguei|pago|recibo)/i;
 
   if (mediaUrlProp) {
     const isImage = mediaTypeProp === 'image' || (!mediaTypeProp && (mediaUrlProp.startsWith('data:image') || /\.(jpg|jpeg|png|webp|gif)/i.test(mediaUrlProp)));
@@ -158,10 +158,10 @@ export function parseMessageContent(text: string, mediaUrlProp?: string | null, 
 // Atalhos de Respostas Rápidas para o Operador
 const QUICK_RESPONSES = [
   { label: '🍕 No Forno', text: 'Seu pedido já está no forno e logo sai para entrega!' },
-  { label: '🛵 Saiu p/ Entrega', text: 'Seu pedido acabou de sair com o estafeta para entrega!' },
-  { label: '🪙 Precisa de Troco?', text: 'Com certeza! Você tem o valor exato ou precisa de troco para alguma nota (ex: € 20, € 50)?' },
-  { label: '✅ MB WAY Confirmado', text: 'Confirmamos o recebimento do seu MB WAY com sucesso! Muito obrigado!' },
-  { label: '💳 Chave MB WAY', text: 'O nosso número oficial para MB WAY é: +351 914 044 317' }
+  { label: '🛵 Saiu p/ Entrega', text: 'Seu pedido acabou de sair com o entregador para entrega!' },
+  { label: '🪙 Precisa de Troco?', text: 'Com certeza! Você tem o valor exato ou precisa de troco para alguma nota (ex: R$ 50, R$ 100)?' },
+  { label: '✅ PIX Confirmado', text: 'Confirmamos o recebimento do seu PIX com sucesso! Muito obrigado!' },
+  { label: '💳 Chave PIX', text: 'Nossa chave PIX (telefone) é: (41) 99598-4072' }
 ];
 
 export default function AgentManager() {
@@ -171,8 +171,8 @@ export default function AgentManager() {
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [copiedPhone, setCopiedPhone] = useState(false);
   const [conversationFilter, setConversationFilter] = useState<'all' | 'ai' | 'manual'>('all');
-  const [activeMbWayKey, setActiveMbWayKey] = useState<string>('351914044317');
-  const [savingMbWay, setSavingMbWay] = useState(false);
+  const [activePixKey, setActivePixKey] = useState<string>('(41) 99598-4072');
+  const [savingPix, setSavingPix] = useState(false);
 
   const handleCopyPhone = useCallback((phone: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -468,9 +468,9 @@ export default function AgentManager() {
           setIsActive(true);
         }
 
-        const mbSetting = settingsData.find(s => s.key === 'active_mbway_key');
-        if (mbSetting && mbSetting.value) {
-          setActiveMbWayKey(String(mbSetting.value));
+        const pixSetting = settingsData.find(s => s.key === 'active_pix_key' || s.key === 'active_mbway_key' || s.key === 'pix_key_phone');
+        if (pixSetting && pixSetting.value) {
+          setActivePixKey(String(pixSetting.value));
         }
       } else {
         setIsActive(true);
@@ -606,30 +606,30 @@ export default function AgentManager() {
     }
   };
 
-  const handleSelectMbWay = async (newKey: string) => {
-    if (newKey === activeMbWayKey || savingMbWay) return;
-    setSavingMbWay(true);
+  const handleSelectPix = async (newKey: string) => {
+    if (newKey === activePixKey || savingPix) return;
+    setSavingPix(true);
     try {
       const nowIso = new Date().toISOString();
       const { error } = await supabase
         .from('settings')
         .upsert({ 
-          key: 'active_mbway_key', 
+          key: 'active_pix_key', 
           value: newKey, 
           updated_at: nowIso 
         }, { onConflict: 'key' });
         
       if (!error) {
-        setActiveMbWayKey(newKey);
+        setActivePixKey(newKey);
       }
     } catch (err) {
-      console.error('Erro ao alternar chave MB WAY:', err);
+      console.error('Erro ao alternar chave PIX:', err);
     } finally {
-      setSavingMbWay(false);
+      setSavingPix(false);
     }
   };
 
-  const formattedActiveMbWay = activeMbWayKey === '351912092269' ? '+351 912 092 269' : '+351 914 044 317';
+  const formattedActivePix = activePixKey === '41995984072' ? '(41) 99598-4072' : (activePixKey || '(41) 99598-4072');
 
   const toggleChatPause = async (phone: string, currentPaused: boolean) => {
     setTogglingChatPause(true);
@@ -963,7 +963,7 @@ export default function AgentManager() {
         </div>
       </div>
 
-      {/* Seletor da Chave MB WAY Ativa no Atendimento */}
+      {/* Seletor da Chave PIX Ativa no Atendimento */}
       <div className="bg-white rounded-xl border border-stone-200/90 shadow-2xs p-3 sm:p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 flex items-center justify-center shrink-0">
@@ -971,45 +971,22 @@ export default function AgentManager() {
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-stone-900 font-sans">Chave MB WAY Ativa da Giovanna</span>
+              <span className="text-xs font-bold text-stone-900 font-sans">Chave PIX Oficial do Atendimento</span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold">
                 Enviada nos Pedidos
               </span>
             </div>
             <p className="text-[11px] text-stone-500">
-              Escolha qual conta receberá os pagamentos via MB WAY no WhatsApp hoje.
+              Chave PIX cadastrada: Telefone da pizzaria para pagamentos no WhatsApp.
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => handleSelectMbWay('351912092269')}
-            disabled={savingMbWay}
-            className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer border ${
-              activeMbWayKey === '351912092269'
-                ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs ring-2 ring-emerald-500/20'
-                : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full ${activeMbWayKey === '351912092269' ? 'bg-white animate-pulse' : 'bg-stone-300'}`} />
-            <span>MB WAY 1 (912 092 269)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleSelectMbWay('351914044317')}
-            disabled={savingMbWay}
-            className={`flex-1 sm:flex-initial px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer border ${
-              activeMbWayKey === '351914044317'
-                ? 'bg-emerald-600 text-white border-emerald-600 shadow-2xs ring-2 ring-emerald-500/20'
-                : 'bg-stone-50 hover:bg-stone-100 text-stone-700 border-stone-200'
-            }`}
-          >
-            <span className={`w-2 h-2 rounded-full ${activeMbWayKey === '351914044317' ? 'bg-white animate-pulse' : 'bg-stone-300'}`} />
-            <span>MB WAY 2 (914 044 317)</span>
-          </button>
+          <div className="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 bg-emerald-600 text-white border border-emerald-600 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+            <span>Chave PIX (Telefone): (41) 99598-4072</span>
+          </div>
         </div>
       </div>
 
@@ -1123,7 +1100,7 @@ export default function AgentManager() {
                   </div>
                   <div>
                     <span className="font-bold text-emerald-950 block mb-0.5 text-[11px]">Pagamento Oficial</span>
-                    <p className="text-[11px] leading-snug">Aceitar exclusivamente <strong>MB WAY ({formattedActiveMbWay})</strong> ou <strong>Dinheiro (Numerário)</strong>. Transferência bancária é proibida.</p>
+                    <p className="text-[11px] leading-snug">Aceitar exclusivamente <strong>PIX ({formattedActivePix})</strong>, <strong>Cartão (Débito/Crédito)</strong> ou <strong>Dinheiro</strong>.</p>
                   </div>
                 </div>
 
@@ -1133,7 +1110,7 @@ export default function AgentManager() {
                   </div>
                   <div>
                     <span className="font-bold text-amber-950 block mb-0.5 text-[11px]">Troco Inteligente em Dinheiro</span>
-                    <p className="text-[11px] leading-snug">Ao optar por dinheiro, a IA sempre questiona se o cliente tem o valor exato ou precisa de troco para nota específica (ex: € 20, € 50).</p>
+                    <p className="text-[11px] leading-snug">Ao optar por dinheiro, a IA sempre questiona se o cliente tem o valor exato ou precisa de troco para nota específica (ex: R$ 50, R$ 100).</p>
                   </div>
                 </div>
 
@@ -1143,7 +1120,7 @@ export default function AgentManager() {
                   </div>
                   <div>
                     <span className="font-bold text-sky-950 block mb-0.5 text-[11px]">Cardápio & Bebidas</span>
-                    <p className="text-[11px] leading-snug">Disponíveis Coca-Cola 1L (Normal e Zero), cervejas Sagres e águas minerais.</p>
+                    <p className="text-[11px] leading-snug">Disponíveis Coca-Cola 1L (Normal e Zero), sucos, refrigerantes e águas.</p>
                   </div>
                 </div>
 
@@ -1481,11 +1458,11 @@ export default function AgentManager() {
                           </div>
                         )}
 
-                        {/* Selo especial para comprovantes de pagamento / MB WAY */}
+                        {/* Selo especial para comprovantes de pagamento / PIX */}
                         {parsed.isReceipt && (
                           <div className="inline-flex items-center gap-1.5 px-3 py-1 mb-2 rounded-lg bg-emerald-600 text-white text-xs font-bold shadow-xs">
                             <ShieldCheck size={14} className="text-white shrink-0" />
-                            <span>Comprovante de Pagamento MB WAY</span>
+                            <span>Comprovante de Pagamento PIX</span>
                           </div>
                         )}
 
@@ -1631,8 +1608,8 @@ export default function AgentManager() {
                 { label: '🍕 No Forno', text: 'Seu pedido já está no forno e logo sai para entrega!' },
                 { label: '🛵 Saiu p/ Entrega', text: 'Seu pedido acabou de sair com o estafeta para entrega!' },
                 { label: '🪙 Precisa de Troco?', text: 'Com certeza! Você tem o valor exato ou precisa de troco para alguma nota (ex: € 20, € 50)?' },
-                { label: '✅ MB WAY Confirmado', text: 'Confirmamos o recebimento do seu MB WAY com sucesso! Muito obrigado!' },
-                { label: '💳 Chave MB WAY', text: `O nosso número oficial para MB WAY é: ${formattedActiveMbWay}` }
+                { label: '✅ PIX Confirmado', text: 'Confirmamos o recebimento do seu PIX com sucesso! Muito obrigado!' },
+                { label: '💳 Chave PIX', text: `Nossa chave PIX oficial (telefone) é: ${formattedActivePix}` }
               ].map((qr, idx) => (
                 <button
                   key={idx}
@@ -1704,7 +1681,7 @@ export default function AgentManager() {
                 <ul className="space-y-1 text-[11px] leading-relaxed text-stone-600 list-disc list-inside">
                   <li><strong>Intervenção rápida:</strong> Digitar e enviar uma mensagem pausa a IA automaticamente.</li>
                   <li><strong>Respostas em 1 clique:</strong> Use os atalhos rápidos de forno, entrega e troco.</li>
-                  <li><strong>Comprovantes:</strong> Fotos e PDFs com menção a MB WAY ganham selo verde destacado.</li>
+                  <li><strong>Comprovantes:</strong> Fotos e PDFs com menção a PIX ganham selo verde destacado.</li>
                 </ul>
               </div>
             </div>
