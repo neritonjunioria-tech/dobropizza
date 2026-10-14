@@ -74,26 +74,16 @@ export const categoriesUI = [
       group: ["doces"],
     },
     {
-      id: "esfihas",
-      label: "ESFIHAS 🧆",
-      sub: "Salgadas e doces",
-      group: [
-        "esfihas-salgadas-tradicionais",
-        "esfihas-salgadas-especiais",
-        "esfihas-doces",
-      ],
+      id: "sandubas",
+      label: "SANDUBAS 🥪",
+      sub: "Sanduíches artesanais na massa da casa",
+      group: ["sandubas"],
     },
     {
       id: "bebidas",
       label: "BEBIDAS 🥤",
-      sub: "Refrigerantes e sumos",
+      sub: "Refrigerantes e águas",
       group: ["bebidas"],
-    },
-    {
-      id: "cafe",
-      label: "CAFÉ ☕",
-      sub: "Cafés e acompanhamentos",
-      group: ["cafe"],
     },
   ];
 
@@ -367,24 +357,29 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] font-sans text-[#1a1a1a] scroll-smooth pb-20 lg:pb-0">
+    <div className="min-h-screen bg-[#fdfbf7] font-sans text-[#44210f] scroll-smooth pb-20 lg:pb-0">
       {/* Navbar Topo */}
-      {/* iFood Style Header */}
-      <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-gray-100">
+      {/* DOBRO Pizzas Header */}
+      <header className="bg-white sticky top-0 z-50 shadow-sm border-b border-[#e8d8d1]">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3 md:gap-0 md:flex-row md:items-center justify-between">
           <div className="flex justify-between items-center w-full md:w-auto">
-            <div className="flex items-center gap-2.5">
-              <div className="font-bold text-2xl drop-shadow-sm text-[#ea1d2c]">
-                41Menu's <span className="text-xl">🍕</span>
+            <div className="flex items-center gap-3">
+              <img 
+                src="/dobro/logo-dobro.png" 
+                alt="DOBRO Pizzas" 
+                className="h-10 w-10 object-contain rounded-full border border-[#e8d8d1] bg-[#e8d8d1]/30 p-1"
+              />
+              <div className="font-bold text-2xl drop-shadow-sm text-[#083d07] tracking-tight flex items-baseline gap-1">
+                DOBRO <span className="text-[#d5af7a] text-lg font-medium">Pizzas</span>
               </div>
               {!businessStatus.loading && (
                 <div className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${
                   businessStatus.isOpen 
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                    : "bg-rose-50 text-rose-700 border-rose-200"
+                    ? "bg-emerald-50 text-emerald-800 border-emerald-200" 
+                    : "bg-amber-50 text-amber-800 border-amber-200"
                 }`}>
                   <span className={`w-2 h-2 rounded-full ${
-                    businessStatus.isOpen ? "bg-emerald-500 animate-pulse" : "bg-rose-500"
+                    businessStatus.isOpen ? "bg-[#083d07] animate-pulse" : "bg-amber-600"
                   }`} />
                   <span>{businessStatus.isOpen ? "Aberto • 35-45 min" : "Fechado"}</span>
                 </div>
@@ -393,60 +388,58 @@ function App() {
             
             <button
               onClick={() => setIsPromoOpen(true)}
-              className="md:hidden font-bold text-[#ea1d2c] animate-pulse transition-colors text-xs border border-[#ea1d2c] rounded-full px-2 py-1"
+              className="md:hidden font-bold text-[#083d07] transition-colors text-xs border border-[#083d07] bg-[#f6e3df]/60 rounded-full px-3 py-1 hover:bg-[#083d07] hover:text-white"
             >
-              PROMOÇÃO DO DIA
+              DESTAQUES DO DIA
             </button>
           </div>
           
           <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="w-full md:w-[350px] relative">
-               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#745240]/60" />
                <input 
                  type="text" 
-                 placeholder="Busque por pratos ou ingredientes"
-                 className="w-full bg-gray-100 border-none rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-gray-300 outline-none transition-all"
+                 placeholder="Busque por sabores ou ingredientes"
+                 className="w-full bg-[#fdfbf7] border border-[#e8d8d1] rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-[#083d07] focus:border-[#083d07] text-[#44210f] outline-none transition-all placeholder:text-[#745240]/50"
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
                />
             </div>
             <button
               onClick={() => setIsPromoOpen(true)}
-              className="hidden md:block font-bold text-[#ea1d2c] animate-pulse transition-colors text-sm"
+              className="hidden md:block font-bold text-[#083d07] bg-[#f6e3df]/70 hover:bg-[#083d07] hover:text-[#fdfbf7] border border-[#d5af7a]/50 rounded-full px-3.5 py-1.5 transition-all text-xs tracking-wide"
             >
-              PROMOÇÃO DO DIA
+              DESTAQUES DO DIA
             </button>
           </div>
         </div>
       </header>
 
       {!businessStatus.loading && !businessStatus.isOpen && (
-        <div className="bg-[#8b0000] text-white text-center py-2 px-4 text-sm font-semibold">
-          🔴 Estamos fechados no momento{businessStatus.todayLabel ? ` — hoje funcionamos das ${businessStatus.todayLabel}` : ''}. Você pode navegar no cardápio, mas o pedido só pode ser finalizado durante o horário de funcionamento.
+        <div className="bg-[#44210f] text-[#fdfbf7] text-center py-2 px-4 text-sm font-medium border-b border-[#d5af7a]/30">
+          🌾 Estamos preparando a casa{businessStatus.todayLabel ? ` — hoje funcionamos das ${businessStatus.todayLabel}` : ''}. Você pode navegar pelo cardápio e preparar o seu pedido com calma!
         </div>
       )}
 
       {/* Hero Banner */}
-      <div className="relative h-[220px] md:h-[280px] w-full bg-black max-w-7xl mx-auto md:mt-4 md:rounded-2xl overflow-hidden shadow-sm">
+      <div className="relative h-[220px] md:h-[280px] w-full bg-[#1b140e] max-w-7xl mx-auto md:mt-4 md:rounded-2xl overflow-hidden shadow-sm">
         <img
           src="/capa.png"
-          className="w-full h-full object-cover opacity-80"
-          alt="Pizza Hero Background"
+          className="w-full h-full object-cover opacity-75"
+          alt="DOBRO Pizzas Forno e Ingredientes"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1b140e]/90 via-[#1b140e]/30 to-transparent"></div>
         <div className="absolute bottom-6 left-6 md:left-12 flex items-center gap-4">
-          <div className="w-24 h-24 bg-black rounded-full border-4 border-white flex items-center justify-center text-white scale-110 shadow-xl overflow-hidden drop-shadow-2xl relative group">
+          <div className="w-24 h-24 bg-[#e8d8d1] rounded-full border-4 border-white flex items-center justify-center scale-110 shadow-2xl overflow-hidden drop-shadow-2xl relative p-2">
             <img
-              src="/logo.png"
-              alt="41 Menu's"
-              className="w-full h-full object-cover absolute inset-0 z-20"
+              src="/dobro/logo-dobro.png"
+              alt="DOBRO Pizzas"
+              className="w-full h-full object-contain relative z-20"
             />
-            <div className="flex flex-col items-center justify-center pb-1 relative z-0">
-              <span className="font-bold text-3xl leading-none">41</span>
-              <span className="text-[#d4af37] text-[9px] font-bold tracking-widest mt-1">
-                MENUS
-              </span>
-            </div>
+          </div>
+          <div className="text-white drop-shadow-md hidden sm:block">
+            <h2 className="text-2xl font-bold text-white tracking-wide">DOBRO Pizzas</h2>
+            <p className="text-xs text-[#d5af7a] font-medium">Fermentação Lenta • Receitas Autorais • Forno Artesanal</p>
           </div>
         </div>
       </div>
@@ -495,11 +488,11 @@ function App() {
                   window.scrollTo({ top: y, behavior: "smooth" });
                 }
               }}
-              className={`py-0.5 md:py-1 px-2 md:px-2.5 rounded-full text-[10px] md:text-[11px] whitespace-nowrap font-bold tracking-tight transition-all duration-150 active:scale-95 active:opacity-70 cursor-pointer border ${
+              className={`py-0.5 md:py-1 px-2.5 md:px-3 rounded-full text-[11px] md:text-xs whitespace-nowrap font-medium tracking-tight transition-all duration-150 active:scale-95 cursor-pointer border ${
                 activeCategory === cat.id
-                  ? "bg-[#8b0000] text-white border-[#8b0000] shadow-2xs"
-                  : "bg-white text-stone-600 border-stone-200 hover:bg-stone-50 hover:text-stone-900"
-              } ${cat.id === "promocoes" && activeCategory !== cat.id ? "animate-pulse text-[#8b0000] border-[#8b0000]" : ""}`}
+                  ? "bg-[#083d07] text-[#fdfbf7] border-[#083d07] shadow-sm ring-1 ring-[#d5af7a]/50 font-bold"
+                  : "bg-white text-[#745240] border-[#e8d8d1] hover:bg-[#f6e3df]/40 hover:text-[#44210f]"
+              } ${cat.id === "promocoes" && activeCategory !== cat.id ? "animate-pulse text-[#083d07] border-[#083d07] bg-[#f6e3df]/30 font-semibold" : ""}`}
               title={cat.label}
             >
               {shortLabel}

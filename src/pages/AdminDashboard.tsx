@@ -79,6 +79,9 @@ import UsersManager from '../components/UsersManager';
 import BannerManager from '../components/BannerManager';
 import AgentManager from '../components/AgentManager';
 import { BillingManager } from '../components/BillingManager';
+import MotoboysManager from '../components/MotoboysManager';
+import MotoboyAssignModal from '../components/MotoboyAssignModal';
+import { Motoboy, isDeliveryOrderType, getDeliveryResponsibleLabel } from '../utils/motoboys';
 import { SubscriptionLockoutOverlay } from '../components/SubscriptionLockoutOverlay';
 import { useSubscription } from '../hooks/useSubscription';
 import { startOfDay, endOfDay } from 'date-fns';
@@ -177,6 +180,7 @@ export default function AdminDashboard() {
     'visao-geral': { title: 'Visão Geral', subtitle: 'Acompanhe o desempenho do seu negócio em tempo real.' },
     'pedidos': { title: 'Pedidos', subtitle: 'Gerencie e acompanhe os pedidos em tempo real.' },
     'caixa': { title: 'Caixa', subtitle: 'Abertura, fechamento e conferência do turno.' },
+    'motoboys': { title: 'Motoboys', subtitle: 'Entregas, gastos por plataforma e fechamento dos motoboys.' },
     'cardapio-digital': { title: 'Cardápio Digital', subtitle: 'Espelho do que os clientes veem na loja.' },
     'gestao-cardapio': { title: 'Produtos', subtitle: 'Gerencie o cardápio, preços e fotos.' },
     'categorias': { title: 'Categorias', subtitle: 'Organize as categorias do cardápio.' },
@@ -235,6 +239,8 @@ export default function AdminDashboard() {
   const [ordersViewMode, setOrdersViewMode] = useState<'cards' | 'table'>('table');
   const [ordersStatusFilter, setOrdersStatusFilter] = useState<'todos' | 'Pendente' | 'Em Preparo' | 'Saiu para Entrega' | 'Finalizado' | 'Cancelado'>('todos');
   const [ordersSearchTerm, setOrdersSearchTerm] = useState('');
+  const [motoboys, setMotoboys] = useState<Motoboy[]>([]);
+  const [assigningDelivery, setAssigningDelivery] = useState<{ order: any; nextStatus?: string } | null>(null);
 
   const getElapsedTime = (createdAt: string | Date) => {
     if (!createdAt) return { text: '', minutes: 0, urgency: 'normal' };
@@ -383,6 +389,9 @@ export default function AdminDashboard() {
       const { data: dbExpenses, error: expensesError } = await supabase.from('expenses').select('*').order('created_at', { ascending: false });
       if (expensesError) console.error(expensesError);
       setExpenses(dbExpenses || []);
+      // Sem a migration de motoboys aplicada a consulta falha e a lista fica vazia
+      const { data: dbMotoboys } = await supabase.from('motoboys').select('*').order('name', { ascending: true });
+      setMotoboys((dbMotoboys || []).map((m: any) => ({ ...m, default_fee: Number(m.default_fee) || 0 })));
       const { data: dbOrders, error: ordersError } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
       if (ordersError) throw ordersError;
 
@@ -406,7 +415,11 @@ export default function AdminDashboard() {
         notes: o.notes || '',
         updatedAt: o.updated_at,
         createdAt: o.created_at,
-        cashSessionId: o.cash_session_id
+        cashSessionId: o.cash_session_id,
+        deliveryProvider: o.delivery_provider || null,
+        motoboyId: o.motoboy_id || null,
+        deliveryCost: o.delivery_cost ?? null,
+        motoboySettlementId: o.motoboy_settlement_id || null
       }));
       setAllOrders(allDbOrders);
 
@@ -955,6 +968,7 @@ export default function AdminDashboard() {
       'visao-geral': 'ver_relatorios',
       'pedidos': 'ver_pedidos',
       'caixa': 'gerenciar_caixa',
+      'motoboys': 'gerenciar_caixa',
       'gestao-cardapio': 'gerenciar_produtos',
       'categorias': 'gerenciar_categorias',
       'relatorios': 'ver_relatorios',
@@ -1214,6 +1228,42 @@ export default function AdminDashboard() {
     }
   };
 
+  // Toda entrega precisa de um motoboy (próprio ou plataforma) antes de sair ou ser concluída
+  const changeOrderStatus = (order: any, status: string) => {
+    const needsMotoboy =
+      isDeliveryOrderType(order.orderType) &&
+      !order.deliveryProvider &&
+      (status === 'Saiu para Entrega' || status === 'Finalizado');
+    if (needsMotoboy) {
+      setAssigningDelivery({ order, nextStatus: status });
+      return;
+    }
+    updateOrderStatus(order.id, status);
+  };
+
+  const renderMotoboyBadge = (order: any) => {
+    if (!isDeliveryOrderType(order.orderType)) return null;
+    const responsible = getDeliveryResponsibleLabel(order.deliveryProvider, order.motoboyId, motoboys);
+    return (
+      <button
+        type="button"
+        onClick={() => setAssigningDelivery({ order })}
+        title={responsible ? 'Alterar motoboy da entrega' : 'Vincular motoboy à entrega'}
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-bold border cursor-pointer transition-colors ${
+          responsible
+            ? 'bg-white text-stone-800 border-stone-200 hover:bg-stone-100'
+            : 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200'
+        }`}
+      >
+        <Bike size={12} />
+        <span>{responsible || 'Sem motoboy'}</span>
+        {responsible && order.deliveryCost !== null && order.deliveryCost !== undefined && (
+          <span className="font-normal text-stone-500 tabular-nums">€{Number(order.deliveryCost).toFixed(2)}</span>
+        )}
+      </button>
+    );
+  };
+
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-500 font-medium">Carregando...</div>;
   }
@@ -1369,6 +1419,7 @@ export default function AdminDashboard() {
               {activeTab === 'visao-geral' && 'Visão Geral'}
               {activeTab === 'pedidos' && 'Pedidos'}
               {activeTab === 'caixa' && 'Caixa'}
+              {activeTab === 'motoboys' && 'Motoboys'}
               {activeTab === "relatorios" && (
           <div className="mt-1 space-y-2.5 pb-12">
             {/* Filtro de Tempo Compacto Padronizado */}
@@ -1590,6 +1641,12 @@ export default function AdminDashboard() {
                 >
                   Despesas
                 </button>
+                <button
+                  onClick={() => { setActiveTab("motoboys"); setIsMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'motoboys' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-stone-900'}`}
+                >
+                  Motoboys
+                </button>
                 {isOwner && (
                   <button 
                     onClick={() => { setActiveTab("relatorios"); setIsMobileMenuOpen(false); }} 
@@ -1796,6 +1853,15 @@ export default function AdminDashboard() {
               Despesas
             </button>
           )}
+          {hasPermission('gerenciar_caixa') && (
+            <button
+              onClick={() => setActiveTab("motoboys")}
+              className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'motoboys' ? 'bg-[#fdde58] text-stone-950 font-bold shadow-xs border border-[#d8ba39]' : 'text-stone-300 hover:text-white hover:bg-stone-900/60'}`}
+            >
+              <Bike size={12} className={activeTab === 'motoboys' ? 'text-stone-950' : 'text-stone-400'} />
+              Motoboys
+            </button>
+          )}
           {hasPermission('ver_relatorios') && (
             <button 
               onClick={() => setActiveTab("relatorios")} 
@@ -1918,7 +1984,7 @@ export default function AdminDashboard() {
 
       {/* Main Content Area */}
       <main className={`flex-1 min-w-0 px-4 md:px-8 min-h-[100dvh] relative overflow-y-auto ${
-        ['despesas', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos'].includes(activeTab) 
+        ['despesas', 'motoboys', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos'].includes(activeTab) 
           ? 'pt-4 pb-4 flex flex-col' 
           : activeTab === 'agente-ia'
             ? 'pt-2 md:pt-3 pb-4'
@@ -1927,7 +1993,7 @@ export default function AdminDashboard() {
         
 
         <div className={`max-w-7xl mx-auto w-full ${
-          ['despesas', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos'].includes(activeTab) 
+          ['despesas', 'motoboys', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos'].includes(activeTab) 
             ? 'flex-1 flex flex-col min-h-0' 
             : activeTab === 'agente-ia'
               ? 'space-y-3'
@@ -1936,7 +2002,7 @@ export default function AdminDashboard() {
 
 
           {/* Header Section (Only for Non-Cockpit Views) */}
-          {!['despesas', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos', 'agente-ia'].includes(activeTab) && (
+          {!['despesas', 'motoboys', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos', 'agente-ia'].includes(activeTab) && (
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-2.5 border-b border-stone-200/80 mb-4">
               <div>
                 <h1 className="text-xl font-bold tracking-tight text-stone-900">
@@ -2009,6 +2075,13 @@ export default function AdminDashboard() {
               expenses={expenses}
               onExpenseChange={fetchDashboardData}
             />
+          </div>
+        )}
+
+        {/* MOTOBOYS */}
+        {activeTab === "motoboys" && hasPermission('gerenciar_caixa') && (
+          <div className="mt-1">
+            <MotoboysManager onChange={() => fetchDashboardData(true)} />
           </div>
         )}
 
@@ -3142,6 +3215,8 @@ export default function AdminDashboard() {
                                 </div>
                               )}
 
+                              {renderMotoboyBadge(order)}
+
                               {/* Pagamento e Troco */}
                               <div className="flex items-center justify-between gap-2 text-xs flex-wrap">
                                 <div className="flex items-center gap-1.5 text-stone-600 font-mono">
@@ -3241,7 +3316,7 @@ export default function AdminDashboard() {
                               {isPending && (
                                 <button
                                   type="button"
-                                  onClick={() => updateOrderStatus(order.id, 'Em Preparo')}
+                                  onClick={() => changeOrderStatus(order, 'Em Preparo')}
                                   className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#fdde58] hover:bg-[#e2c23f] active:bg-[#d8ba39] text-stone-950 font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-[#d8ba39]"
                                 >
                                   <Flame size={14} />
@@ -3253,7 +3328,7 @@ export default function AdminDashboard() {
                               {isInPrep && (
                                 <button
                                   type="button"
-                                  onClick={() => updateOrderStatus(order.id, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
+                                  onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
                                   className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-950 active:bg-black text-[#fdde58] font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-stone-800"
                                 >
                                   {isDelivery ? <Bike size={14} /> : <Check size={14} />}
@@ -3265,7 +3340,7 @@ export default function AdminDashboard() {
                               {isInRoute && (
                                 <button
                                   type="button"
-                                  onClick={() => updateOrderStatus(order.id, 'Finalizado')}
+                                  onClick={() => changeOrderStatus(order, 'Finalizado')}
                                   className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-stone-900 hover:bg-stone-950 active:bg-black text-white font-mono font-black text-xs shadow-2xs transition-all cursor-pointer border border-stone-800"
                                 >
                                   <Check size={14} className="text-[#fdde58]" />
@@ -3289,7 +3364,7 @@ export default function AdminDashboard() {
                               <div className="flex items-center justify-between gap-1 pt-1">
                                 <select
                                   value={order.status}
-                                  onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                  onChange={(e) => changeOrderStatus(order, e.target.value)}
                                   className="text-[11px] font-mono font-bold px-2 py-1 bg-white rounded border border-stone-200 text-stone-800 cursor-pointer outline-none hover:bg-stone-50 transition-colors"
                                   title="Mudar status manualmente"
                                 >
@@ -3321,7 +3396,7 @@ export default function AdminDashboard() {
                                     <button
                                       onClick={() => {
                                         if (window.confirm(`Deseja realmente CANCELAR o Pedido #${order.id}?`)) {
-                                          updateOrderStatus(order.id, 'Cancelado');
+                                          changeOrderStatus(order, 'Cancelado');
                                         }
                                       }}
                                       className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 rounded-md transition-colors cursor-pointer"
@@ -3442,6 +3517,9 @@ export default function AdminDashboard() {
                                       </span>
                                     );
                                   })()}
+                                  {isDeliveryOrderType(order.orderType) && (
+                                    <div className="mt-1">{renderMotoboyBadge(order)}</div>
+                                  )}
                                 </td>
 
                                 <td className="py-3 px-4">
@@ -3464,7 +3542,7 @@ export default function AdminDashboard() {
                                 <td className="py-3 px-4 text-center">
                                   <select
                                     value={order.status}
-                                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                    onChange={(e) => changeOrderStatus(order, e.target.value)}
                                     className="px-2.5 py-1 rounded-md text-[11px] font-mono font-bold border border-stone-200 bg-white text-stone-800 cursor-pointer outline-none hover:bg-stone-50 transition-all"
                                     style={{ textAlignLast: 'center' }}
                                     title="Alterar status"
@@ -3481,7 +3559,7 @@ export default function AdminDashboard() {
                                   <div className="flex items-center justify-end gap-1.5">
                                     {order.status === 'Pendente' && (
                                       <button
-                                        onClick={() => updateOrderStatus(order.id, 'Em Preparo')}
+                                        onClick={() => changeOrderStatus(order, 'Em Preparo')}
                                         className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-[#fdde58] hover:bg-[#e2c23f] text-stone-950 transition-colors cursor-pointer border border-[#d8ba39] shadow-2xs"
                                         title="Iniciar Preparo"
                                       >
@@ -3490,7 +3568,7 @@ export default function AdminDashboard() {
                                     )}
                                     {order.status === 'Em Preparo' && (
                                       <button
-                                        onClick={() => updateOrderStatus(order.id, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
+                                        onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
                                         className="text-[11px] font-mono font-black px-2.5 py-1 rounded bg-stone-900 hover:bg-stone-950 text-[#fdde58] transition-colors cursor-pointer border border-stone-800 shadow-2xs"
                                         title={isDelivery ? 'Despachar Motoboy' : 'Finalizar Pedido'}
                                       >
@@ -3499,7 +3577,7 @@ export default function AdminDashboard() {
                                     )}
                                     {order.status === 'Saiu para Entrega' && (
                                       <button
-                                        onClick={() => updateOrderStatus(order.id, 'Finalizado')}
+                                        onClick={() => changeOrderStatus(order, 'Finalizado')}
                                         className="text-[11px] font-mono font-bold px-2.5 py-1 rounded bg-stone-900 hover:bg-stone-950 text-white transition-colors cursor-pointer border border-stone-800 shadow-2xs"
                                         title="Concluir Pedido"
                                       >
@@ -3524,7 +3602,7 @@ export default function AdminDashboard() {
                                       <button
                                         onClick={() => {
                                           if (window.confirm(`Deseja cancelar o Pedido #${order.id}?`)) {
-                                            updateOrderStatus(order.id, 'Cancelado');
+                                            changeOrderStatus(order, 'Cancelado');
                                           }
                                         }}
                                         className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 rounded-md transition-colors cursor-pointer"
@@ -4714,6 +4792,19 @@ export default function AdminDashboard() {
         menuItems={menuItems && menuItems.length > 0 ? menuItems : ALL_MENU_ITEMS}
         onClose={() => setEditingOrder(null)}
         onSave={handleSaveOrderEdit}
+      />
+    )}
+
+    {assigningDelivery && (
+      <MotoboyAssignModal
+        order={assigningDelivery.order}
+        motoboys={motoboys}
+        nextStatus={assigningDelivery.nextStatus}
+        onClose={() => setAssigningDelivery(null)}
+        onSaved={() => {
+          setAssigningDelivery(null);
+          fetchDashboardData(true);
+        }}
       />
     )}
 

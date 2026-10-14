@@ -52,6 +52,7 @@ export default async (req: Request) => {
 
     // 2. Se o cliente informou telefone, enviar também para o WhatsApp do cliente
     let customerResult = null;
+    let confirmationResult = null;
     let formattedCustomerPhone = customerPhone;
     if (customerPhone) {
       // Se for número de Portugal com 9 dígitos iniciando em 9 ou 2, adicionar DDI 351
@@ -60,6 +61,7 @@ export default async (req: Request) => {
       }
 
       if (formattedCustomerPhone !== pizzeriaPhone) {
+        // 2a. Enviar o resumo do pedido para o cliente
         try {
           const evoCustRes = await fetch(`${evolutionUrl}/message/sendText/${instanceName}`, {
             method: 'POST',
@@ -78,6 +80,29 @@ export default async (req: Request) => {
         } catch (e) {
           console.warn('[AutoSend] Falha ao enviar para o WhatsApp do cliente:', e);
         }
+
+        // 2b. Enviar mensagem de confirmação automática para o cliente (após o resumo)
+        try {
+          // Pequeno delay para garantir que a confirmação chegue após o resumo
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const confirmMsg = 'Pedido confirmado, já encaminhamos para cozinha. ✅🍕';
+          const evoConfirmRes = await fetch(`${evolutionUrl}/message/sendText/${instanceName}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': evolutionApiKey
+            },
+            body: JSON.stringify({
+              number: formattedCustomerPhone,
+              text: confirmMsg
+            })
+          });
+          if (evoConfirmRes.ok) {
+            confirmationResult = await evoConfirmRes.json();
+          }
+        } catch (e) {
+          console.warn('[AutoSend] Falha ao enviar confirmação automática para o cliente:', e);
+        }
       }
     }
 
@@ -86,6 +111,7 @@ export default async (req: Request) => {
       orderId,
       pizzeriaSent: !!puzzeriaResult,
       customerSent: !!customerResult,
+      confirmationSent: !!confirmationResult,
       pizzeriaPhone,
       customerPhone: formattedCustomerPhone
     }), { status: 200, headers });

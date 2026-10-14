@@ -1,6 +1,13 @@
 export default async (req: Request) => {
   const headers = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': '*',com o link de rastreio em tempo real).
+    Botão secundário de apoio: 💬 Falar com a Pizzaria no WhatsApp (abre apenas com a mensagem simples: "Olá! Gostaria de falar sobre o meu pedido #545", sem permitir que o cliente altere itens, morada ou valores do pedido).
+    Status de Publicação:
+    
+    O código foi compilado, testado com zero erros, commitado e enviado para as branches main e dev.
+    O deploy no Netlify já foi concluído com sucesso (state: ready).
+    8:26 PM
+    
     'Access-Control-Allow-Headers': 'Authorization, Content-Type',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Content-Type': 'application/json'

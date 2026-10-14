@@ -1054,7 +1054,7 @@ export default function Cart({
                     </span>
                     <div className="flex items-center gap-1">
                       <span className="text-gray-500 font-medium">Total:</span>
-                      <span className="font-black text-[#8b0000] text-base">€ {total.toFixed(2)}</span>
+                      <span className="font-black text-[#083d07] text-base">€ {total.toFixed(2)}</span>
                     </div>
                   </div>
 

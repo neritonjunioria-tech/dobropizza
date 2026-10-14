@@ -1,34 +1,35 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Lora", serif;
 }
 
 :root {
-  --pdv-brand: #fdde58; /* Amarelo fosco oficial da marca 41 Menus */
-  --pdv-brand-hover: #e2c23f;
-  --pdv-brand-text: #0c0a09;
-  --pdv-bg: #f8fafc;
+  --pdv-brand: #083d07; /* Verde Floresta oficial Dobro Pizzas */
+  --pdv-brand-hover: #0b520a;
+  --pdv-brand-text: #fdfbf7;
+  --pdv-accent: #d5af7a; /* Dourado Trigo */
+  --pdv-bg: #fdfbf7;
   --pdv-surface: #ffffff;
-  --pdv-surface-hover: #f1f5f9;
-  --pdv-text-primary: #0f172a;
-  --pdv-text-secondary: #64748b;
-  --pdv-border: #e2e8f0;
+  --pdv-surface-hover: #f9f5f0;
+  --pdv-text-primary: #44210f;
+  --pdv-text-secondary: #745240;
+  --pdv-border: #e8d8d1;
   
   --pdv-radius-sm: 0.5rem;
   --pdv-radius-md: 0.75rem;
   --pdv-radius-lg: 1rem;
   --pdv-radius-full: 9999px;
 
-  --pdv-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --pdv-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --pdv-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --pdv-shadow-sm: 0 1px 2px 0 rgb(68 33 15 / 0.05);
+  --pdv-shadow-md: 0 4px 6px -1px rgb(68 33 15 / 0.08), 0 2px 4px -2px rgb(68 33 15 / 0.08);
+  --pdv-shadow-lg: 0 10px 15px -3px rgb(68 33 15 / 0.1), 0 4px 6px -4px rgb(68 33 15 / 0.1);
 }
 
 body {
-  background-color: #f5f5f5;
-  color: #1a1a1a;
+  background-color: #fdfbf7;
+  color: #44210f;
   font-family: var(--font-sans);
 }
 

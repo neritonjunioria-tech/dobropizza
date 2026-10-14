@@ -87,12 +87,12 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
     return (
       <div
         onClick={handleCardClick}
-        className="w-full h-full flex flex-col overflow-hidden rounded-xl cursor-pointer group shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 bg-white active:scale-[0.99]"
+        className="w-full h-full flex flex-col overflow-hidden rounded-xl cursor-pointer group shadow-sm hover:shadow-md transition-all duration-200 border border-[#e8d8d1] bg-white active:scale-[0.99]"
       >
         {hasPhoto && (
-          <div className="w-full aspect-[4/5] overflow-hidden bg-stone-100 relative flex items-center justify-center">
+          <div className="w-full aspect-[4/5] overflow-hidden bg-[#fdfbf7] relative flex items-center justify-center">
             {!imgLoaded && !failedImage && (
-              <div className="absolute inset-0 bg-stone-200 animate-pulse" />
+              <div className="absolute inset-0 bg-[#e8d8d1]/50 animate-pulse" />
             )}
             <img
               src={currentSrc}
@@ -110,17 +110,17 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
           </div>
         )}
         <div className="p-4 flex flex-col flex-1">
-          <h3 className={`font-bold ${catId === "mais-pedidos" ? "text-[14px]" : "text-[16px]"} text-gray-900 mb-1 leading-tight`}>
+          <h3 className={`font-bold ${catId === "mais-pedidos" ? "text-[14px]" : "text-[16px]"} text-[#44210f] mb-1 leading-tight`}>
             {item.name}
           </h3>
-          <p className={`${catId === "mais-pedidos" ? "text-[11px]" : "text-[13px]"} text-gray-500 line-clamp-3 leading-relaxed mb-4`}>
+          <p className={`${catId === "mais-pedidos" ? "text-[11px]" : "text-[13px]"} text-[#745240] line-clamp-3 leading-relaxed mb-4`}>
             {item.ingredients}
           </p>
           <div className="mt-auto flex items-center justify-between">
-            <span className="font-extrabold text-gray-900 text-lg">
+            <span className="font-extrabold text-[#083d07] text-lg">
               €{(item.priceSingle || item.priceM || item.priceG || item.priceP || 0).toFixed(2)}
             </span>
-            <span className="text-[#8b0000] font-bold text-sm hover:underline">
+            <span className="text-[#083d07] font-bold text-sm hover:underline">
               Pedir Agora
             </span>
           </div>
@@ -132,39 +132,39 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className={`${catId === "promocoes" ? "bg-[#8b0000]/10 border-[#8b0000]" : (catId === "menu-do-dia" && item.dayOfWeek === getLisbonDate().getDay() ? "bg-green-50 border-green-500" : "bg-white border-gray-200")} border rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all duration-200 group relative bg-white`}
+      className={`${catId === "promocoes" ? "bg-[#f6e3df]/40 border-[#d5af7a]" : (catId === "menu-do-dia" && item.dayOfWeek === getLisbonDate().getDay() ? "bg-emerald-50/50 border-[#083d07]" : "bg-white border-[#e8d8d1]")} border rounded-xl p-3 sm:p-4 flex items-start justify-between gap-3 sm:gap-4 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all duration-200 group relative bg-white`}
     >
       {catId === "promocoes" && (
-        <div className="absolute top-0 right-0 bg-[#8b0000] text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10">
+        <div className="absolute top-0 right-0 bg-[#083d07] text-[#fdfbf7] text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10">
           Destaque
         </div>
       )}
       {catId === "menu-do-dia" && item.dayOfWeek === getLisbonDate().getDay() && (
-        <div className="absolute top-0 right-0 bg-green-600 text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-sm animate-pulse">
+        <div className="absolute top-0 right-0 bg-[#083d07] text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10 shadow-sm animate-pulse">
           🔥 HOJE
         </div>
       )}
       {item.isMaisPedido && catId === "mais-pedidos" && (
-        <div className="absolute top-0 right-0 bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10">
-          🔥 Popular
+        <div className="absolute top-0 right-0 bg-[#745240] text-white text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 sm:py-1 rounded-bl-lg uppercase tracking-wider z-10">
+          ⭐ Assinatura
         </div>
       )}
       <div className={`flex-1 flex flex-col justify-between h-full ${hasPhoto ? "min-h-[92px] sm:min-h-[112px]" : "min-h-[76px] sm:min-h-[88px]"}`}>
         <div>
           <h3
-            className={`font-bold ${catId === "promocoes" ? "text-base sm:text-lg text-[#8b0000]" : catId === "mais-pedidos" ? "text-xs sm:text-[13px] text-gray-900" : "text-sm sm:text-[15px] text-gray-900"} mb-0.5 sm:mb-1 break-words pr-1.5 leading-snug`}
+            className={`font-bold ${catId === "promocoes" ? "text-base sm:text-lg text-[#083d07]" : catId === "mais-pedidos" ? "text-xs sm:text-[13px] text-[#44210f]" : "text-sm sm:text-[15px] text-[#44210f]"} mb-0.5 sm:mb-1 break-words pr-1.5 leading-snug`}
           >
             {item.name}
           </h3>
           <p
-            className={`${catId === "mais-pedidos" ? "text-[10.5px] sm:text-[11px]" : "text-[11.5px] sm:text-[13px]"} ${catId === "promocoes" ? "text-gray-700 font-medium" : "text-gray-500"} line-clamp-2 leading-relaxed pr-1.5 mt-0.5`}
+            className={`${catId === "mais-pedidos" ? "text-[10.5px] sm:text-[11px]" : "text-[11.5px] sm:text-[13px]"} text-[#745240] line-clamp-2 leading-relaxed pr-1.5 mt-0.5`}
           >
             {item.ingredients}
           </p>
         </div>
         <div className="mt-2.5 sm:mt-4 flex justify-between items-center pr-1.5">
           {priceDisplay}
-          <button className="w-6 h-6 sm:w-7 sm:h-7 bg-[#8b0000]/10 text-[#8b0000] hover:bg-[#8b0000] hover:text-white rounded-full flex items-center justify-center transition-colors shrink-0">
+          <button className="w-6 h-6 sm:w-7 sm:h-7 bg-[#083d07]/10 text-[#083d07] hover:bg-[#083d07] hover:text-[#fdfbf7] rounded-full flex items-center justify-center transition-colors shrink-0">
             <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>

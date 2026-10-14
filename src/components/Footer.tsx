@@ -5,54 +5,49 @@ import { Instagram, ShieldCheck } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1a1a1a] text-gray-300 py-12 px-4 mt-8 lg:mt-12 border-t-[6px] border-[#8b0000]">
+    <footer className="bg-[#1b140e] text-[#e8d8d1] py-12 px-4 mt-8 lg:mt-12 border-t-4 border-[#083d07]">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
         <div className="text-center md:text-left">
           <div className="font-extrabold text-white text-2xl flex items-center gap-2 justify-center md:justify-start">
-            <div className="w-8 h-8 bg-black rounded-full border-2 border-white flex items-center justify-center flex-shrink-0 relative overflow-hidden">
+            <div className="w-9 h-9 bg-[#e8d8d1] rounded-full border border-[#d5af7a] flex items-center justify-center flex-shrink-0 p-1">
               <img
-                src="/logo.png"
-                alt=""
-                className="w-full h-full object-cover absolute inset-0 z-20"
+                src="/dobro/logo-dobro.png"
+                alt="DOBRO Pizzas"
+                className="w-full h-full object-contain"
               />
-              <span className="font-bold text-[10px] leading-none text-white mt-0.5 relative z-0">
-                41
-              </span>
             </div>
-            41Menu's
+            <span className="text-[#fdfbf7] font-sans">DOBRO <span className="text-[#d5af7a] font-light">Pizzas</span></span>
           </div>
-          <p className="text-sm text-gray-400 mt-2">
-            © 2026 41Menu's · Entregas e Take-away · Portugal
+          <p className="text-sm text-[#e4c5b9] mt-2">
+            © 2026 DOBRO Pizzas · Fermentação Natural & Receitas Autorais
           </p>
-          <div className="flex items-center gap-1.5 text-sm font-medium text-emerald-500 mt-2 justify-center md:justify-start">
-            <ShieldCheck className="w-4 h-4" />
-            <span>Site Seguro</span>
+          <div className="flex items-center gap-1.5 text-sm font-medium text-[#d5af7a] mt-2 justify-center md:justify-start">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>Cardápio Digital Oficial</span>
           </div>
           <a
-            href="https://www.instagram.com/41menus/"
+            href="https://www.instagram.com/dobropizza/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm font-medium text-[#8b0000] mt-2 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium text-[#d5af7a] mt-2 hover:text-white transition-colors"
           >
             <Instagram className="w-5 h-5" />
-            @41menu's
+            @dobropizza
           </a>
         </div>
         <div className="text-center">
-          <p className="text-xl md:text-2xl font-black text-[#d4af37] animate-pulse uppercase italic tracking-wider">
-            CHAMAAAA NA REDONDA!
+          <p className="text-lg md:text-xl font-bold text-[#d5af7a] uppercase tracking-widest font-serif">
+            O Dobro de Sabor • O Dobro de Afeto
           </p>
+          <p className="text-xs text-[#e4c5b9] mt-1">Massa de fermentação lenta com farinhas selecionadas</p>
         </div>
-        <div className="text-center md:text-right space-y-1.5">
-          <p className="font-bold text-white text-lg flex items-center gap-2 justify-center md:justify-end">
-            WhatsApp: +351 938 360 931
+        <div className="text-center md:text-right space-y-1.5 text-sm text-[#e8d8d1]">
+          <p className="font-semibold text-white text-base">
+            Forno Artesanal & Delivery Especial
           </p>
-          <p className="text-sm font-medium">Ganhe a entrega em pedidos acima de €35</p>
-          <p className="text-sm font-medium text-gray-300">
-            Rua Gil Vicente 47M Cotovia, Sesimbra
-          </p>
-          <p className="text-xs text-gray-500 pt-1">
-            Horário: Seg a Sáb, 18:00 às 22:30 (Fechado aos Domingos)
+          <p className="text-xs text-[#d5af7a]">Ingredientes frescos e selecionados todos os dias</p>
+          <p className="text-xs text-[#a89284] pt-1">
+            Pedidos online pelo cardápio com confirmação ágil
           </p>
         </div>
       </div>
