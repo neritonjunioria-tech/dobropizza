@@ -390,11 +390,12 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
            )}
 
            {/* Extras Selection */}
-           {item.category !== 'bebidas' && item.category !== 'bordas' && item.id !== 'md-1-esfirra' && (
+           {item.category !== 'bebidas' && item.category !== 'bordas' && item.id !== 'md-1-esfirra' &&
+             extrasList.some((extra) => !extra.onlyFor || extra.onlyFor.includes(item.category)) && (
              <div className="mb-6">
                <h4 className="font-bold mb-3 text-sm uppercase tracking-wide text-gray-800">Adicionais Extras (Opcional):</h4>
                <div className="flex flex-col gap-2">
-                 {extrasList.map((extra) => {
+                 {extrasList.filter((extra) => !extra.onlyFor || extra.onlyFor.includes(item.category)).map((extra) => {
                    const isSelected = selectedExtras.some(e => e.id === extra.id);
                    return (
                      <label key={extra.id} className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-colors ${isSelected ? 'border-[#083d07] bg-[#083d07]/5' : 'border-gray-200 hover:border-gray-300'}`}>
@@ -407,7 +408,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                          />
                          <span className="font-medium text-sm">{extra.name}</span>
                        </div>
-                       <span className="text-[#083d07] font-bold text-sm whitespace-nowrap flex-shrink-0">+ R$ {extra.price.toFixed(2)}</span>
+                       <span className="text-[#083d07] font-bold text-sm whitespace-nowrap flex-shrink-0">+ R$ {extra.price.toFixed(2).replace('.', ',')}</span>
                      </label>
                    );
                  })}

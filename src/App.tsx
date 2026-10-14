@@ -547,7 +547,7 @@ function App() {
               <span className="ml-1">Ver Sacola</span>
             </div>
             <span className="bg-white/20 px-2.5 py-1 rounded-lg text-sm tracking-wide">
-              R$ {totalCartPrice.toFixed(2)}
+              R$ {totalCartPrice.toFixed(2).replace('.', ',')}
             </span>
           </button>
         </div>
@@ -557,15 +557,11 @@ function App() {
       {showScrollTop && (
         <button
           onClick={() => {
+            // One tap goes all the way back to the start of the menu.
+            // (The categories bar is sticky, so aiming at it only moved the page a little per tap.)
             hapticLight();
-            const el = document.getElementById("categories-bar");
-            if (el) {
-              const yOffset = -120;
-              const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
-              window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
-            } else {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }
+            setActiveCategory(currentCategoriesUI[0]?.id ?? "mais-pedidos");
+            window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           className="fixed bottom-24 lg:bottom-10 left-4 sm:left-6 w-11 h-11 bg-white/95 backdrop-blur-md text-[#083d07] rounded-full flex items-center justify-center shadow-lg border border-[#e8d8d1] hover:bg-[#083d07] hover:text-[#fdfbf7] transition-all active:scale-95 z-30 group"
           title="Voltar ao topo do cardápio"

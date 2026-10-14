@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { ExtraIngredient, pizzaExtras } from '../data/menu';
 
+// Active extras from the admin (Produtos > Adicionais Extras). Paused extras are not returned.
+// The list in the code is only used if the database cannot be reached.
 export function useExtras() {
   const [extras, setExtras] = useState<ExtraIngredient[]>(pizzaExtras);
 
@@ -9,13 +11,16 @@ export function useExtras() {
     try {
       const { data, error } = await supabase
         .from('extras')
-        .select('id, name, price')
+        .select('id, name, price, categories')
         .eq('is_active', true)
         .order('sort_order');
       if (error) throw error;
-      if (data && data.length > 0) {
-        setExtras(data.map((e: any) => ({ id: e.id, name: e.name, price: Number(e.price) })));
-      }
+      setExtras((data || []).map((e: any) => ({
+        id: e.id,
+        name: e.name,
+        price: Number(e.price),
+        onlyFor: Array.isArray(e.categories) && e.categories.length > 0 ? e.categories : undefined,
+      })));
     } catch (err) {
       console.warn('[useExtras] Não foi possível carregar adicionais do Supabase, usando lista padrão.', err);
       setExtras(pizzaExtras);

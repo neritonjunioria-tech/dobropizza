@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { MenuItem, ALL_MENU_ITEMS } from '../data/menu';
 import { Plus, Edit2, Trash2, Save, X, Image as ImageIcon, Search, ChevronDown, Check } from 'lucide-react';
+import ExtrasManager from './ExtrasManager';
 
 export default function MenuManager() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -350,8 +351,14 @@ export default function MenuManager() {
               {cat.name}
             </button>
           ))}
+          <button
+            onClick={() => setActiveCategory('adicionais')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all duration-200 active:scale-95 cursor-pointer ${activeCategory === 'adicionais' ? 'bg-[#1C1917] text-[#D4AF6A] shadow-md' : 'bg-[#FAFAF9] text-[#78716C] border border-[#E7E5E1] hover:bg-gray-100'}`}
+          >
+            Adicionais Extras
+          </button>
         </div>
-        <div className="w-full sm:w-72 flex-shrink-0 relative">
+        <div className={`w-full sm:w-72 flex-shrink-0 relative ${activeCategory === 'adicionais' ? 'hidden' : ''}`}>
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={16} className="text-stone-400" />
           </div>
@@ -365,7 +372,10 @@ export default function MenuManager() {
         </div>
       </div>
 
+      {activeCategory === 'adicionais' && <ExtrasManager mode="full" />}
+
       {/* Items Table (Quick Edit) */}
+      {activeCategory !== 'adicionais' && (
       <div className="bg-white rounded-xl border border-[#E7E5E1] shadow-[0_1px_2px_rgba(28,25,23,0.04)] overflow-hidden overflow-x-auto">
         <table className="min-w-full text-left border-collapse">
           <thead>
@@ -463,8 +473,9 @@ export default function MenuManager() {
           </tbody>
         </table>
       </div>
+      )}
 
-      {items.length === 0 && (
+      {items.length === 0 && activeCategory !== 'adicionais' && (
          <div className="text-center py-12 text-gray-500">
            Nenhum produto cadastrado no banco de dados ainda. <br/>
            Clique em "Puxar Cardápio Inicial" para importar os dados do código.

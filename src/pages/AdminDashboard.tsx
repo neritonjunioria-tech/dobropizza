@@ -83,6 +83,7 @@ import MotoboysManager from '../components/MotoboysManager';
 import MotoboyAssignModal from '../components/MotoboyAssignModal';
 import { Motoboy, isDeliveryOrderType, getDeliveryResponsibleLabel } from '../utils/motoboys';
 import { SubscriptionLockoutOverlay } from '../components/SubscriptionLockoutOverlay';
+import ExtrasManager from '../components/ExtrasManager';
 import { useSubscription } from '../hooks/useSubscription';
 
 // Aba de Cobrança oculta neste projeto por enquanto. Mudar para true reativa a aba e o bloqueio por atraso.
@@ -3818,6 +3819,22 @@ export default function AdminDashboard() {
                     {cat.label}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActiveCategory('adicionais');
+                    if (cardapioSearchTerm) setCardapioSearchTerm('');
+                    setTimeout(() => document.getElementById('admin-cat-adicionais')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 40);
+                  }}
+                  className={`py-1 px-3 rounded-full text-xs whitespace-nowrap font-bold transition-all duration-150 active:scale-95 cursor-pointer border ${
+                    activeCategory === 'adicionais'
+                      ? "bg-[#083d07] text-[#d5af7a] border-[#083d07] shadow-2xs"
+                      : "bg-white text-stone-600 border-stone-200 hover:bg-stone-100"
+                  }`}
+                >
+                  ADICIONAIS EXTRAS
+                </button>
               </div>
             </div>
 
@@ -3927,6 +3944,17 @@ export default function AdminDashboard() {
                 </div>
               );
             })}
+
+            {/* Adicionais extras: pausar / reativar (cadastro e preços ficam em Produtos) */}
+            {!cardapioSearchTerm && (
+              <div id="admin-cat-adicionais" className="scroll-mt-36 bg-white p-5 rounded-xl border border-[#E7E5E1] shadow-[0_1px_2px_rgba(28,25,23,0.04),0_1px_8px_rgba(28,25,23,0.04)]">
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold text-stone-900">Adicionais Extras</h2>
+                  <p className="text-xs text-stone-500">Acabou algum ingrediente? Pause aqui e ele some do cardápio na hora. Para cadastrar ou mudar preço, vá em Produtos › Adicionais Extras.</p>
+                </div>
+                <ExtrasManager mode="pause" />
+              </div>
+            )}
           </div>
         )}
 

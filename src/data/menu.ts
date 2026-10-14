@@ -168,15 +168,18 @@ export interface ExtraIngredient {
   id: string;
   name: string;
   price: number;
+  // Categories where this extra is offered; empty/undefined = every product that accepts extras
+  onlyFor?: string[];
 }
 
+// Every extra costs R$ 7,00. Tomatinhos Confit is offered only on sandubas.
 export const pizzaExtras: ExtraIngredient[] = [
-  { id: 'ex-1', name: 'Extra Queijo Mozzarella', price: 6.00 },
-  { id: 'ex-2', name: 'Extra Calabresa Defumada', price: 6.00 },
+  { id: 'ex-1', name: 'Extra Queijo Mozzarella', price: 7.00 },
+  { id: 'ex-2', name: 'Extra Calabresa Defumada', price: 7.00 },
   { id: 'ex-3', name: 'Extra Cream Cheese', price: 7.00 },
-  { id: 'ex-4', name: 'Fio de Hot Honey (Mel Picante)', price: 5.00 },
-  { id: 'ex-5', name: 'Tomatinhos Confit', price: 5.00 },
-  { id: 'ex-6', name: 'Cebola Roxa Fininha', price: 3.00 }
+  { id: 'ex-4', name: 'Fio de Hot Honey (Mel Picante)', price: 7.00 },
+  { id: 'ex-5', name: 'Tomatinhos Confit', price: 7.00, onlyFor: ['sandubas'] },
+  { id: 'ex-6', name: 'Cebola Roxa Fininha', price: 7.00 }
 ];
 
 export const menuDoDia: MenuItem[] = [
