@@ -209,10 +209,10 @@ export default function Cart({
     }
     if (orderType === "Delivery") {
       if (!morada.trim()) {
-        errors.push("Por favor, preencha a morada de entrega.");
+        errors.push("Por favor, preencha o endereço de entrega.");
       }
       if (!zona.trim()) {
-        errors.push("Por favor, selecione a zona/freguesia de entrega.");
+        errors.push("Por favor, selecione o bairro de entrega.");
       }
     }
 
@@ -433,7 +433,7 @@ export default function Cart({
               <Check className="w-6 h-6 text-green-600" />
             </div>
             <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} Confirmado!</h2>
-            <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipa.</p>
+            <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipe.</p>
             {successActionButtons}
           </div>
         </div>
@@ -450,7 +450,7 @@ export default function Cart({
                 <Check className="w-6 h-6 text-green-600" />
               </div>
               <h2 className="text-base font-black text-gray-800 mb-0.5">Pedido {savedOrderId ? `#${savedOrderId}` : ''} Confirmado!</h2>
-              <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipa.</p>
+              <p className="text-gray-500 text-xs mb-1">O resumo do seu pedido foi enviado automaticamente para a nossa equipe.</p>
               {successActionButtons}
             </div>
           </div>

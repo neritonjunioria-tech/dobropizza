@@ -22,7 +22,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-xs text-[#a89284] leading-relaxed pr-2">
-              Pizzas e sanduíches autorais assados no forno artesanal, com massa de fermentação lenta e ingredientes nobres.
+              Forno 420°C, Longa fermentação
             </p>
           </div>
 

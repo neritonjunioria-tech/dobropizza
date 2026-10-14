@@ -48,7 +48,7 @@ const SUGGESTIONS = [
 const PAYMENT_METHODS = [
   { id: 'Dinheiro', label: 'Dinheiro', icon: DollarSign },
   { id: 'Pix', label: 'Pix', icon: Smartphone },
-  { id: 'Cartão', label: 'Cartão / TPA', icon: CreditCard },
+  { id: 'Cartão', label: 'Cartão (maquininha)', icon: CreditCard },
   { id: 'Transferência', label: 'Transferência', icon: Building }
 ];
 

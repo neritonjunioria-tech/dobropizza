@@ -579,7 +579,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                   className="px-3.5 py-1.5 bg-[#44210F] hover:bg-[#32170a] text-[#FDFBF7] border border-[#D5AF7A]/40 rounded-xl text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer shadow-xs"
                 >
                   <Printer className="w-3.5 h-3.5 text-[#D5AF7A]" />
-                  Imprimir Talão
+                  Imprimir Cupom
                 </button>
               </div>
 

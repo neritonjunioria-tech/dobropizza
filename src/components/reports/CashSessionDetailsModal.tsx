@@ -625,7 +625,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                                     setSelectedReceiptOrder(order);
                                   }}
                                   className="p-1 rounded text-stone-500 hover:text-stone-950 hover:bg-stone-200/80 transition-colors cursor-pointer"
-                                  title="Ver Cupom / Imprimir Talão"
+                                  title="Ver / Imprimir Cupom"
                                 >
                                   <Receipt size={14} />
                                 </button>
@@ -739,7 +739,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                                       onClick={() => setSelectedReceiptOrder(order)}
                                       className="px-2 py-1 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg font-mono text-[10px] font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                                     >
-                                      <Printer size={13} /> Ver / Imprimir Talão
+                                      <Printer size={13} /> Ver / Imprimir Cupom
                                     </button>
                                   </div>
                                 </div>

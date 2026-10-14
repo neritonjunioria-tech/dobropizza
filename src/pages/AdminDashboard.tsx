@@ -3359,7 +3359,7 @@ export default function AdminDashboard() {
                                   <button
                                     onClick={() => handlePrintOrder(order)}
                                     className="p-1.5 text-stone-700 hover:text-stone-950 bg-white hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
-                                    title="Imprimir Talão Térmico"
+                                    title="Imprimir Cupom Térmico"
                                   >
                                     <Printer size={13} />
                                   </button>
@@ -3567,7 +3567,7 @@ export default function AdminDashboard() {
                                     <button
                                       onClick={() => handlePrintOrder(order)}
                                       className="p-1.5 text-stone-700 hover:text-stone-950 bg-white hover:bg-stone-100 border border-stone-200 rounded-md transition-colors cursor-pointer"
-                                      title="Imprimir Talão"
+                                      title="Imprimir Cupom"
                                     >
                                       <Printer size={13} />
                                     </button>
@@ -4467,7 +4467,7 @@ export default function AdminDashboard() {
                                       setShowPrintPreview(true);
                                     }}
                                     className="px-2.5 py-1 text-xs font-bold text-stone-700 bg-stone-100 hover:bg-stone-200 border border-stone-300 rounded-lg transition-colors cursor-pointer"
-                                    title="Imprimir Talão"
+                                    title="Imprimir Cupom"
                                   >
                                     Imprimir
                                   </button>
@@ -4511,7 +4511,7 @@ export default function AdminDashboard() {
           >
             {/* Modal Header */}
             <div style={{ padding: '16px 20px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
-              <span style={{ fontWeight: 'bold', fontSize: '16px', color: '#111', display: 'flex', alignItems: 'center', gap: '8px' }}><Printer size={18} /> Pré-visualização do Talão</span>
+              <span style={{ fontWeight: 'bold', fontSize: '16px', color: '#111', display: 'flex', alignItems: 'center', gap: '8px' }}><Printer size={18} /> Prévia do Cupom</span>
               <button onClick={handleClosePrintPreview} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', lineHeight: 1, display: 'flex', alignItems: 'center' }}><X size={20} /></button>
             </div>
             {/* Receipt Content */}
@@ -5110,12 +5110,8 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
     return isPizzaItem(selectedBaseMenuItem) || ['priceP', 'priceM', 'priceG', 'priceBig', 'priceSuperBig'].includes(selectedSize);
   }, [selectedBaseMenuItem, selectedSize]);
 
-  const maxAdditionalFlavors = React.useMemo(() => {
-    if (selectedSize === 'priceSuperBig') return 3;
-    if (selectedSize === 'priceBig') return 2;
-    if (selectedSize === 'priceG') return 1;
-    return 0;
-  }, [selectedSize]);
+  // DOBRO: pizzas de sabor único (sem meio a meio / 2º sabor)
+  const maxAdditionalFlavors = 0;
 
   const totalFlavors = 1 + customAdditionalFlavors.length;
 
@@ -5155,7 +5151,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
     setIsProductSearchOpen(false);
 
     if (isPizzaItem(m)) {
-      if (selectedSize === 'priceSingle') {
+      if (selectedSize === 'priceSingle' && (m.priceG || m.priceM || m.priceP)) {
         setSelectedSize(m.priceG ? 'priceG' : m.priceM ? 'priceM' : 'priceP');
       }
     } else {
@@ -5948,7 +5944,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                 </div>
 
                 {/* Size Selection */}
-                {isCurrentSelectionPizza ? (
+                {isCurrentSelectionPizza && selectedBaseMenuItem && (selectedBaseMenuItem.priceP || selectedBaseMenuItem.priceM || selectedBaseMenuItem.priceG || selectedBaseMenuItem.priceBig || selectedBaseMenuItem.priceSuperBig) ? (
                   <div className="space-y-1 pt-1 border-t border-stone-200/60">
                     <div className="flex items-center justify-between">
                       <label className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">
@@ -5995,16 +5991,16 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
                 ) : (
                   selectedProductId && (
                     <div className="flex items-center justify-between px-2 py-1 bg-stone-100 rounded text-xs font-bold text-stone-700 border border-stone-200">
-                      <span className="text-[10px] font-mono text-stone-500 uppercase">Item Simples</span>
+                      <span className="text-[10px] font-mono text-stone-500 uppercase">{isPizzaItem(selectedBaseMenuItem) ? 'Tamanho único 28cm' : 'Item simples'}</span>
                       <span className="font-mono text-stone-900">
-                        R$ {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0).toFixed(2)}
+                        R$ {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0).toFixed(2).replace('.', ',')}
                       </span>
                     </div>
                   )
                 )}
 
                 {/* Multi-Flavor Pizza Manager (G, Big, Super Big) */}
-                {isCurrentSelectionPizza && ['priceG', 'priceBig', 'priceSuperBig'].includes(selectedSize) && selectedProductId && (
+                {maxAdditionalFlavors > 0 && isCurrentSelectionPizza && ['priceG', 'priceBig', 'priceSuperBig'].includes(selectedSize) && selectedProductId && (
                   <div className="space-y-1.5 pt-1.5 border-t border-stone-200/60">
                     <div className="flex items-center justify-between">
                       <span className="text-[9px] font-mono font-bold text-stone-400 uppercase tracking-wider">
@@ -6325,7 +6321,7 @@ function EditOrderModal({ order, menuItems, onClose, onSave }: { order: any, men
 
               <div className="space-y-0.5">
                 <label className="block text-[8px] font-mono font-bold text-stone-500 uppercase tracking-wider">
-                  Obs. Taxa Adicional (Sai no Talão)
+                  Obs. Taxa Adicional (Sai no Cupom)
                 </label>
                 <input
                   type="text"

@@ -1019,7 +1019,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
               </div>
               <div className="space-y-1">
                 <label className="block text-[11px] font-semibold text-stone-700">Observações</label>
-                <input type="text" placeholder="Ex: Pago em numerário no fim do turno" value={settleNotes} onChange={e => setSettleNotes(e.target.value)} className={inputClass} />
+                <input type="text" placeholder="Ex: Pago em dinheiro no fim do turno" value={settleNotes} onChange={e => setSettleNotes(e.target.value)} className={inputClass} />
               </div>
 
               <div className="bg-[#e5ddd4] text-[#44210f] rounded-xl p-4 space-y-1.5 text-xs font-mono">

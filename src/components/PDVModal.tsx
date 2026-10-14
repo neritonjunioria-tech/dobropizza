@@ -89,6 +89,9 @@ export const isTwoPizzaPromo = (item: MenuItem | null | undefined): boolean => {
   return id === 'item-1788199746629' || id === 'md-2-pizza' || n.includes('2 pizza') || n.includes('2 pizzas');
 };
 
+// DOBRO: pizzas de sabor único (sem meio a meio / 2º sabor)
+const MULTI_FLAVOR_ENABLED = false;
+
 const getPizzaPriceForSize = (item: MenuItem, size: 'P' | 'M' | 'G' | 'Big' | 'Super Big') => {
   if (size === 'P') return item.priceP || (item.priceM ? item.priceM - 2 : item.priceSingle || 0);
   if (size === 'M') return item.priceM || item.priceSingle || 0;
@@ -599,9 +602,12 @@ export default function PDVModal({
     const hasMultipleSizes = Boolean(item.priceP || item.priceM || item.priceG || item.priceBig || item.priceSuperBig);
     const isPromoPizza = isPromoWithPizza(item);
 
-    if (hasMultipleSizes || isPromoPizza) {
+    // Pizzas and sandubas open the customization window (extras, notes) even with a single size
+    const isCustomizable = ['mais-pedidos', 'premium', 'sandubas'].includes(item.category) || item.id.startsWith('p-') || item.id.startsWith('s-');
+
+    if (hasMultipleSizes || isPromoPizza || isCustomizable) {
       setCustomizingItem(item);
-      setCustomSize(item.priceG ? 'G' : item.priceM ? 'M' : item.priceP ? 'P' : 'G');
+      setCustomSize((item.priceG ? 'G' : item.priceM ? 'M' : item.priceP ? 'P' : '') as any);
       setCustomAdditionalFlavors([]);
       setCustomBorda(null);
       setCustomExtras([]);
@@ -784,7 +790,7 @@ export default function PDVModal({
 
     if (orderType === 'entrega') {
       if (!deliveryAddress.trim()) {
-        setErrorMessage('Por favor, informe a morada de entrega (Rua, Número, etc).');
+        setErrorMessage('Por favor, informe o endereço de entrega (rua, número etc.).');
         return;
       }
       if (!deliveryZone.trim()) {
@@ -1903,6 +1909,12 @@ export default function PDVModal({
                   </span>
                 </div>
               ) : (
+                !(customizingItem.priceP || customizingItem.priceM || customizingItem.priceG || customizingItem.priceBig || customizingItem.priceSuperBig) ? (
+                <div className="p-3 bg-[#FAF7F2] rounded-2xl border border-[#E8D8D1] flex items-center justify-between">
+                  <span className="text-xs font-black text-[#083D07]">Tamanho único 28cm</span>
+                  <span className="text-sm font-black font-mono text-[#44210F]">R$ {(customizingItem.priceSingle || 0).toFixed(2).replace('.', ',')}</span>
+                </div>
+                ) : (
                 <div>
                   <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
                     Tamanho
@@ -1941,6 +1953,7 @@ export default function PDVModal({
                     })}
                   </div>
                 </div>
+                )
               )}
 
               {/* Se for Promoção com Pizza: Seleção de Sabor e Bebida da Promoção */}
@@ -2087,7 +2100,7 @@ export default function PDVModal({
                 );
               })()}
 
-              {!isPromoWithPizza(customizingItem) && (customSize === 'G' || customSize === 'Big' || customSize === 'Super Big') && (() => {
+              {MULTI_FLAVOR_ENABLED && !isPromoWithPizza(customizingItem) && (customSize === 'G' || customSize === 'Big' || customSize === 'Super Big') && (() => {
                 const maxAdditional = customSize === 'Super Big' ? 3 : customSize === 'Big' ? 2 : 1;
                 const totalFlavors = 1 + customAdditionalFlavors.length;
                 const maxAllowedTotal = maxAdditional + 1;

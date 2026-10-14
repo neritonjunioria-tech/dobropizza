@@ -96,7 +96,7 @@ export default function OrderTracking() {
           </h3>
           <p className="text-gray-500 text-center">
             {order.status === 'Pendente' && 'Aguardando o restaurante aceitar seu pedido.'}
-            {order.status === 'Em Preparo' && 'A nossa equipa está a preparar o seu pedido com muito carinho!'}
+            {order.status === 'Em Preparo' && 'Nossa equipe está preparando o seu pedido com muito carinho!'}
             {order.status === 'Saiu para Entrega' && 'O seu pedido já está a caminho!'}
             {order.status === 'Finalizado' && 'Pedido concluído. Bom apetite!'}
           </p>
