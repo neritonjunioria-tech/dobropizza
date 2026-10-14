@@ -92,7 +92,9 @@ export function useBusinessHours(): BusinessHoursStatus {
 
       const nowMinutes = now.getHours() * 60 + now.getMinutes();
       const openMinutes = openH * 60 + openM;
-      const closeMinutes = closeH * 60 + closeM;
+      // Closing at or before the opening time means it closes after midnight (e.g. 18:30 to 00:00)
+      let closeMinutes = closeH * 60 + closeM;
+      if (closeMinutes <= openMinutes) closeMinutes += 24 * 60;
 
       const isOpen = nowMinutes >= openMinutes && nowMinutes < closeMinutes;
 
