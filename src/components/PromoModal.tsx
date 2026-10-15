@@ -76,7 +76,7 @@ export default function PromoModal({ isOpen, onClose }: PromoModalProps) {
           />
         )}
         <div className="p-6 text-center shrink-0">
-          <h3 className="font-extrabold text-2xl mb-4 text-[#8b0000]">
+          <h3 className="font-extrabold text-2xl mb-4 text-[#083d07]">
             {config.title}
           </h3>
           <div className="text-gray-600 mb-6 leading-relaxed space-y-3 whitespace-pre-line">
@@ -88,7 +88,7 @@ export default function PromoModal({ isOpen, onClose }: PromoModalProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={onClose}
-              className="block w-full bg-[#8b0000] hover:bg-[#660000] text-white font-bold py-3.5 px-4 rounded-xl transition-colors"
+              className="block w-full bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold py-3.5 px-4 rounded-xl transition-colors shadow-xs"
             >
               {config.button_text}
             </a>

@@ -683,7 +683,7 @@ export default function PDVModal({
         updated[editingCartIndex] = {
           ...existing,
           menuItem: customizingItem,
-          size: hasMultipleSizes ? customSize : undefined,
+          size: undefined,
           isHalf: !isPromoPizza && customAdditionalFlavors.length === 1,
           secondFlavor: !isPromoPizza && customAdditionalFlavors.length === 1 ? customAdditionalFlavors[0] : undefined,
           additionalFlavors: !isPromoPizza && customAdditionalFlavors.length > 0 ? customAdditionalFlavors : undefined,
@@ -700,7 +700,7 @@ export default function PDVModal({
       addToCart({
         id: `${customizingItem.id}-${Date.now()}`,
         menuItem: customizingItem,
-        size: hasMultipleSizes ? customSize : undefined,
+        size: undefined,
         isHalf: !isPromoPizza && customAdditionalFlavors.length === 1,
         secondFlavor: !isPromoPizza && customAdditionalFlavors.length === 1 ? customAdditionalFlavors[0] : undefined,
         additionalFlavors: !isPromoPizza && customAdditionalFlavors.length > 0 ? customAdditionalFlavors : undefined,
@@ -1909,51 +1909,12 @@ export default function PDVModal({
                   </span>
                 </div>
               ) : (
-                !(customizingItem.priceP || customizingItem.priceM || customizingItem.priceG || customizingItem.priceBig || customizingItem.priceSuperBig) ? (
                 <div className="p-3 bg-[#FAF7F2] rounded-2xl border border-[#E8D8D1] flex items-center justify-between">
                   <span className="text-xs font-black text-[#083D07]">Tamanho único 28cm</span>
-                  <span className="text-sm font-black font-mono text-[#44210F]">R$ {(customizingItem.priceSingle || 0).toFixed(2).replace('.', ',')}</span>
+                  <span className="text-sm font-black font-mono text-[#44210F]">
+                    R$ {(customizingItem.priceSingle || customizingItem.priceG || customizingItem.price || 0).toFixed(2).replace('.', ',')}
+                  </span>
                 </div>
-                ) : (
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">
-                    Tamanho
-                  </label>
-                  <div className="grid grid-cols-5 gap-2">
-                    {(['P', 'M', 'G', 'Big', 'Super Big'] as const).map(size => {
-                      let p = 0;
-                      if (size === 'P') p = customizingItem.priceP || (customizingItem.priceM ? customizingItem.priceM - 2 : 0);
-                      if (size === 'M') p = customizingItem.priceM || 0;
-                      if (size === 'G') p = customizingItem.priceG || 0;
-                      if (size === 'Big') p = customizingItem.priceBig || 0;
-                      if (size === 'Super Big') p = customizingItem.priceSuperBig || 0;
-                      if (p <= 0) return null;
-
-                      const isSelected = customSize === size;
-                      return (
-                        <button
-                          key={size}
-                          onClick={() => {
-                            setCustomSize(size);
-                            const maxAdditional = size === 'Super Big' ? 3 : size === 'Big' ? 2 : size === 'G' ? 1 : 0;
-                            if (customAdditionalFlavors.length > maxAdditional) {
-                              setCustomAdditionalFlavors(prev => prev.slice(0, maxAdditional));
-                            }
-                          }}
-                          className={`py-2.5 px-2 rounded-xl flex flex-col items-center gap-0.5 border-2 transition-all cursor-pointer shadow-2xs ${
-                            isSelected
-                              ? 'bg-yellow-50 border-yellow-400 text-yellow-900 ring-1 ring-yellow-400 ring-offset-1'
-                              : 'bg-white border-gray-200 text-gray-600 hover:border-yellow-200 hover:bg-yellow-50/50'
-                          }`}
-                        >
-                          <span className="text-xs font-black">{size === 'P' ? 'Pequena' : size === 'M' ? 'Média' : size === 'G' ? 'Grande' : size}</span>
-                          <span className="text-[10px] font-bold text-gray-500">+ R$ {p.toFixed(2).replace('.', ',')}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-                )
               )}
 
               {/* Se for Promoção com Pizza: Seleção de Sabor e Bebida da Promoção */}

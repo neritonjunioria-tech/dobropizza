@@ -3,6 +3,14 @@
 @theme {
   --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Lora", serif;
+
+  --color-dobro-green: #083d07;
+  --color-dobro-green-hover: #0b520a;
+  --color-dobro-gold: #d5af7a;
+  --color-dobro-gold-hover: #c49b64;
+  --color-dobro-dark: #44210f;
+  --color-dobro-parchment: #fdfbf7;
+  --color-dobro-sand: #e8d8d1;
 }
 
 :root {

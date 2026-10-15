@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { 
-  Save, Printer, Bell, BellOff, Volume2, 
-  Clock, Truck, Building2, Key, FileSpreadsheet, 
-  Sparkles, Check, CheckCircle2, 
+import {
+  Save, Printer, Bell, BellOff, Volume2,
+  Clock, Truck, Building2, Key, FileSpreadsheet,
+  Sparkles, Check, CheckCircle2,
   Sliders, AlertCircle, Trash2, Upload,
   Shield, CheckCheck, RefreshCw,
   CreditCard, QrCode, Banknote, Instagram, Zap
@@ -29,22 +29,27 @@ export interface PaymentMethodsConfig {
   debito: boolean;
 }
 
-export default function SettingsManager({ 
-  onTestPrint, 
-  autoPrint, 
-  onToggleAutoPrint, 
-  onExportCSV, 
+export default function SettingsManager({
+  onTestPrint,
+  autoPrint,
+  onToggleAutoPrint,
+  onExportCSV,
   onChangePassword,
   soundEnabled = true,
   onToggleSound,
   onTestSound
 }: SettingsManagerProps) {
   const [activeTab, setActiveTab] = useState<SettingsTab>('empresa');
-  const [savedStatus, setSavedStatus] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
 
   const showSavedFeedback = (msg = "Alterações salvas com sucesso!") => {
-    setSavedStatus(msg);
-    setTimeout(() => setSavedStatus(null), 3000);
+    setFeedback({ message: msg, type: 'success' });
+    setTimeout(() => setFeedback(null), 3500);
+  };
+
+  const showFeedback = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    setFeedback({ message, type });
+    setTimeout(() => setFeedback(null), 3500);
   };
 
   // ────────────────── ESTADO: EMPRESA & IDENTIDADE ──────────────────
@@ -115,7 +120,7 @@ export default function SettingsManager({
   const handleSavePayments = async (override?: PaymentMethodsConfig) => {
     const cfg = override || paymentConfig;
     if (!cfg.pix && !cfg.dinheiro && !cfg.credito && !cfg.debito) {
-      alert("Pelo menos uma forma de pagamento deve permanecer ativada!");
+      showFeedback("Pelo menos uma forma de pagamento deve permanecer ativada!", "warning");
       return;
     }
     setSavingPayments(true);
@@ -128,7 +133,7 @@ export default function SettingsManager({
       if (error) throw error;
       showSavedFeedback("Formas de pagamento atualizadas para o dia!");
     } catch (err: any) {
-      alert("Erro ao salvar formas de pagamento: " + (err?.message || err));
+      showFeedback("Erro ao salvar formas de pagamento: " + (err?.message || err), "error");
     } finally {
       setSavingPayments(false);
     }
@@ -183,7 +188,7 @@ export default function SettingsManager({
       showSavedFeedback("Logo da loja atualizada!");
     } catch (error: any) {
       console.error(error);
-      alert("Erro no upload da logo: " + error.message);
+      showFeedback("Erro no upload da logo: " + error.message, "error");
     } finally {
       setUploadingAdminLogo(false);
     }
@@ -216,7 +221,7 @@ export default function SettingsManager({
     setSavingHours(true);
     const { error } = await supabase.from('business_hours').upsert(hours, { onConflict: 'day_of_week' });
     setSavingHours(false);
-    if (error) alert("Erro ao salvar horários: " + error.message);
+    if (error) showFeedback("Erro ao salvar horários: " + error.message, "error");
     else showSavedFeedback("Grade de horários salva com sucesso!");
   };
 
@@ -291,10 +296,10 @@ export default function SettingsManager({
   // Categorias do menu lateral de navegação
   const navItems = [
     { id: 'empresa' as SettingsTab, label: 'Empresa & Marca', icon: Building2, desc: 'Nome, CNPJ, Instagram e logo' },
-    { 
-      id: 'pagamentos' as SettingsTab, 
-      label: 'Formas de Pagamento', 
-      icon: CreditCard, 
+    {
+      id: 'pagamentos' as SettingsTab,
+      label: 'Formas de Pagamento',
+      icon: CreditCard,
       desc: isOnlyPixActive ? 'Somente Pix Ativo Hoje' : `${activeMethodsCount} formas ativas`,
       badge: isOnlyPixActive ? 'Apenas Pix' : null
     },
@@ -307,7 +312,7 @@ export default function SettingsManager({
 
   return (
     <div className="max-w-6xl mx-auto pb-16 font-sans">
-      
+
       {/* ────────────────── HEADER PRINCIPAL ────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-stone-200">
         <div>
@@ -320,17 +325,27 @@ export default function SettingsManager({
           <p className="text-xs text-stone-500 mt-1">Gerencie a identidade da loja, regras operacionais e integração do terminal.</p>
         </div>
 
-        {savedStatus && (
-          <div className="animate-in fade-in slide-in-from-top-2 flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold">
-            <CheckCheck size={14} className="text-emerald-600" />
-            <span>{savedStatus}</span>
+        {feedback && (
+          <div className={`animate-in fade-in slide-in-from-top-2 flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold border shadow-xs ${
+            feedback.type === 'error'
+              ? 'bg-rose-50 text-rose-900 border-rose-200'
+              : feedback.type === 'warning'
+              ? 'bg-amber-50 text-amber-900 border-amber-200'
+              : 'bg-emerald-50 text-emerald-900 border-emerald-200'
+          }`}>
+            {feedback.type === 'error' || feedback.type === 'warning' ? (
+              <AlertCircle size={14} className={feedback.type === 'error' ? 'text-rose-600' : 'text-amber-600'} />
+            ) : (
+              <CheckCheck size={14} className="text-emerald-600" />
+            )}
+            <span>{feedback.message}</span>
           </div>
         )}
       </div>
 
       {/* ────────────────── LAYOUT EM 2 COLUNAS: ABAS LATERAIS + CONTEÚDO ────────────────── */}
       <div className="mt-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-        
+
         {/* Coluna Esquerda: Navegação Lateral Fixa */}
         <aside className="md:col-span-4 lg:col-span-3 space-y-1">
           {navItems.map((item) => {
@@ -340,24 +355,21 @@ export default function SettingsManager({
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                  isActive 
-                    ? 'bg-[#083d07] text-white shadow-xs' 
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all cursor-pointer ${isActive
+                    ? 'bg-[#083d07] text-white shadow-xs'
                     : 'text-stone-600 hover:text-stone-950 hover:bg-stone-100'
-                }`}
+                  }`}
               >
-                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                  isActive ? 'bg-[#0b520a] text-[#d5af7a]' : 'bg-stone-100 text-stone-500'
-                }`}>
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${isActive ? 'bg-[#0b520a] text-[#d5af7a]' : 'bg-stone-100 text-stone-500'
+                  }`}>
                   <Icon size={15} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-1">
                     <span className="text-xs font-bold block truncate leading-tight">{item.label}</span>
                     {item.badge && (
-                      <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${
-                        isActive ? 'bg-[#d5af7a] text-[#083d07]' : 'bg-emerald-100 text-emerald-800'
-                      }`}>
+                      <span className={`text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${isActive ? 'bg-[#d5af7a] text-[#083d07]' : 'bg-emerald-100 text-emerald-800'
+                        }`}>
                         {item.badge}
                       </span>
                     )}
@@ -372,7 +384,7 @@ export default function SettingsManager({
         {/* Coluna Direita: Conteúdo com Largura Máxima (~650px) para Leitura Confortável */}
         <main className="md:col-span-8 lg:col-span-9">
           <div className="max-w-2xl bg-white rounded-2xl border border-stone-200 shadow-2xs overflow-hidden">
-            
+
             {/* ═══════════ 1. EMPRESA & MARCA ═══════════ */}
             {activeTab === 'empresa' && (
               <div className="p-6 space-y-6">
@@ -402,17 +414,17 @@ export default function SettingsManager({
                         {adminLogoUrl ? 'Logo Atual Ativa' : 'Nenhuma logo configurada'}
                       </p>
                       <p className="text-[11px] text-stone-500 mt-0.5">Formato quadrado recomendado (PNG ou JPG). Aparece no topo do menu lateral.</p>
-                      
+
                       <div className="mt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2">
                         <label className="px-3 py-1.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold text-xs rounded-lg border border-[#d5af7a]/60 cursor-pointer shadow-xs transition-all flex items-center gap-1.5">
                           <Upload size={13} />
                           <span>{uploadingAdminLogo ? 'Enviando...' : 'Fazer Upload de Logo'}</span>
-                          <input 
-                            type="file" 
-                            accept="image/png, image/jpeg, image/webp" 
+                          <input
+                            type="file"
+                            accept="image/png, image/jpeg, image/webp"
                             onChange={handleAdminLogoUpload}
                             disabled={uploadingAdminLogo}
-                            className="hidden" 
+                            className="hidden"
                           />
                         </label>
                         {adminLogoUrl && (
@@ -433,32 +445,32 @@ export default function SettingsManager({
                 <div className="space-y-4 pt-2">
                   <div>
                     <label className="text-xs font-semibold text-stone-700 block mb-1">Nome do Estabelecimento</label>
-                    <input 
-                      type="text" 
-                      value={companyInfo.name} 
-                      onChange={e => setCompanyInfo({...companyInfo, name: e.target.value})} 
-                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
+                    <input
+                      type="text"
+                      value={companyInfo.name}
+                      onChange={e => setCompanyInfo({ ...companyInfo, name: e.target.value })}
+                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all"
                     />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-stone-700 block mb-1">CNPJ</label>
-                      <input 
-                        type="text" 
-                        value={companyInfo.nif} 
-                        onChange={e => setCompanyInfo({...companyInfo, nif: e.target.value})} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
+                      <input
+                        type="text"
+                        value={companyInfo.nif}
+                        onChange={e => setCompanyInfo({ ...companyInfo, nif: e.target.value })}
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all"
                         placeholder="Ex: 517000000"
                       />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-stone-700 block mb-1">Endereço</label>
-                      <input 
-                        type="text" 
-                        value={companyInfo.address} 
-                        onChange={e => setCompanyInfo({...companyInfo, address: e.target.value})} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
+                      <input
+                        type="text"
+                        value={companyInfo.address}
+                        onChange={e => setCompanyInfo({ ...companyInfo, address: e.target.value })}
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all"
                         placeholder="Ex: Rua Quirino Zagonel 500 - São José dos Pinhais"
                       />
                     </div>
@@ -470,11 +482,11 @@ export default function SettingsManager({
                       <Instagram size={14} className="text-[#083d07]" />
                       <span>Link do Instagram Oficial</span>
                     </label>
-                    <input 
-                      type="url" 
-                      value={instagramUrl} 
-                      onChange={e => setInstagramUrl(e.target.value)} 
-                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all" 
+                    <input
+                      type="url"
+                      value={instagramUrl}
+                      onChange={e => setInstagramUrl(e.target.value)}
+                      className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-semibold text-stone-900 focus:bg-white focus:border-[#083d07] focus:ring-2 focus:ring-[#083d07]/30 outline-none transition-all"
                       placeholder="https://www.instagram.com/dobropizzas/"
                     />
                     <p className="text-[11px] text-stone-400 mt-1">Atualiza automaticamente o link e o @ no rodapé do cardápio digital.</p>
@@ -482,8 +494,8 @@ export default function SettingsManager({
                 </div>
 
                 <div className="pt-4 border-t border-stone-100 flex justify-end">
-                  <button 
-                    onClick={handleSaveCompany} 
+                  <button
+                    onClick={handleSaveCompany}
                     disabled={savingCompany}
                     className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
@@ -520,41 +532,14 @@ export default function SettingsManager({
                   )}
                 </div>
 
-                {/* Barra de Ações Rápidas */}
-                <div className="bg-[#F7F4EE] p-3.5 rounded-xl border border-[#E8D8D1] flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <div className="text-xs text-[#44210F]">
-                    <span className="font-bold block">Ajuste Rápido do Dia:</span>
-                    <span className="text-[#745240] text-[11px]">Deseja aceitar apenas Pix hoje ou liberar todas?</span>
-                  </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto">
-                    <button
-                      type="button"
-                      onClick={handleQuickActivateOnlyPix}
-                      disabled={savingPayments}
-                      className="flex-1 sm:flex-none px-3.5 py-2 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer border border-[#d5af7a]/40"
-                    >
-                      <Zap size={13} className="text-[#d5af7a]" />
-                      <span>Ativar Somente Pix Hoje</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleQuickActivateAll}
-                      disabled={savingPayments}
-                      className="flex-1 sm:flex-none px-3.5 py-2 bg-white hover:bg-stone-50 text-stone-700 border border-stone-200 rounded-lg text-xs font-semibold transition-all cursor-pointer"
-                    >
-                      Ativar Todas
-                    </button>
-                  </div>
-                </div>
-
-                {/* Lista de Métodos de Pagamento */}
+                {/* Lista de Métodos de Pagamento - Ativação/Desativação Individual */}
                 <div className="space-y-3">
                   {[
                     {
                       key: 'pix' as const,
                       title: 'Pix Instantâneo',
-                      badge: 'Recomendado',
-                      desc: 'Pagamento imediato via chave Pix ou QR Code.',
+                      badge: '56.116.831/0001-88 (chave pix)',
+                      desc: '56.116.831/0001-88 (chave pix) • QR Code dinâmico e Copia e Cola gerados no checkout.',
                       icon: QrCode,
                       activeColor: 'border-emerald-500 bg-emerald-50/30'
                     },
@@ -589,42 +574,40 @@ export default function SettingsManager({
                       <div
                         key={method.key}
                         onClick={() => handleTogglePaymentMethod(method.key)}
-                        className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-4 ${
-                          isChecked
+                        className={`p-3.5 sm:p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 sm:gap-4 ${isChecked
                             ? `${method.activeColor} shadow-2xs`
                             : 'bg-stone-50/60 border-stone-200 opacity-60 hover:opacity-90'
-                        }`}
+                          }`}
                       >
-                        <div className="flex items-center gap-3.5 min-w-0">
-                          <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 border ${
-                            isChecked
+                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                          <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 border ${isChecked
                               ? 'bg-[#083d07] text-[#fdfbf7] border-[#083d07]'
                               : 'bg-white text-stone-400 border-stone-200'
-                          }`}>
-                            <IconComp size={18} />
+                            }`}>
+                            <IconComp size={16} />
                           </div>
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-xs font-bold text-stone-900">{method.title}</h3>
-                              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-stone-200 text-stone-600">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center flex-wrap gap-1.5">
+                              <h3 className="text-[11px] sm:text-xs font-bold text-stone-900">{method.title}</h3>
+                              <span className="text-[9px] font-medium px-1.5 py-0.2 rounded bg-white border border-stone-200 text-stone-600 shrink-0">
                                 {method.badge}
                               </span>
                             </div>
-                            <p className="text-[11px] text-stone-500 mt-0.5 truncate">{method.desc}</p>
+                            <p className="text-[10px] sm:text-[10.5px] text-stone-500 mt-0.5 leading-snug break-words">
+                              {method.desc}
+                            </p>
                           </div>
                         </div>
 
                         {/* Switch Toggle */}
                         <div className="shrink-0 flex items-center gap-2">
-                          <span className={`text-xs font-bold font-mono ${isChecked ? 'text-emerald-700' : 'text-stone-400'}`}>
+                          <span className={`text-[10px] sm:text-xs font-bold font-mono ${isChecked ? 'text-emerald-700' : 'text-stone-400'}`}>
                             {isChecked ? 'ATIVO' : 'DESLIGADO'}
                           </span>
-                          <div className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors cursor-pointer ${
-                            isChecked ? 'bg-[#083d07]' : 'bg-stone-300'
-                          }`}>
-                            <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
-                              isChecked ? 'translate-x-5' : 'translate-x-0'
-                            }`} />
+                          <div className={`w-10 sm:w-11 h-5 sm:h-6 flex items-center rounded-full p-0.5 sm:p-1 transition-colors cursor-pointer ${isChecked ? 'bg-[#083d07]' : 'bg-stone-300'
+                            }`}>
+                            <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${isChecked ? 'translate-x-5' : 'translate-x-0'
+                              }`} />
                           </div>
                         </div>
                       </div>
@@ -636,8 +619,8 @@ export default function SettingsManager({
                   <span className="text-xs text-stone-500">
                     O cardápio digital reflete essas opções no checkout imediatamente.
                   </span>
-                  <button 
-                    onClick={() => handleSavePayments()} 
+                  <button
+                    onClick={() => handleSavePayments()}
                     disabled={savingPayments}
                     className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer disabled:opacity-50"
                   >
@@ -656,19 +639,23 @@ export default function SettingsManager({
                   <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
                     <Clock size={16} />
                   </div>
-                  <div>
-                    <h2 className="text-sm font-bold text-stone-900">Horários de Funcionamento</h2>
-                    <p className="text-xs text-stone-500">Defina os dias e turnos em que a loja aceita pedidos online.</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-sm font-bold text-stone-900">Horários de Funcionamento</h2>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-[#083d07] border border-emerald-200">
+                        🇧🇷 Horário de Brasília (BRT / UTC-3)
+                      </span>
+                    </div>
+                    <p className="text-xs text-stone-500 mt-0.5">Defina os dias e turnos em que a pizzaria aceita pedidos online no cardápio digital.</p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   {hours.map((h) => (
-                    <div 
-                      key={h.day_of_week} 
-                      className={`p-3 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                        h.is_closed ? 'bg-stone-50/70 border-stone-200 opacity-75' : 'bg-white border-stone-200 shadow-2xs'
-                      }`}
+                    <div
+                      key={h.day_of_week}
+                      className={`p-3 rounded-xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${h.is_closed ? 'bg-stone-50/70 border-stone-200 opacity-75' : 'bg-white border-stone-200 shadow-2xs'
+                        }`}
                     >
                       <div className="flex items-center justify-between sm:justify-start gap-3 w-40">
                         <span className="text-xs font-bold text-stone-900">{DAY_NAMES[h.day_of_week]}</span>
@@ -679,16 +666,14 @@ export default function SettingsManager({
                         <button
                           type="button"
                           onClick={() => updateDay(h.day_of_week, 'is_closed', !h.is_closed)}
-                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                            !h.is_closed ? 'bg-emerald-600' : 'bg-stone-300'
-                          }`}
+                          className={`relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${!h.is_closed ? 'bg-emerald-600' : 'bg-stone-300'
+                            }`}
                           role="switch"
                           aria-checked={!h.is_closed}
                         >
                           <span
-                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                              !h.is_closed ? 'translate-x-4' : 'translate-x-0'
-                            }`}
+                            className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${!h.is_closed ? 'translate-x-4' : 'translate-x-0'
+                              }`}
                           />
                         </button>
                         <span className="text-[11px] font-mono text-stone-500 w-16">
@@ -700,14 +685,14 @@ export default function SettingsManager({
                         <div className="flex items-center gap-2 font-mono text-xs">
                           <input
                             type="time"
-                            value={h.opens_at ? h.opens_at.slice(0,5) : ''}
+                            value={h.opens_at ? h.opens_at.slice(0, 5) : ''}
                             onChange={(e) => updateDay(h.day_of_week, 'opens_at', e.target.value)}
                             className="p-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:border-[#083d07]"
                           />
                           <span className="text-stone-300">→</span>
                           <input
                             type="time"
-                            value={h.closes_at ? h.closes_at.slice(0,5) : ''}
+                            value={h.closes_at ? h.closes_at.slice(0, 5) : ''}
                             onChange={(e) => updateDay(h.day_of_week, 'closes_at', e.target.value)}
                             className="p-1.5 bg-stone-50 border border-stone-200 rounded-lg text-xs font-bold text-stone-900 focus:outline-none focus:border-[#083d07]"
                           />
@@ -720,8 +705,8 @@ export default function SettingsManager({
                 </div>
 
                 <div className="pt-4 border-t border-stone-100 flex justify-end">
-                  <button 
-                    onClick={handleSaveHours} 
+                  <button
+                    onClick={handleSaveHours}
                     disabled={savingHours}
                     className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
@@ -755,16 +740,14 @@ export default function SettingsManager({
                     <button
                       type="button"
                       onClick={onToggleAutoPrint}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                        autoPrint ? 'bg-emerald-600' : 'bg-stone-300'
-                      }`}
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${autoPrint ? 'bg-emerald-600' : 'bg-stone-300'
+                        }`}
                       role="switch"
                       aria-checked={autoPrint}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          autoPrint ? 'translate-x-5' : 'translate-x-0'
-                        }`}
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${autoPrint ? 'translate-x-5' : 'translate-x-0'
+                          }`}
                       />
                     </button>
                   </div>
@@ -785,16 +768,16 @@ export default function SettingsManager({
                 </div>
 
                 <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
-                  <button 
-                    onClick={handleTestPrint} 
+                  <button
+                    onClick={handleTestPrint}
                     className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 cursor-pointer border border-stone-200"
                   >
                     <Printer size={14} />
                     <span>Imprimir Cupom de Teste</span>
                   </button>
 
-                  <button 
-                    onClick={handleSavePrintDelay} 
+                  <button
+                    onClick={handleSavePrintDelay}
                     disabled={savingPrint}
                     className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
@@ -825,12 +808,12 @@ export default function SettingsManager({
                     </label>
                     <div className="relative max-w-xs">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 font-bold text-xs">R$</span>
-                      <input 
-                        type="number" 
-                        step="0.50" 
-                        value={freeDeliveryThreshold} 
-                        onChange={e => setFreeDeliveryThreshold(e.target.value)} 
-                        className="w-full pl-7 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#083d07] outline-none" 
+                      <input
+                        type="number"
+                        step="0.50"
+                        value={freeDeliveryThreshold}
+                        onChange={e => setFreeDeliveryThreshold(e.target.value)}
+                        className="w-full pl-7 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono font-bold text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
                       />
                     </div>
                   </div>
@@ -838,21 +821,21 @@ export default function SettingsManager({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-stone-700 block mb-1">Tempo Estimado de Entrega</label>
-                      <input 
-                        type="text" 
-                        value={deliveryTime} 
-                        onChange={e => setDeliveryTime(e.target.value)} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none" 
+                      <input
+                        type="text"
+                        value={deliveryTime}
+                        onChange={e => setDeliveryTime(e.target.value)}
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
                         placeholder="Ex: 40 a 50 min"
                       />
                     </div>
                     <div>
                       <label className="text-xs font-semibold text-stone-700 block mb-1">Tempo Estimado para Retirada</label>
-                      <input 
-                        type="text" 
-                        value={pickupTime} 
-                        onChange={e => setPickupTime(e.target.value)} 
-                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none" 
+                      <input
+                        type="text"
+                        value={pickupTime}
+                        onChange={e => setPickupTime(e.target.value)}
+                        className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-medium text-stone-900 focus:bg-white focus:border-[#083d07] outline-none"
                         placeholder="Ex: 20 a 30 min"
                       />
                     </div>
@@ -860,8 +843,8 @@ export default function SettingsManager({
                 </div>
 
                 <div className="pt-4 border-t border-stone-100 flex justify-end">
-                  <button 
-                    onClick={handleSaveTimes} 
+                  <button
+                    onClick={handleSaveTimes}
                     disabled={savingTimes}
                     className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold rounded-xl text-xs flex items-center gap-1.5 transition-all shadow-xs border border-[#d5af7a]/60 cursor-pointer"
                   >
@@ -891,16 +874,14 @@ export default function SettingsManager({
                     <button
                       type="button"
                       onClick={onToggleSound}
-                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                        soundEnabled ? 'bg-emerald-600' : 'bg-stone-300'
-                      }`}
+                      className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${soundEnabled ? 'bg-emerald-600' : 'bg-stone-300'
+                        }`}
                       role="switch"
                       aria-checked={soundEnabled}
                     >
                       <span
-                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-                          soundEnabled ? 'translate-x-5' : 'translate-x-0'
-                        }`}
+                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${soundEnabled ? 'translate-x-5' : 'translate-x-0'
+                          }`}
                       />
                     </button>
                     <div>
@@ -944,8 +925,8 @@ export default function SettingsManager({
                       <span className="text-xs font-bold text-stone-900 block mb-1">Senha de Administrador</span>
                       <span className="text-[11px] text-stone-500">Altere a senha mestre de acesso a este painel.</span>
                     </div>
-                    <button 
-                      onClick={onChangePassword} 
+                    <button
+                      onClick={onChangePassword}
                       className="mt-4 w-full py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <Key size={13} />
@@ -958,8 +939,8 @@ export default function SettingsManager({
                       <span className="text-xs font-bold text-stone-900 block mb-1">Planilha de Pedidos</span>
                       <span className="text-[11px] text-stone-500">Baixe o histórico com clientes, totais e pagamentos.</span>
                     </div>
-                    <button 
-                      onClick={onExportCSV} 
+                    <button
+                      onClick={onExportCSV}
                       className="mt-4 w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors inline-flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
                       <FileSpreadsheet size={13} />

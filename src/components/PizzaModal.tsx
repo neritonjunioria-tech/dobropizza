@@ -127,7 +127,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
       id: crypto.randomUUID(),
       menuItem: item,
       quantity: quantity,
-      size: isPizza ? '28cm' : undefined,
+      size: undefined,
       isHalfAndHalf: false,
       halfAndHalfFlavor: undefined,
       extras: finalExtras,
@@ -427,6 +427,7 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                    setQuantity(Math.max(1, quantity - 1));
                  }}
                  className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[#083d07] font-bold text-xl hover:bg-gray-100 active:scale-95 transition-all shadow-sm"
+                 aria-label="Diminuir quantidade"
                >
                  -
                </button>
@@ -436,7 +437,10 @@ export default function PizzaModal({ item, isOpen, onClose, onAddToCart, initial
                    hapticLight();
                    setQuantity(quantity + 1);
                  }}
-                 className="w-10 h-10 rounded-full bg-[#E8D8D1] border border-[#d5af7a]/60 flex items-center justify-center text-[#083d07] font-bold text-xl hover:bg-[#d5af7a] active:scale-95 transition-all shadow-sm" title="Aumentar quantidade">
+                 className="w-10 h-10 rounded-full bg-[#E8D8D1] border border-[#d5af7a]/60 flex items-center justify-center text-[#083d07] font-bold text-xl hover:bg-[#d5af7a] active:scale-95 transition-all shadow-sm"
+                 title="Aumentar quantidade"
+                 aria-label="Aumentar quantidade"
+               >
                   +
                 </button>
              </div>

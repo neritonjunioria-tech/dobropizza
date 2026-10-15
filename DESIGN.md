@@ -1,16 +1,18 @@
 ---
 name: DOBRO Pizzas - PDV & Cardápio
-description: Sistema unificado de PDV, painel de controle e cardápio digital para restaurantes.
+description: Sistema unificado de PDV, painel de controle e cardápio digital para pizzarias e esfiharias.
 colors:
-  primary: "#fdde58"
-  primary-hover: "#e2c23f"
-  text-on-primary: "#0c0a09"
-  bg-neutral: "#f8fafc"
-  surface: "#ffffff"
-  surface-hover: "#f1f5f9"
-  text-primary: "#0f172a"
-  text-secondary: "#64748b"
-  border: "#e2e8f0"
+  primary: "#083D07"
+  primary-hover: "#0B520A"
+  accent: "#D5AF7A"
+  accent-hover: "#C49B64"
+  dark: "#44210F"
+  bg-neutral: "#FDFBF7"
+  surface: "#FFFFFF"
+  surface-hover: "#F8FAFC"
+  text-primary: "#44210F"
+  text-secondary: "#745240"
+  border: "#E8D8D1"
 typography:
   body:
     fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -28,29 +30,28 @@ spacing:
 
 ## Overview
 
-**Creative North Star: "Operacionalidade Moderna e Focada"**
+**Creative North Star: "Pizzaria Artesanal, Operação Veloz e Alta Confiabilidade"**
 
-O design do sistema (painel admin e PDV) prioriza a alta eficiência da operação, utilizando o Amarelo fosco oficial da marca como cor de ação, contrapondo-se a fundos neutros e claros que reduzem o cansaço visual. O sistema é utilitário, veloz e robusto.
+O design do sistema (painel admin, comanda e PDV) une a atmosfera acolhedora de uma pizzaria e esfiha artesanal italiana com a velocidade cirúrgica de um sistema moderno de comanda e caixa. Utiliza o Verde Floresta (#083D07) como cor de autoridade e confirmação, o Dourado (#D5AF7A) para detalhes e distinções, e o fundo Pergaminho (#FDFBF7) para eliminar o cansaço visual de telas de balcão.
 
 **Key Characteristics:**
 - Alta densidade de informação sem poluição visual.
-- Ações destrutivas ou de controle bem segregadas.
-- Cores de status muito claras e diretas.
-- Foco em velocidade de leitura para o operador de caixa.
+- Ações destrutivas com confirmação explícita.
+- Cores semânticas intuitivas para pedidos (Pendente: Âmbar, Preparo: Azul, Entrega: Roxo, Concluído: Verde).
+- Foco em velocidade de leitura para o operador de caixa e cozinha.
 
 ## Colors
 
-O sistema de cores gira em torno de uma identidade neutra limpa com toques fortes da cor da marca.
+### Brand & Primary
+- **Verde Floresta** (#083D07 / hover #0B520A): Identidade oficial da DOBRO Pizzas. Usado em botões principais, status aberto, confirmações de pedidos e cabeçalhos de alta prioridade.
+- **Dourado Forno** (#D5AF7A): Detalhes refinados, medalhas, destaque de turno e acentos especiais.
+- **Forno a Lenha** (#44210F): Tipografia de alto contraste para títulos, alertas e elementos escuros.
 
-### Primary
-- **Amarelo Fosco Oficial** (#fdde58): Cor de destaque e identidade da marca "DOBRO Pizzas". Usado em botões de ação principal, barras de rolagem ativas, botões de confirmar e focos de interação.
-
-### Neutral
-- **Fundo Principal** (#f8fafc): Fundo suave do PDV e painel.
-- **Surface** (#ffffff): Cor principal dos modais, cartões e blocos de conteúdo para destacar da base.
-- **Texto Principal** (#0f172a): Texto padrão de alto contraste.
-- **Texto Secundário** (#64748b): Dicas, notas, subtítulos.
-- **Borda** (#e2e8f0): Divisores e delineadores suaves entre áreas de trabalho.
+### Neutral & Surfaces
+- **Fundo Principal** (#FDFBF7): Tom suave pergaminho natural, reduz reflexos e fadiga visual.
+- **Surface** (#FFFFFF): Cartões de comanda, modais e painéis elevados.
+- **Borda Suave** (#E8D8D1): Delimitadores harmônicos entre áreas operacionais.
+- **Texto Secundário** (#745240 / #57534E): Metadados, horários decorridos e legendas.
 
 ## Typography
 

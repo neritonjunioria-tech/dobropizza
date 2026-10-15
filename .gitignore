@@ -12,3 +12,4 @@ backups/
 
 .tmp/
 .netlify/
+scratch*

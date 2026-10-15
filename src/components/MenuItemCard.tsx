@@ -157,6 +157,7 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
           <button 
             className="w-6 h-6 sm:w-7 sm:h-7 bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/50 hover:bg-[#d5af7a] hover:text-[#083d07] rounded-full flex items-center justify-center transition-all shrink-0 shadow-2xs"
             title="Adicionar ao pedido"
+            aria-label={`Adicionar ${item.name} ao pedido`}
           >
             <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
           </button>
@@ -171,6 +172,8 @@ const MenuItemCard: React.FC<MenuItemCardProps> = ({
           <img
             src={currentSrc}
             alt={item.name}
+            loading="lazy"
+            decoding="async"
             onLoad={() => setImgLoaded(true)}
             className={`w-full h-full object-cover transition-all duration-300 ${imgLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-95'} group-hover:scale-105`}
             onError={() => {

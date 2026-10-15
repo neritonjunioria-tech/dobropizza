@@ -37,7 +37,7 @@ export default function MenuDoDiaModal({ isOpen, onClose, onSelectItem, menuItem
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-          <h3 className="font-extrabold text-2xl text-[#8b0000]">
+          <h3 className="font-extrabold text-2xl text-[#083d07]">
             📢 PROMOÇÃO DO DIA!
           </h3>
           <button
@@ -86,7 +86,7 @@ export default function MenuDoDiaModal({ isOpen, onClose, onSelectItem, menuItem
                       </p>
                       
                       <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                        <span className="font-extrabold text-[#8b0000] text-lg">
+                        <span className="font-extrabold text-[#083d07] text-lg">
                           R$ {item.priceSingle ? Number(item.priceSingle).toFixed(2) : '0.00'}
                         </span>
                         <button
@@ -94,7 +94,7 @@ export default function MenuDoDiaModal({ isOpen, onClose, onSelectItem, menuItem
                             onSelectItem(item);
                             onClose();
                           }}
-                          className="px-5 py-2.5 rounded-xl text-sm font-bold transition-colors bg-[#8b0000] text-white hover:bg-[#6b0000]"
+                          className="px-5 py-2.5 rounded-xl text-sm font-bold transition-colors bg-[#083d07] text-[#fdfbf7] hover:bg-[#0b520a] shadow-xs"
                         >
                           Pedir Agora
                         </button>

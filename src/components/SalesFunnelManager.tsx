@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { PeriodFilterCompact, PeriodFilterOption } from './PeriodFilterCompact';
+import { isInternalDevice, setInternalDevice } from '../hooks/useAnalytics';
 import { 
   Users, 
   ShoppingBag, 
@@ -15,7 +16,12 @@ import {
   Flame,
   Award,
   Layers,
-  ArrowDown
+  ArrowDown,
+  Shield,
+  Copy,
+  Check,
+  Server,
+  Smartphone
 } from 'lucide-react';
 
 interface FunnelData {
@@ -41,6 +47,21 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [selectedStage, setSelectedStage] = useState<number | null>(null);
+
+  const [isInternal, setIsInternal] = useState(isInternalDevice());
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedMenuLink, setCopiedMenuLink] = useState(false);
+  const [netlifyData, setNetlifyData] = useState<{
+    loading: boolean;
+    available: boolean;
+    message?: string;
+    visitors?: number;
+    pageviews?: number;
+  }>({
+    loading: false,
+    available: false,
+    message: 'não disponível'
+  });
 
   const [data, setData] = useState<FunnelData>({
     visitors: 0,
@@ -144,11 +165,61 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
         cartAbandonmentRate,
         checkoutDropRate
       });
+
+      // Consulta métricas no servidor (Netlify) via function segura
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const jwt = sessionData?.session?.access_token;
+        if (jwt) {
+          const res = await fetch(`/.netlify/functions/analytics?from=${startOfDate.getTime()}&to=${endOfDate.getTime()}`, {
+            headers: { Authorization: `Bearer ${jwt}` }
+          });
+          if (res.ok) {
+            const netRes = await res.json();
+            setNetlifyData({
+              loading: false,
+              available: Boolean(netRes.available),
+              message: netRes.message || (netRes.available ? undefined : 'não disponível'),
+              visitors: typeof netRes.visitors === 'number' ? netRes.visitors : undefined,
+              pageviews: typeof netRes.pageviews === 'number' ? netRes.pageviews : undefined
+            });
+          } else {
+            setNetlifyData({ loading: false, available: false, message: 'não disponível' });
+          }
+        } else {
+          setNetlifyData({ loading: false, available: false, message: 'não disponível' });
+        }
+      } catch {
+        setNetlifyData({ loading: false, available: false, message: 'não disponível' });
+      }
     } catch (err) {
       console.error('Erro ao buscar dados do funil:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToggleInternal = () => {
+    const next = !isInternal;
+    setInternalDevice(next);
+    setIsInternal(next);
+  };
+
+  const handleCopyMenuLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://dobropizzasdelivery.netlify.app';
+    navigator.clipboard.writeText(origin).then(() => {
+      setCopiedMenuLink(true);
+      setTimeout(() => setCopiedMenuLink(false), 2500);
+    }).catch(() => {});
+  };
+
+  const handleCopyTeamLink = () => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://dobropizzasdelivery.netlify.app';
+    const link = `${origin}/?interno=1`;
+    navigator.clipboard.writeText(link).then(() => {
+      setCopiedLink(true);
+      setTimeout(() => setCopiedLink(false), 2500);
+    }).catch(() => {});
   };
 
   // Clears the funnel tracking (visits, product views, cart, checkout). Orders are not touched.
@@ -265,8 +336,8 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             </h1>
           </div>
 
-          {/* Filtro de Período Compacto Padronizado (Mesmo padrão de Despesas) */}
-          <div className="flex items-center gap-2 self-start sm:self-auto">
+          {/* Filtro de Período Compacto Padronizado + Botão Copiar Link do Cardápio */}
+          <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
             <PeriodFilterCompact
               value={period}
               startDate={startDate}
@@ -278,6 +349,17 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
               }}
               align="right"
             />
+
+            {/* Botão Copiar Link do Cardápio ao lado do filtro */}
+            <button
+              type="button"
+              onClick={handleCopyMenuLink}
+              title="Copiar o link oficial do cardápio digital para enviar aos clientes ou compartilhar"
+              className="h-7 px-2.5 rounded-lg border border-[#d5af7a]/60 bg-[#083d07] text-[#fdfbf7] hover:bg-[#0b520a] transition-all cursor-pointer shadow-2xs flex items-center gap-1.5 text-[11px] font-mono font-bold"
+            >
+              {copiedMenuLink ? <Check size={12} className="text-[#d5af7a]" /> : <Copy size={12} className="text-[#d5af7a]" />}
+              <span>{copiedMenuLink ? 'Link Copiado!' : 'Copiar link'}</span>
+            </button>
 
             <button
               onClick={fetchFunnelData}
@@ -805,10 +887,10 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             <div className="pt-2 mt-2 border-t border-stone-200/60">
               <button
                 onClick={() => onNavigateToTab?.('gestao-cardapio')}
-                className="w-full h-7 px-2 rounded-lg bg-white hover:bg-amber-50 text-stone-800 hover:text-amber-900 border border-stone-200 text-[10.5px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-2xs"
+                className="w-full h-7 px-2 rounded-lg bg-white hover:bg-amber-50/80 text-stone-800 hover:text-amber-950 border border-stone-200 text-[10.5px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-2xs"
               >
                 <span>Ajustar Cardápio & Preços</span>
-                <ArrowRight size={12} className="text-stone-400" />
+                <ArrowRight size={12} className="text-stone-400 group-hover:text-amber-800" />
               </button>
             </div>
           </div>
@@ -831,10 +913,10 @@ export const SalesFunnelManager: React.FC<SalesFunnelManagerProps> = ({ onNaviga
             <div className="pt-2 mt-2 border-t border-stone-200/60">
               <button
                 onClick={() => onNavigateToTab?.('configuracoes')}
-                className="w-full h-7 px-2 rounded-lg bg-white hover:bg-amber-50 text-stone-800 hover:text-amber-900 border border-stone-200 text-[10.5px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-2xs"
+                className="w-full h-7 px-2 rounded-lg bg-white hover:bg-amber-50/80 text-stone-800 hover:text-amber-950 border border-stone-200 text-[10.5px] font-bold flex items-center justify-between transition-all cursor-pointer shadow-2xs"
               >
                 <span>Configurar Zonas de Entrega</span>
-                <ArrowRight size={12} className="text-stone-400" />
+                <ArrowRight size={12} className="text-stone-400 group-hover:text-amber-800" />
               </button>
             </div>
           </div>

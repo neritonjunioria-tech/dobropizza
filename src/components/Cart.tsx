@@ -8,6 +8,9 @@ import {
   ALL_MENU_ITEMS,
   NEIGHBORHOOD_DELIVERY_FEES,
 } from "../data/menu";
+import { stripSizeSuffix } from "../utils/printHelpers";
+import PixPaymentModal from "./PixPaymentModal";
+
 import { useBusinessHours } from '../hooks/useBusinessHours';
 import { 
   ShoppingBag, 
@@ -23,7 +26,8 @@ import {
   AlertCircle,
   Phone,
   User,
-  FileText
+  FileText,
+  Sparkles
 } from "lucide-react";
 import { useAnalytics } from '../hooks/useAnalytics';
 
@@ -84,6 +88,16 @@ export default function Cart({
   const [whatsappUrl, setWhatsappUrl] = useState("");
   const [savedOrderId, setSavedOrderId] = useState<number | null>(null);
   const [savedTrackingCode, setSavedTrackingCode] = useState<string | null>(null);
+  const [savedTotal, setSavedTotal] = useState<number>(0);
+  const [savedPaymentMethod, setSavedPaymentMethod] = useState<string>("Pix");
+
+  // Ambiente de desenvolvimento: ativa por padrão o Modo Simulação para NÃO enviar pedidos ao gestor da pizzaria
+  const isDevHost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.hostname.startsWith('192.168.')
+  );
+  const [simulationMode, setSimulationMode] = useState<boolean>(isDevHost);
 
   const [zonesFees, setZonesFees] = useState<Record<string, number>>(NEIGHBORHOOD_DELIVERY_FEES);
   // No free delivery unless a positive threshold is set in the admin (empty = always charge the zone fee)
@@ -105,6 +119,17 @@ export default function Cart({
     debito: false
   });
 
+// Garante que apenas formas de pagamento válidas brasileiras sejam aceitas (elimina MB Way e formatos legados)
+const sanitizePaymentMethod = (pm: string | null | undefined): string => {
+  if (!pm) return 'Pix';
+  const clean = pm.trim().toLowerCase();
+  if (clean.includes('pix')) return 'Pix';
+  if (clean.includes('dinheiro') || clean.includes('numerario') || clean.includes('numerário')) return 'Dinheiro';
+  if (clean.includes('crédito') || clean.includes('credito')) return 'Cartão de Crédito';
+  if (clean.includes('débito') || clean.includes('debito')) return 'Cartão de Débito';
+  return 'Pix';
+};
+
   // Load saved customer checkout details from localStorage (Memory for fast re-orders)
   useEffect(() => {
     try {
@@ -120,7 +145,14 @@ export default function Cart({
           setShowNifInput(true);
         }
         if (parsed.orderType) setOrderType(parsed.orderType);
-        if (parsed.pagamento) setPagamento(parsed.pagamento);
+        
+        // Sanitiza forma de pagamento salva: se continha MB Way ou valor legado, converte para Pix
+        const sanitizedPm = sanitizePaymentMethod(parsed.pagamento);
+        setPagamento(sanitizedPm);
+        if (parsed.pagamento && parsed.pagamento !== sanitizedPm) {
+          parsed.pagamento = sanitizedPm;
+          localStorage.setItem('customer_checkout_data', JSON.stringify(parsed));
+        }
       }
     } catch (e) {
       console.warn('[Cart] Error reading localStorage customer data', e);
@@ -233,7 +265,7 @@ export default function Cart({
     setFormError(null);
     const errors: string[] = [];
 
-    if (!businessStatus.isOpen) {
+    if (!simulationMode && !businessStatus.isOpen) {
       errors.push("Estamos fechados no momento. Poderá finalizar o pedido durante o nosso horário de funcionamento.");
     }
 
@@ -257,55 +289,66 @@ export default function Cart({
     setIsSubmitting(true);
     const orderNumber = Math.floor(1000 + Math.random() * 9000);
 
+    const finalPayment = sanitizePaymentMethod(pagamento);
+
     let newOrderId = null;
     let newTrackingCode: string | null = null;
     let orderSavedSuccessfully = false;
-    try {
-      // The order goes through a database function: the public key cannot read orders or customers directly.
-      // It links the open cash session and updates the customer record (CRM) on the server side.
-      const { data, error } = await supabase.rpc('create_public_order', { p_order: {
-        customer_name: name,
-        customer_phone: telefone,
-        order_type: orderType,
-        payment_method: pagamento,
-        total_amount: total,
-        delivery_address: orderType === 'Delivery' ? morada : null,
-        delivery_zone: orderType === 'Delivery' ? zona : null,
-        change_for: pagamento === 'Numerário' ? trocoPara : null,
-        nif: nif.trim() ? nif : null,
-        items: items.map(item => {
-          let itemName = item.menuItem.name;
-          if (item.isHalfAndHalf && item.halfAndHalfFlavor) {
-            itemName = `1/2 ${item.menuItem.name} e 1/2 ${item.halfAndHalfFlavor.name}`;
-          }
-          if (item.size) {
-            itemName += ` (${item.size === "G" ? "Gr" : item.size === "M" ? "Md" : "Pq"})`;
-          }
-          const extrasTotalPrice = (item.extras || []).reduce((sum, e) => sum + e.price, 0);
-          return {
-            name: itemName,
-            category: item.menuItem.category,
-            quantity: item.quantity,
-            priceCalculated: item.priceCalculated,
-            basePrice: item.priceCalculated - extrasTotalPrice,
-            extras: item.extras || [],
-            notes: item.notes || ""
-          };
-        })
-      } });
 
-      if (error) throw error;
-      if (data && data.length > 0) {
-        newOrderId = data[0].id;
-        setSavedOrderId(newOrderId);
-        newTrackingCode = data[0].tracking_code;
-        setSavedTrackingCode(data[0].tracking_code);
-        orderSavedSuccessfully = true;
-      }
-    } catch (err) {
-      console.error("Error saving order:", err);
-    } finally {
+    if (simulationMode) {
+      // MODO SIMULAÇÃO: Gera identificadores de teste sem gravar no banco de produção da pizzaria
+      const mockId = Math.floor(9000 + Math.random() * 999);
+      newOrderId = mockId;
+      setSavedOrderId(mockId);
+      newTrackingCode = `SIM-${mockId}`;
+      setSavedTrackingCode(newTrackingCode);
+      orderSavedSuccessfully = true;
       setIsSubmitting(false);
+    } else {
+      try {
+        // The order goes through a database function: the public key cannot read orders or customers directly.
+        // It links the open cash session and updates the customer record (CRM) on the server side.
+        const { data, error } = await supabase.rpc('create_public_order', { p_order: {
+          customer_name: name,
+          customer_phone: telefone,
+          order_type: orderType,
+          payment_method: finalPayment,
+          total_amount: total,
+          delivery_address: orderType === 'Delivery' ? morada : null,
+          delivery_zone: orderType === 'Delivery' ? zona : null,
+          change_for: finalPayment === 'Dinheiro' ? trocoPara : null,
+          nif: nif.trim() ? nif : null,
+          items: items.map(item => {
+            let itemName = stripSizeSuffix(item.menuItem.name);
+            if (item.isHalfAndHalf && item.halfAndHalfFlavor) {
+              itemName = `1/2 ${stripSizeSuffix(item.menuItem.name)} e 1/2 ${stripSizeSuffix(item.halfAndHalfFlavor.name)}`;
+            }
+            const extrasTotalPrice = (item.extras || []).reduce((sum, e) => sum + e.price, 0);
+            return {
+              name: itemName,
+              category: item.menuItem.category,
+              quantity: item.quantity,
+              priceCalculated: item.priceCalculated,
+              basePrice: item.priceCalculated - extrasTotalPrice,
+              extras: item.extras || [],
+              notes: item.notes || ""
+            };
+          })
+        } });
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          newOrderId = data[0].id;
+          setSavedOrderId(newOrderId);
+          newTrackingCode = data[0].tracking_code;
+          setSavedTrackingCode(data[0].tracking_code);
+          orderSavedSuccessfully = true;
+        }
+      } catch (err) {
+        console.error("Error saving order:", err);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
 
     if (!orderSavedSuccessfully) {
@@ -359,12 +402,10 @@ export default function Cart({
     });
 
     sortedItems.forEach((item) => {
-      let desc = item.menuItem.name;
+      let desc = stripSizeSuffix(item.menuItem.name);
       if (item.isHalfAndHalf && item.halfAndHalfFlavor) {
-        desc = `1/2 ${item.menuItem.name} e 1/2 ${item.halfAndHalfFlavor.name}`;
+        desc = `1/2 ${stripSizeSuffix(item.menuItem.name)} e 1/2 ${stripSizeSuffix(item.halfAndHalfFlavor.name)}`;
       }
-      if (item.size)
-        desc += ` (${item.size})`;
       
       const extrasTotalPrice = (item.extras || []).reduce((sum, e) => sum + e.price, 0);
       const basePrice = item.priceCalculated - extrasTotalPrice;
@@ -395,7 +436,10 @@ export default function Cart({
     text += `*TOTAL: R$ ${brl(total)}*\n`;
     text += `-----------------------------------\n`;
     text += `[PAGAMENTO]\n`;
-    text += `Forma: ${pagamento}\n`;
+    text += `Forma: ${finalPayment}\n`;
+    if (finalPayment === 'Pix') {
+      text += `Status: Pagamento pendente de conferência manual\n`;
+    }
     text += `-----------------------------------`;
     if (newTrackingCode) {
       text += `\n🔍 Acompanhe seu pedido:\n${window.location.origin}/track/${newTrackingCode}`;
@@ -406,22 +450,28 @@ export default function Cart({
       } catch { /* private mode: tracking link still goes in the WhatsApp message */ }
     }
 
-    // Envio automático oficial do resumo para a pizzaria e cliente (impossibilita alteração pelo cliente)
-    fetch('/.netlify/functions/send-order-whatsapp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        orderId: newOrderId || orderNumber,
-        customerPhone: telefone,
-        message: text
-      })
-    }).catch(err => console.warn('[Cart] Aviso no envio automático WhatsApp:', err));
+    if (!simulationMode) {
+      // Envio automático oficial do resumo para a pizzaria e cliente (impossibilita alteração pelo cliente)
+      fetch('/.netlify/functions/send-order-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: newOrderId || orderNumber,
+          customerPhone: telefone,
+          message: text
+        })
+      }).catch(err => console.warn('[Cart] Aviso no envio automático WhatsApp:', err));
+    }
 
     // The customer sends the full summary to the pizzeria on WhatsApp to confirm the order
-    const contactWappUrl = `https://wa.me/${RESTAURANT_WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
+    const contactWappUrl = simulationMode
+      ? `https://wa.me/?text=${encodeURIComponent("[TESTE SIMULADO - NÃO PREPARAR]\n" + text)}`
+      : `https://wa.me/${RESTAURANT_WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`;
 
     trackEvent('purchase', { total_value: total, order_id: newOrderId || orderNumber });
 
+    setSavedTotal(total);
+    setSavedPaymentMethod(finalPayment);
     setWhatsappUrl(contactWappUrl);
     setIsSuccess(true);
     onClearCart();
@@ -429,6 +479,32 @@ export default function Cart({
 
   // SUCCESS SCREEN
   if (isSuccess) {
+    const isPixOrder = sanitizePaymentMethod(savedPaymentMethod) === 'Pix';
+
+    if (isPixOrder) {
+      return (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs overflow-y-auto animate-in fade-in duration-200">
+          <div className="relative bg-white w-full max-w-md max-h-[92vh] overflow-y-auto rounded-3xl shadow-2xl p-6 my-auto">
+            <PixPaymentModal
+              orderId={savedOrderId}
+              total={savedTotal}
+              trackingCode={savedTrackingCode}
+              whatsappUrl={whatsappUrl}
+              onClose={() => {
+                setIsSuccess(false);
+                setCurrentStep('items');
+                setSavedOrderId(null);
+                setSavedTotal(0);
+                setSavedTrackingCode(null);
+                setSavedPaymentMethod('Pix');
+                onClose();
+              }}
+            />
+          </div>
+        </div>
+      );
+    }
+
     const successActionButtons = (
       <div className="w-full max-w-xs mx-auto flex flex-col gap-2.5 mt-3">
         <a
@@ -499,15 +575,36 @@ export default function Cart({
   const CartContent = (
     <div className="bg-white lg:border border-gray-200 lg:rounded-2xl shadow-xs flex flex-col w-full relative">
       
+      {/* BANNER DE SEGURANÇA: MODO TESTE EM AMBIENTE LOCAL */}
+      {isDevHost && (
+        <div className="bg-emerald-50 border-b border-emerald-200 px-3 py-1.5 flex items-center justify-between text-xs text-emerald-950 shrink-0">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs">🛡️</span>
+            <span className="text-[11px] font-bold text-[#083d07]">
+              {simulationMode ? 'Modo Teste Ativo (Isolado da Pizzaria)' : 'Atenção: Modo Real (Envia à pizzaria)'}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSimulationMode(!simulationMode)}
+            className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+              simulationMode ? 'bg-[#083d07] text-white border-[#083d07]' : 'bg-white text-stone-700 border-stone-300'
+            }`}
+          >
+            {simulationMode ? 'ISOLADO (SEGURO)' : 'LIGAR GESTOR'}
+          </button>
+        </div>
+      )}
+
       {/* HEADER WITH DISCREET STEP TABS */}
       <div className="bg-white border-b border-gray-100 p-3 shrink-0">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-1.5">
-            <ShoppingBag className="w-4 h-4 text-[#8b0000]" />
+            <ShoppingBag className="w-4 h-4 text-[#083d07]" />
             <h2 className="text-[13px] font-black uppercase tracking-wide text-gray-800">
               {currentStep === 'items' ? 'Meu Pedido' : 'Entrega & Pagamento'}
             </h2>
-            <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-1.5 py-0.2 rounded-full">
+            <span className="bg-gray-100 text-[#083d07] text-[10px] font-bold px-1.5 py-0.2 rounded-full">
               {totalItemCount}
             </span>
           </div>
@@ -534,13 +631,13 @@ export default function Cart({
 
         {/* COMPACT STEP SWITCHER */}
         {items.length > 0 && (
-          <div className="grid grid-cols-2 gap-1 bg-gray-100 p-0.5 rounded-lg text-[11px] font-bold">
+          <div className="grid grid-cols-2 gap-1 bg-stone-100 p-0.5 rounded-lg text-[11px] font-bold">
             <button
               type="button"
               onClick={() => setCurrentStep('items')}
               className={`py-1 px-2 rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 currentStep === 'items'
-                  ? 'bg-white text-[#8b0000] shadow-xs'
+                  ? 'bg-white text-[#083d07] shadow-xs'
                   : 'text-gray-500 hover:text-gray-900'
               }`}
             >
@@ -554,7 +651,7 @@ export default function Cart({
               }}
               className={`py-1 px-2 rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 currentStep === 'checkout'
-                  ? 'bg-[#8b0000] text-white shadow-xs'
+                  ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs'
                   : 'text-gray-500 hover:text-gray-900'
               }`}
             >
@@ -568,12 +665,13 @@ export default function Cart({
           <div className="mt-2.5 pt-2 border-t border-gray-100">
             <div className="flex justify-between items-center text-[11px] font-bold mb-1">
               {subtotal >= freeDeliveryThreshold ? (
-                <span className="text-emerald-700 flex items-center gap-1">
-                  <strong>Entrega Grátis garantida!</strong>
+                <span className="text-emerald-700 flex items-center gap-1 font-extrabold animate-pulse">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span>Entrega Grátis Liberada!</span>
                 </span>
               ) : (
                 <span className="text-stone-600">
-                  Falta <strong className="text-[#8b0000]">R$ {brl(freeDeliveryThreshold - subtotal)}</strong> para <strong>Entrega Grátis</strong>
+                  Falta <strong className="text-[#083d07]">R$ {brl(freeDeliveryThreshold - subtotal)}</strong> para <strong>Entrega Grátis</strong>
                 </span>
               )}
               <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {brl(freeDeliveryThreshold)}</span>
@@ -604,7 +702,7 @@ export default function Cart({
           </p>
           <button
             onClick={onClose}
-            className="lg:hidden bg-[#8b0000] text-white text-[11px] font-bold py-1.5 px-4 rounded-lg hover:bg-[#6b0000] transition-colors cursor-pointer"
+            className="lg:hidden bg-[#083d07] text-[#fdfbf7] text-[11px] font-bold py-1.5 px-4 rounded-lg hover:bg-[#0b520a] transition-colors cursor-pointer"
           >
             Ver Cardápio
           </button>
@@ -666,6 +764,7 @@ export default function Cart({
                         <div className="flex items-center border border-gray-200 rounded-md bg-white overflow-hidden">
                           <button
                             onClick={() => onUpdateQuantity(item.id, -1)}
+                            aria-label={`Diminuir quantidade de ${item.menuItem.name}`}
                             className="px-1.5 py-0.5 text-gray-500 hover:text-[#083d07] hover:bg-gray-50 transition-colors cursor-pointer"
                           >
                             <Minus className="w-2.5 h-2.5" />
@@ -675,6 +774,7 @@ export default function Cart({
                           </span>
                           <button
                             onClick={() => onUpdateQuantity(item.id, 1)}
+                            aria-label={`Aumentar quantidade de ${item.menuItem.name}`}
                             className="w-5 h-5 rounded bg-[#E8D8D1] text-[#083D07] border border-[#d5af7a]/40 hover:bg-[#d5af7a] hover:text-[#083d07] flex items-center justify-center transition-all cursor-pointer shadow-2xs"
                             title="Aumentar quantidade"
                           >
@@ -684,6 +784,7 @@ export default function Cart({
 
                         <button
                           onClick={() => onRemoveItem(item.id)}
+                          aria-label={`Remover ${item.menuItem.name} do carrinho`}
                           className="text-[10px] text-gray-400 hover:text-red-600 transition-colors cursor-pointer"
                         >
                           Remover
@@ -905,109 +1006,75 @@ export default function Cart({
                     </div>
                   )}
 
-                  {/* Formas de Pagamento Dinâmicas (Controladas no Gestor) */}
+                  {/* FORMAS DE PAGAMENTO ACEITAS */}
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase">
-                      Forma de Pagamento *
+                    <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase tracking-wider">
+                      Forma de Pagamento
                     </label>
+                    {(() => {
+                      const activeMethods = [
+                        paymentConfig.pix && { id: 'Pix', label: 'Pix', sub: 'QR Code & Copia e Cola' },
+                        paymentConfig.dinheiro && { id: 'Dinheiro', label: 'Dinheiro', sub: 'Na entrega/balcão' },
+                        paymentConfig.credito && { id: 'Cartão de Crédito', label: 'Crédito', sub: 'Maquininha' },
+                        paymentConfig.debito && { id: 'Cartão de Débito', label: 'Débito', sub: 'Maquininha' },
+                      ].filter(Boolean) as { id: string; label: string; sub: string }[];
 
-                    {/* Caso Somente Pix esteja ativo (padrão de hoje) */}
-                    {paymentConfig.pix && !paymentConfig.dinheiro && !paymentConfig.credito && !paymentConfig.debito ? (
-                      <div className="h-9 px-3 rounded-xl bg-[#083d07]/5 border border-[#083d07]/30 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-[#083d07]" />
-                          <span className="font-bold text-xs text-[#083d07]">Pix</span>
-                        </div>
-                        <span className="text-[10px] text-[#745240] font-medium">Pagamento instantâneo via Pix</span>
-                      </div>
-                    ) : (
-                      /* Caso o gestor libere mais opções */
-                      <div className="space-y-1.5">
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {paymentConfig.pix && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPagamento('Pix');
-                                saveCustomerData({ pagamento: 'Pix' });
-                              }}
-                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                                pagamento === 'Pix'
-                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
-                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
-                              }`}
-                            >
-                              <span>Pix</span>
-                            </button>
-                          )}
-                          {paymentConfig.dinheiro && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPagamento('Dinheiro');
-                                saveCustomerData({ pagamento: 'Dinheiro' });
-                              }}
-                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                                pagamento === 'Dinheiro'
-                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
-                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
-                              }`}
-                            >
-                              <span>Dinheiro</span>
-                            </button>
-                          )}
-                          {paymentConfig.credito && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPagamento('Cartão de Crédito');
-                                saveCustomerData({ pagamento: 'Cartão de Crédito' });
-                              }}
-                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                                pagamento === 'Cartão de Crédito'
-                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
-                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
-                              }`}
-                            >
-                              <span>Cartão Crédito</span>
-                            </button>
-                          )}
-                          {paymentConfig.debito && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setPagamento('Cartão de Débito');
-                                saveCustomerData({ pagamento: 'Cartão de Débito' });
-                              }}
-                              className={`py-2 px-2.5 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                                pagamento === 'Cartão de Débito'
-                                  ? 'bg-[#E5DDD4] text-[#44210F] border-[#D5AF7A] font-bold shadow-xs'
-                                  : 'bg-white text-[#745240] border-[#E8D8D1] hover:bg-[#FDFBF7]'
-                              }`}
-                            >
-                              <span>Cartão Débito</span>
-                            </button>
-                          )}
-                        </div>
+                      if (activeMethods.length <= 1) {
+                        return (
+                          <div className="h-11 px-3.5 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-between shadow-2xs">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2.5 h-2.5 rounded-full bg-[#083d07]" />
+                              <span className="font-black text-xs text-[#083d07] tracking-wider">
+                                {pagamento === 'Pix' ? 'PIX' : pagamento.toUpperCase()}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-[#083d07] font-bold">
+                              {pagamento === 'Pix' ? 'QR Code & Copia e Cola' : 'Pagamento no Recebimento'}
+                            </span>
+                          </div>
+                        );
+                      }
 
-                        {/* Se selecionado Dinheiro, abre o campo de troco */}
-                        {pagamento === 'Dinheiro' && (
-                          <div className="pt-1">
-                            <label className="block text-[10px] font-bold text-gray-600 mb-0.5">
-                              Troco para quanto? (R$)
-                            </label>
+                      return (
+                        <div className="space-y-2">
+                          <div className="grid grid-cols-2 gap-1.5">
+                            {activeMethods.map(m => {
+                              const isSel = pagamento === m.id;
+                              return (
+                                <button
+                                  key={m.id}
+                                  type="button"
+                                  onClick={() => {
+                                    setPagamento(m.id);
+                                    saveCustomerData({ pagamento: m.id });
+                                  }}
+                                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                    isSel
+                                      ? 'bg-emerald-50/90 border-[#083d07] text-[#083d07] font-bold shadow-2xs ring-1 ring-[#083d07]/20'
+                                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <span className="text-xs font-bold">{m.label}</span>
+                                    {isSel && <span className="w-2 h-2 rounded-full bg-[#083d07]" />}
+                                  </div>
+                                  <span className="text-[10px] text-gray-500 font-normal mt-0.5">{m.sub}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                          {pagamento === 'Dinheiro' && (
                             <input
                               type="text"
-                              inputMode="decimal"
-                              placeholder="Ex: 50,00 ou Não precisa de troco"
+                              placeholder="Troco para quanto? (Deixe em branco se não precisar)"
                               value={trocoPara}
                               onChange={(e) => setTrocoPara(e.target.value)}
-                              className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none font-medium transition-colors"
+                              className="h-8 w-full bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none"
                             />
-                          </div>
-                        )}
-                      </div>
-                    )}
+                          )}
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* CPF opcional */}
@@ -1084,9 +1151,9 @@ export default function Cart({
                   <button
                     type="button"
                     onClick={handleCheckout}
-                    disabled={isSubmitting || !businessStatus.isOpen}
+                    disabled={isSubmitting || (!simulationMode && !businessStatus.isOpen)}
                     className={`w-full font-black py-2.5 px-3 rounded-xl transition-all flex justify-center items-center gap-1.5 text-xs shadow-xs cursor-pointer ${
-                      isSubmitting || !businessStatus.isOpen
+                      isSubmitting || (!simulationMode && !businessStatus.isOpen)
                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                         : 'bg-[#25D366] hover:bg-[#1EBE5D] active:scale-[0.99] text-white shadow-emerald-700/20'
                     }`}
@@ -1096,7 +1163,7 @@ export default function Cart({
                         <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                         <span>Enviando pedido...</span>
                       </>
-                    ) : !businessStatus.isOpen ? (
+                    ) : !simulationMode && !businessStatus.isOpen ? (
                       <>
                         <Clock className="w-3.5 h-3.5" />
                         <span>Loja Fechada no Momento</span>

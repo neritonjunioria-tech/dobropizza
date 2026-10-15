@@ -881,7 +881,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                         </button>
                         <button
                           onClick={() => handleDeleteMotoboy(m)}
-                          className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-md transition-colors cursor-pointer"
+                          className="p-1.5 text-stone-500 hover:text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-md transition-colors cursor-pointer"
                           title="Excluir motoboy"
                         >
                           <Trash2 size={13} />
@@ -972,7 +972,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                       <td className="py-3 px-4 text-right">
                         <button
                           onClick={() => handleUndoSettlement(s)}
-                          className="inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-1 text-stone-500 hover:text-rose-600 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 rounded-md transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 text-[11px] font-mono font-bold px-2 py-1 text-stone-600 hover:text-rose-700 hover:bg-rose-50 border border-stone-200 hover:border-rose-200 rounded-md transition-colors cursor-pointer"
                           title="Desfazer fechamento"
                         >
                           <RotateCcw size={12} />
@@ -1089,7 +1089,7 @@ export default function MotoboysManager({ onChange }: MotoboysManagerProps) {
                           <button
                             type="button"
                             onClick={() => handleDeleteZone(z)}
-                            className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-md transition-colors cursor-pointer"
+                            className="p-1.5 text-stone-500 hover:text-rose-700 hover:bg-rose-50 border border-transparent hover:border-rose-200 rounded-md transition-colors cursor-pointer"
                             title="Remover Bairro"
                           >
                             <Trash2 size={13} />

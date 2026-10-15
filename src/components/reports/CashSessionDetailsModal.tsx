@@ -164,7 +164,7 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
     const fundoInicial = Number(session.opening_amount || 0);
     const expectedCash = fundoInicial + totalDinheiro + suprimentosTotal - sangriasTotal;
     const countedCash = Number(session.closing_counted_amount || 0);
-    const difference = Number(session.difference_amount || 0);
+    const difference = Number(session.difference !== undefined && session.difference !== null ? session.difference : (session.difference_amount || 0));
 
     // Duração da sessão
     let durationText = 'Em andamento';
@@ -454,6 +454,12 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                       <span className="text-[9px] font-mono font-bold uppercase">Diferença:</span>
                       <span className="font-mono text-sm font-black">{summary.difference >= 0 ? '+' : ''}R$ {summary.difference.toFixed(2)}</span>
                     </div>
+                    {session.notes && (
+                      <div className="mt-1.5 p-2 bg-[#FAF7F2] border border-[#E8D8D1] rounded-lg text-xs font-sans text-[#44210F]">
+                        <span className="font-bold text-[#745240] text-[9.5px] uppercase font-mono block">Justificativa da Diferença:</span>
+                        <p className="mt-0.5 italic text-stone-800 text-[11px] leading-tight">{session.notes}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

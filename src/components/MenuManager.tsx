@@ -417,20 +417,21 @@ export default function MenuManager() {
                   <td className="py-3 px-4 text-center">
                     <button
                       onClick={() => togglePauseItem(item.id)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${!isPaused ? 'bg-emerald-500' : 'bg-stone-300'}`}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none cursor-pointer ${!isPaused ? 'bg-[#083D07]' : 'bg-[#D3C8BB]'}`}
+                      title={isPaused ? 'Clique para publicar este item' : 'Clique para pausar este item'}
                     >
-                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${!isPaused ? 'translate-x-6' : 'translate-x-1'}`} />
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition-transform ${!isPaused ? 'translate-x-6' : 'translate-x-1'}`} />
                     </button>
-                    <div className={`text-[10px] font-mono font-bold mt-1 ${isPaused ? 'text-red-500' : 'text-emerald-600'}`}>
-                      {isPaused ? 'PAUSADO' : 'ATIVO'}
+                    <div className={`text-[10px] font-mono font-bold mt-1 tracking-wider ${isPaused ? 'text-amber-800' : 'text-[#083D07]'}`}>
+                      {isPaused ? 'PAUSADO' : 'PUBLICADO'}
                     </div>
                   </td>
                   <td className="py-3 px-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="p-1.5 text-stone-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Editar Completo">
+                      <button onClick={() => { setEditingItem(item); setIsModalOpen(true); }} className="p-1.5 text-stone-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200 cursor-pointer" title="Editar Completo" aria-label="Editar Completo">
                         <Edit2 size={16} />
                       </button>
-                      <button onClick={() => handleDelete(item.id)} className="p-1.5 text-stone-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200" title="Excluir">
+                      <button onClick={() => handleDelete(item.id)} className="p-1.5 text-stone-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 cursor-pointer" title="Excluir" aria-label="Excluir">
                         <Trash2 size={16} />
                       </button>
                     </div>
@@ -464,7 +465,7 @@ export default function MenuManager() {
               <h2 className="text-lg font-extrabold text-[#44210f] tracking-tight">
                 {editingItem.id.startsWith('item-') && !editingItem.name ? 'Novo Produto' : 'Editar Produto'}
               </h2>
-              <button onClick={() => setIsModalOpen(false)} className="p-2 text-stone-400 hover:text-white bg-[#083d07] hover:bg-rose-600 rounded-md transition-colors border border-[#0b520a] hover:border-rose-500">
+              <button onClick={() => setIsModalOpen(false)} className="p-2 text-white bg-[#083d07] hover:bg-rose-700 rounded-md transition-colors border border-[#0b520a] hover:border-rose-600 cursor-pointer" title="Fechar" aria-label="Fechar modal de produto">
                 <X size={18} />
               </button>
             </div>

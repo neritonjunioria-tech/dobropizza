@@ -37,7 +37,7 @@ export default function PizzaDayModal({ isOpen, onClose, onAction }: PizzaDayMod
           <X className="w-5 h-5" />
         </button>
         
-        <div className="relative w-full h-[40vh] sm:h-[350px] bg-[#8b0000] overflow-hidden">
+        <div className="relative w-full h-[40vh] sm:h-[350px] bg-[#083d07] overflow-hidden">
           <img
             src="/dobro/logo-dobro.png"
             alt="Dia da Pizza"
@@ -60,7 +60,7 @@ export default function PizzaDayModal({ isOpen, onClose, onAction }: PizzaDayMod
               onAction();
               onClose();
             }}
-            className="flex items-center justify-center gap-2 w-full bg-[#8b0000] hover:bg-[#660000] text-white font-bold py-4 px-4 rounded-2xl transition-all shadow-xl shadow-[#8b0000]/30 active:scale-[0.98]"
+            className="flex items-center justify-center gap-2 w-full bg-[#083d07] hover:bg-[#0b520a] text-[#fdfbf7] font-bold py-4 px-4 rounded-2xl transition-all shadow-xl shadow-[#083d07]/30 active:scale-[0.98]"
           >
             Garantir Minha Promoção <ArrowRight className="w-5 h-5" />
           </button>

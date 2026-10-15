@@ -33,6 +33,15 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
   const [movementReason, setMovementReason] = useState('');
   const [isSubmittingMovement, setIsSubmittingMovement] = useState(false);
   const [movementError, setMovementError] = useState('');
+  const [closingNotes, setClosingNotes] = useState('');
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast(curr => curr?.message === message ? null : curr);
+    }, 4000);
+  };
 
   const totalSangrias = movements.filter(m => m.type === 'sangria').reduce((acc, m) => acc + Number(m.amount), 0);
   const totalSuprimentos = movements.filter(m => m.type === 'suprimento').reduce((acc, m) => acc + Number(m.amount), 0);
@@ -292,9 +301,10 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
         setOpeningAmount('0.00');
         setClosedResult(null);
         setShowOpenModal(false);
+        showToast('Caixa aberto com sucesso!', 'success');
       } else if (error) {
         console.error("Erro ao abrir caixa:", error);
-        alert("Erro ao abrir caixa: " + error.message);
+        showToast("Erro ao abrir caixa: " + error.message, 'error');
       }
     } finally {
       setIsOpening(false);
@@ -307,9 +317,10 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
         const { error } = await supabase.from('cash_sessions').delete().eq('id', id);
         if (error) throw error;
         setHistory(prev => prev.filter(h => h.id !== id));
+        showToast('Fechamento de caixa excluído com sucesso.', 'success');
       } catch (error: any) {
         console.error('Erro ao excluir sessão:', error);
-        alert('Erro ao excluir fechamento: ' + error.message);
+        showToast('Erro ao excluir fechamento: ' + error.message, 'error');
       }
     }
   };
@@ -392,7 +403,8 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
       closed_by: userData.user?.id,
       closing_counted_amount: counted,
       expected_amount: expected,
-      difference: difference
+      difference: difference,
+      notes: closingNotes.trim() || null
     }).eq('id', session.id);
 
     // Automagicamente fechar a loja
@@ -461,14 +473,17 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
         entregaCount,
         retiradaCount,
         totalSangrias,
-        totalSuprimentos
+        totalSuprimentos,
+        notes: closingNotes.trim() || null
       };
 
       setClosedResult(reportData);
       setSession(null);
       setClosingAmount('');
+      setClosingNotes('');
       setShowCloseModal(false);
       loadHistory();
+      showToast('Caixa fechado e conferido com sucesso!', 'success');
     }
   };
 
@@ -818,6 +833,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                         onClick={() => setSelectedSessionForDetails(h)}
                         className="text-xs font-semibold text-[#745240] bg-[#E8D8D1]/60 hover:bg-[#E8D8D1] border border-[#D5AF7A]/40 p-2 rounded-xl transition-colors inline-flex items-center cursor-pointer shadow-2xs"
                         title="Detalhes do Fechamento"
+                        aria-label="Detalhes do Fechamento"
                       >
                         <Search className="w-4 h-4" />
                       </button>
@@ -825,6 +841,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                         onClick={() => handleDeleteSession(h.id)}
                         className="text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200/80 p-2 rounded-xl transition-colors inline-flex items-center cursor-pointer shadow-2xs"
                         title="Excluir Fechamento"
+                        aria-label="Excluir Fechamento"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -910,6 +927,22 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                     {(Number(closingAmount) - currentExpected) >= 0 ? '+' : ''}
                     R$ {(Number(closingAmount) - currentExpected).toFixed(2).replace('.', ',')}
                   </span>
+                </div>
+              )}
+
+              {closingAmount !== '' && Math.abs(Number(closingAmount) - currentExpected) > 0.009 && (
+                <div className="space-y-1.5 pt-1 animate-in fade-in duration-150">
+                  <label htmlFor="closingNotesInput" className="block text-[11px] font-bold font-mono text-[#745240] uppercase tracking-wider">
+                    Justificativa / Motivo da Diferença (Opcional)
+                  </label>
+                  <textarea
+                    id="closingNotesInput"
+                    rows={2}
+                    value={closingNotes}
+                    onChange={(e) => setClosingNotes(e.target.value)}
+                    placeholder="Ex: Troco repassado incorretamente no pedido #142, moeda extraviada..."
+                    className="w-full text-xs font-sans p-2.5 bg-white border border-[#E8D8D1] rounded-xl focus:border-[#D5AF7A] focus:ring-1 focus:ring-[#D5AF7A]/40 focus:outline-none transition-colors placeholder-[#745240]/40 text-[#44210F]"
+                  />
                 </div>
               )}
             </div>
@@ -1099,6 +1132,29 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {toast && (
+        <div 
+          role="status" 
+          aria-live="polite"
+          className="fixed bottom-5 right-5 z-50 max-w-sm w-full animate-in fade-in slide-in-from-bottom-2 duration-150"
+        >
+          <div className={`p-3.5 rounded-xl shadow-lg border flex items-center justify-between gap-3 ${
+            toast.type === 'error'
+              ? 'bg-[#44210F] text-[#FDFBF7] border-rose-500/60'
+              : 'bg-[#44210F] text-[#FDFBF7] border-[#083D07]'
+          }`}>
+            <span className="text-xs font-medium font-sans">{toast.message}</span>
+            <button
+              onClick={() => setToast(null)}
+              className="text-[#E8D8D1]/70 hover:text-white p-1 rounded cursor-pointer"
+              aria-label="Fechar notificação"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
       )}

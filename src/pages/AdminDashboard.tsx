@@ -29,6 +29,7 @@ import {
   AlertCircle,
   FileText,
   Check,
+  Copy,
   Search,
   Shield,
   Megaphone,
@@ -63,7 +64,7 @@ import { ALL_MENU_ITEMS, MenuItem, ExtraIngredient, pizzaExtras } from "../data/
 import { useMenu } from "../hooks/useMenu";
 import { supabase } from '../lib/supabase';
 import { normalizeOrderType, isOrderActive, normalizePaymentMethod, paymentLabel } from '../utils/paymentAndOrderHelper';
-import { formatItemNameForPrint, getItemNameTextForPrint } from '../utils/printHelpers';
+import { formatItemNameForPrint, getItemNameTextForPrint, stripSizeSuffix } from '../utils/printHelpers';
 import { motion } from 'framer-motion';
 import MenuManager from '../components/MenuManager';
 import CategoryManager from '../components/CategoryManager';
@@ -92,14 +93,169 @@ import { startOfDay, endOfDay } from 'date-fns';
 
 
 
+// Fuso horário oficial de BRASÍLIA (America/Sao_Paulo / UTC-3)
+const BRAZIL_TZ = 'America/Sao_Paulo';
+
+interface BrasiliaDateParts {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+  dateStr: string; // YYYY-MM-DD
+  dayOfWeek: number; // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+}
+
+// Analisa e extrai ano, mês, dia e hora RIGOROSAMENTE no Horário de Brasília (BRT / UTC-3).
+// O dia NUNCA vira às 21:00 UTC; a transição ocorre estritamente à meia-noite (00:00:00).
+const getBrasiliaParts = (input?: any): BrasiliaDateParts | null => {
+  if (!input) {
+    const d = new Date();
+    return getBrasiliaParts(d);
+  }
+
+  if (typeof input === 'string') {
+    const s = input.trim();
+    if (!s) return null;
+
+    // Se já é YYYY-MM-DD (ex: '2026-10-14')
+    const isoDateMatch = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoDateMatch) {
+      const year = parseInt(isoDateMatch[1], 10);
+      const month = parseInt(isoDateMatch[2], 10);
+      const day = parseInt(isoDateMatch[3], 10);
+      const dateAtNoon = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+      return {
+        year,
+        month,
+        day,
+        hour: 12,
+        minute: 0,
+        second: 0,
+        dateStr: s,
+        dayOfWeek: dateAtNoon.getUTCDay()
+      };
+    }
+
+    // Se é formato brasileiro DD/MM/YYYY (ex: '14/10/2026')
+    const brMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (brMatch) {
+      const year = parseInt(brMatch[3], 10);
+      const month = parseInt(brMatch[2], 10);
+      const day = parseInt(brMatch[1], 10);
+      const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dateAtNoon = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+      return {
+        year,
+        month,
+        day,
+        hour: 12,
+        minute: 0,
+        second: 0,
+        dateStr,
+        dayOfWeek: dateAtNoon.getUTCDay()
+      };
+    }
+
+    // Para strings do postgres com espaço ex: '2026-10-14 21:00:00'
+    let parseable = s;
+    if (s.includes(' ') && !s.includes('T')) {
+      parseable = s.replace(' ', 'T');
+      if (!parseable.includes('+') && !parseable.includes('Z')) {
+        parseable += 'Z';
+      }
+    }
+
+    const d = new Date(parseable);
+    if (isNaN(d.getTime())) return null;
+    return getBrasiliaParts(d);
+  }
+
+  let d: Date;
+  if (input instanceof Date) {
+    d = input;
+  } else if (typeof input === 'number') {
+    d = new Date(input);
+  } else {
+    d = new Date(input);
+  }
+
+  if (isNaN(d.getTime())) return null;
+
+  try {
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      timeZone: BRAZIL_TZ,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    const parts = formatter.formatToParts(d);
+    const getPart = (type: string) => parts.find(p => p.type === type)?.value || '';
+
+    const year = parseInt(getPart('year'), 10);
+    const month = parseInt(getPart('month'), 10);
+    const day = parseInt(getPart('day'), 10);
+    const hour = parseInt(getPart('hour'), 10);
+    const minute = parseInt(getPart('minute'), 10);
+    const second = parseInt(getPart('second'), 10);
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+    // Dia da semana de Brasília calculado via UTC noon para evitar desvios de timezone
+    const dateAtNoon = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    const dayOfWeek = dateAtNoon.getUTCDay();
+
+    return { year, month, day, hour, minute, second, dateStr, dayOfWeek };
+  } catch {
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    return {
+      year,
+      month,
+      day,
+      hour: d.getHours(),
+      minute: d.getMinutes(),
+      second: d.getSeconds(),
+      dateStr: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+      dayOfWeek: d.getDay()
+    };
+  }
+};
+
 const safeGetDate = (dStr: any): Date | null => {
   if (!dStr) return null;
   try {
+    if (dStr instanceof Date) return dStr;
+    if (typeof dStr === 'string') {
+      const s = dStr.trim();
+      const brMatch = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (brMatch) {
+        return new Date(parseInt(brMatch[3], 10), parseInt(brMatch[2], 10) - 1, parseInt(brMatch[1], 10));
+      }
+      let parseable = s;
+      if (s.includes(' ') && !s.includes('T')) {
+        parseable = s.replace(' ', 'T');
+        if (!parseable.includes('+') && !parseable.includes('Z')) parseable += 'Z';
+      }
+      const d = new Date(parseable);
+      return isNaN(d.getTime()) ? null : d;
+    }
     const d = new Date(dStr);
     return isNaN(d.getTime()) ? null : d;
   } catch (e) {
     return null;
   }
+};
+
+// Retorna data em formato YYYY-MM-DD no fuso horário oficial de BRASÍLIA (America/Sao_Paulo / GMT-3)
+const toLocalDateKey = (dStr: any): string => {
+  const parts = getBrasiliaParts(dStr);
+  return parts ? parts.dateStr : '';
 };
 
 const formatCurrency = (val: any): string => {
@@ -108,17 +264,25 @@ const formatCurrency = (val: any): string => {
 };
 
 const safeParseItems = (items: any): any[] => {
+  let list: any[] = [];
   if (!items) return [];
-  if (Array.isArray(items)) return items;
-  if (typeof items === 'string') {
+  if (Array.isArray(items)) list = items;
+  else if (typeof items === 'string') {
     try {
       const parsed = JSON.parse(items);
-      return Array.isArray(parsed) ? parsed : [];
+      list = Array.isArray(parsed) ? parsed : [];
     } catch (e) {
       return [];
     }
   }
-  return [];
+  return list.map(it => {
+    if (!it || typeof it !== 'object') return it;
+    return {
+      ...it,
+      name: stripSizeSuffix(it.name || ''),
+      size: undefined
+    };
+  });
 };
 
 const CHART_COLORS = ["#083d07", "#d5af7a", "#745240", "#5f8f3e", "#b88a44", "#a89284"];
@@ -232,6 +396,25 @@ export default function AdminDashboard() {
   }, [soundEnabled]);
 
   const toggleSound = () => setSoundEnabled(prev => !prev);
+  const [copiedCardapioLink, setCopiedCardapioLink] = useState(false);
+  const handleCopyCardapioLink = () => {
+    try {
+      const url = window.location.origin;
+      navigator.clipboard.writeText(url);
+      setCopiedCardapioLink(true);
+      setTimeout(() => setCopiedCardapioLink(false), 2000);
+    } catch {
+      // fallback se clipboard API falhar
+      const textarea = document.createElement('textarea');
+      textarea.value = window.location.origin;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+      setCopiedCardapioLink(true);
+      setTimeout(() => setCopiedCardapioLink(false), 2000);
+    }
+  };
   const [lastSeenOrderId, setLastSeenOrderId] = useState<number | null>(null);
   const lastSeenOrderIdRef = useRef(lastSeenOrderId);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -245,6 +428,14 @@ export default function AdminDashboard() {
   const [ordersSearchTerm, setOrdersSearchTerm] = useState('');
   const [motoboys, setMotoboys] = useState<Motoboy[]>([]);
   const [assigningDelivery, setAssigningDelivery] = useState<{ order: any; nextStatus?: string } | null>(null);
+  const [dashboardToast, setDashboardToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    setDashboardToast({ message, type });
+    setTimeout(() => {
+      setDashboardToast((curr) => (curr?.message === message ? null : curr));
+    }, 4500);
+  };
 
   const getElapsedTime = (createdAt: string | Date) => {
     if (!createdAt) return { text: '', minutes: 0, urgency: 'normal' };
@@ -371,7 +562,7 @@ export default function AdminDashboard() {
       fetchDashboardData(true);
     } catch (err: any) {
       console.error('Erro ao atualizar pedido:', err);
-      alert('Erro ao sincronizar atualização no banco: ' + err.message);
+      showToast('Erro ao sincronizar atualização no banco: ' + err.message, 'error');
     }
   };
 
@@ -383,10 +574,10 @@ export default function AdminDashboard() {
       const { error } = await supabase.from('orders').delete().eq('id', orderId);
       if (error) throw error;
       fetchDashboardData(true);
-      alert(`Pedido #${orderId} excluído com sucesso!`);
+      showToast(`Pedido #${orderId} excluído com sucesso!`, 'success');
     } catch (err: any) {
       console.error('Erro ao excluir pedido:', err);
-      alert('Erro ao excluir pedido: ' + err.message);
+      showToast('Erro ao excluir pedido: ' + err.message, 'error');
     }
   };
 
@@ -434,63 +625,58 @@ export default function AdminDashboard() {
       setAllOrders(allDbOrders);
 
       const now = new Date();
-      let allOrdersAgg = allDbOrders;
-      
-      const safeGetTime = (dStr: any) => {
-        if (!dStr) return null;
-        try {
-          const d = new Date(dStr);
-          return isNaN(d.getTime()) ? null : d;
-        } catch(e) {
-          return null;
-        }
+      const brasiliaNow = getBrasiliaParts(now) || {
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+        day: now.getDate(),
+        hour: now.getHours(),
+        minute: now.getMinutes(),
+        second: now.getSeconds(),
+        dateStr: toLocalDateKey(now),
+        dayOfWeek: now.getDay()
       };
+      const todayStr = brasiliaNow.dateStr;
+
+      let allOrdersAgg = allDbOrders;
 
       if (filter === 'hoje') {
-        const todayStr = now.toISOString().split('T')[0];
         allOrdersAgg = allDbOrders.filter(o => {
-          const d = safeGetTime(o.createdAt);
-          if (!d) return false;
-          return d.toISOString().split('T')[0] === todayStr;
+          const orderDate = toLocalDateKey(o.createdAt);
+          const isToday = orderDate === todayStr;
+          const isActiveShift = Boolean(activeSessionId && o.cashSessionId === activeSessionId);
+          return isToday || isActiveShift;
         });
       } else if (filter === 'ontem') {
-        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-        allOrdersAgg = allDbOrders.filter(o => {
-          const d = safeGetTime(o.createdAt);
-          if (!d) return false;
-          return d.toISOString().split('T')[0] === yesterdayStr;
-        });
+        const yesterdayDate = new Date(Date.UTC(brasiliaNow.year, brasiliaNow.month - 1, brasiliaNow.day - 1, 12, 0, 0));
+        const yesterdayStr = toLocalDateKey(yesterdayDate);
+        allOrdersAgg = allDbOrders.filter(o => toLocalDateKey(o.createdAt) === yesterdayStr);
       } else if (filter === '7dias') {
-        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const minDateKey = toLocalDateKey(new Date(Date.UTC(brasiliaNow.year, brasiliaNow.month - 1, brasiliaNow.day - 6, 12, 0, 0)));
+        const maxDateKey = todayStr;
         allOrdersAgg = allDbOrders.filter(o => {
-          const d = safeGetTime(o.createdAt);
-          if (!d) return false;
-          return d >= sevenDaysAgo;
+          const dKey = toLocalDateKey(o.createdAt);
+          return dKey >= minDateKey && dKey <= maxDateKey;
         });
       } else if (filter === '30dias') {
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const minDateKey = toLocalDateKey(new Date(Date.UTC(brasiliaNow.year, brasiliaNow.month - 1, brasiliaNow.day - 29, 12, 0, 0)));
+        const maxDateKey = todayStr;
         allOrdersAgg = allDbOrders.filter(o => {
-          const d = safeGetTime(o.createdAt);
-          if (!d) return false;
-          return d >= thirtyDaysAgo;
+          const dKey = toLocalDateKey(o.createdAt);
+          return dKey >= minDateKey && dKey <= maxDateKey;
         });
       } else if (filter === 'mes') {
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
         allOrdersAgg = allDbOrders.filter(o => {
-          const d = safeGetTime(o.createdAt);
-          if (!d) return false;
-          return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+          const p = getBrasiliaParts(o.createdAt);
+          if (!p) return false;
+          return p.month === brasiliaNow.month && p.year === brasiliaNow.year;
         });
       } else if (filter === 'mes_passado') {
-        const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const prevMonth = prevMonthDate.getMonth();
-        const prevYear = prevMonthDate.getFullYear();
+        const prevMonth = brasiliaNow.month === 1 ? 12 : brasiliaNow.month - 1;
+        const prevYear = brasiliaNow.month === 1 ? brasiliaNow.year - 1 : brasiliaNow.year;
         allOrdersAgg = allDbOrders.filter(o => {
-          const d = safeGetTime(o.createdAt);
-          if (!d) return false;
-          return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+          const p = getBrasiliaParts(o.createdAt);
+          if (!p) return false;
+          return p.month === prevMonth && p.year === prevYear;
         });
       } else if (filter === 'todos') {
         allOrdersAgg = allDbOrders;
@@ -498,12 +684,11 @@ export default function AdminDashboard() {
         const startStr = customStartDateRef.current;
         const endStr = customEndDateRef.current;
         if (startStr && endStr) {
-          const start = new Date(`${startStr}T00:00:00`);
-          const end = new Date(`${endStr}T23:59:59`);
+          const startKey = toLocalDateKey(startStr);
+          const endKey = toLocalDateKey(endStr);
           allOrdersAgg = allDbOrders.filter(o => {
-            const d = safeGetTime(o.createdAt);
-            if (!d) return false;
-            return d >= start && d <= end;
+            const dKey = toLocalDateKey(o.createdAt);
+            return dKey >= startKey && dKey <= endKey;
           });
         }
       }
@@ -539,45 +724,54 @@ export default function AdminDashboard() {
       // Filter Cash Sessions
       let filteredCashAgg = enrichedCashSessions;
       if (filter === 'hoje') {
-        const todayStr = now.toISOString().split('T')[0];
-        filteredCashAgg = enrichedCashSessions.filter(s => s.closed_at && s.closed_at.split('T')[0] === todayStr);
+        filteredCashAgg = enrichedCashSessions.filter(s => {
+          if (!s.closed_at) return s.status === 'aberto';
+          return toLocalDateKey(s.closed_at) === todayStr;
+        });
       } else if (filter === 'ontem') {
-        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        const yesterdayStr = yesterday.toISOString().split('T')[0];
-        filteredCashAgg = enrichedCashSessions.filter(s => s.closed_at && s.closed_at.split('T')[0] === yesterdayStr);
+        const yesterdayDate = new Date(Date.UTC(brasiliaNow.year, brasiliaNow.month - 1, brasiliaNow.day - 1, 12, 0, 0));
+        const yesterdayStr = toLocalDateKey(yesterdayDate);
+        filteredCashAgg = enrichedCashSessions.filter(s => s.closed_at && toLocalDateKey(s.closed_at) === yesterdayStr);
       } else if (filter === '7dias') {
-        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        filteredCashAgg = enrichedCashSessions.filter(s => s.closed_at && new Date(s.closed_at) >= sevenDaysAgo);
-      } else if (filter === '30dias') {
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        filteredCashAgg = enrichedCashSessions.filter(s => s.closed_at && new Date(s.closed_at) >= thirtyDaysAgo);
-      } else if (filter === 'mes') {
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
+        const minDateKey = toLocalDateKey(new Date(Date.UTC(brasiliaNow.year, brasiliaNow.month - 1, brasiliaNow.day - 6, 12, 0, 0)));
+        const maxDateKey = todayStr;
         filteredCashAgg = enrichedCashSessions.filter(s => {
           if (!s.closed_at) return false;
-          const d = new Date(s.closed_at);
-          return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+          const dKey = toLocalDateKey(s.closed_at);
+          return dKey >= minDateKey && dKey <= maxDateKey;
+        });
+      } else if (filter === '30dias') {
+        const minDateKey = toLocalDateKey(new Date(Date.UTC(brasiliaNow.year, brasiliaNow.month - 1, brasiliaNow.day - 29, 12, 0, 0)));
+        const maxDateKey = todayStr;
+        filteredCashAgg = enrichedCashSessions.filter(s => {
+          if (!s.closed_at) return false;
+          const dKey = toLocalDateKey(s.closed_at);
+          return dKey >= minDateKey && dKey <= maxDateKey;
+        });
+      } else if (filter === 'mes') {
+        filteredCashAgg = enrichedCashSessions.filter(s => {
+          if (!s.closed_at) return false;
+          const p = getBrasiliaParts(s.closed_at);
+          return p ? (p.month === brasiliaNow.month && p.year === brasiliaNow.year) : false;
         });
       } else if (filter === 'mes_passado') {
-        const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        const prevMonth = prevMonthDate.getMonth();
-        const prevYear = prevMonthDate.getFullYear();
+        const prevMonth = brasiliaNow.month === 1 ? 12 : brasiliaNow.month - 1;
+        const prevYear = brasiliaNow.month === 1 ? brasiliaNow.year - 1 : brasiliaNow.year;
         filteredCashAgg = enrichedCashSessions.filter(s => {
           if (!s.closed_at) return false;
-          const d = new Date(s.closed_at);
-          return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
+          const p = getBrasiliaParts(s.closed_at);
+          return p ? (p.month === prevMonth && p.year === prevYear) : false;
         });
       } else if (filter === 'customizado') {
         const startStr = customStartDateRef.current;
         const endStr = customEndDateRef.current;
         if (startStr && endStr) {
-          const start = new Date(`${startStr}T00:00:00`);
-          const end = new Date(`${endStr}T23:59:59`);
+          const startKey = toLocalDateKey(startStr);
+          const endKey = toLocalDateKey(endStr);
           filteredCashAgg = enrichedCashSessions.filter(s => {
             if (!s.closed_at) return false;
-            const d = new Date(s.closed_at);
-            return d >= start && d <= end;
+            const dKey = toLocalDateKey(s.closed_at);
+            return dKey >= startKey && dKey <= endKey;
           });
         }
       }
@@ -586,7 +780,7 @@ export default function AdminDashboard() {
       let faturamentoBruto = 0;
       let totalPedidos = allOrdersAgg.length;
       let faturamentoNumerario = 0;
-      let faturamentoMBWay = 0;
+      let faturamentoPix = 0;
       const paymentMethodCounts: Record<string, { count: number, revenue: number }> = {};
       
       const itemCounts: Record<string, {qty: number, revenue: number}> = {};
@@ -598,19 +792,22 @@ export default function AdminDashboard() {
       dayNames.forEach(d => daysCounts[d] = { orders: 0, revenue: 0 });
       
       allOrdersAgg.forEach(order => {
+        const isCanceled = (order.status || '').toLowerCase() === 'cancelado';
         const amt = Number(order.totalAmount) || 0;
-        faturamentoBruto += amt;
+        if (!isCanceled) {
+          faturamentoBruto += amt;
+        }
         const pmRaw = (order.paymentMethod || '').trim();
         const pm = paymentLabel(pmRaw);
         paymentMethodCounts[pm] = paymentMethodCounts[pm] || { count: 0, revenue: 0 };
         paymentMethodCounts[pm].count += 1;
         paymentMethodCounts[pm].revenue += amt;
         if (pm === 'Dinheiro') faturamentoNumerario += amt;
-        if (pm === 'Pix') faturamentoMBWay += amt;
+        if (pm === 'Pix') faturamentoPix += amt;
 
-        const d = safeGetTime(order.createdAt);
-        if (d) {
-          const dayName = dayNames[d.getDay()];
+        const p = getBrasiliaParts(order.createdAt);
+        if (p) {
+          const dayName = dayNames[p.dayOfWeek];
           if (daysCounts[dayName]) {
             daysCounts[dayName].orders += 1;
             daysCounts[dayName].revenue += amt;
@@ -677,9 +874,9 @@ export default function AdminDashboard() {
       // Janela dos 7 dias mais recentes terminando hoje
       const recentDayMap: Record<number, { dateStr: string, displayDate: string, orders: number, revenue: number }> = {};
       for (let i = 6; i >= 0; i--) {
-        const d = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
         const dayIdx = d.getDay();
-        const dateStr = d.toISOString().split('T')[0];
+        const dateStr = toLocalDateKey(d);
         const displayDate = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
         recentDayMap[dayIdx] = {
           dateStr,
@@ -694,7 +891,7 @@ export default function AdminDashboard() {
         if (order.status === 'Cancelado' || order.status === 'cancelado') return;
         const d = safeGetTime(order.createdAt);
         if (!d) return;
-        const orderDateStr = d.toISOString().split('T')[0];
+        const orderDateStr = toLocalDateKey(d);
         const dayIdx = d.getDay();
         if (recentDayMap[dayIdx] && recentDayMap[dayIdx].dateStr === orderDateStr) {
           const amt = Number(order.totalAmount) || 0;
@@ -772,9 +969,8 @@ export default function AdminDashboard() {
           const isPendingOrActive = o.status !== 'Finalizado' && o.status !== 'Cancelado';
           if (isPendingOrActive) return true;
           // Pedidos do dia atual (mesmo que sem sessão aberta vinculada)
-          const orderDate = safeGetTime(o.createdAt);
-          const todayStr = now.toISOString().split('T')[0];
-          return orderDate && orderDate.toISOString().split('T')[0] === todayStr;
+          const todayStr = toLocalDateKey(now);
+          return toLocalDateKey(o.createdAt) === todayStr;
         }),
         popularItems,
         popularPizzas,
@@ -839,9 +1035,15 @@ export default function AdminDashboard() {
     setPrintOrder(null);
   };
 
-  // Dismiss on ESC for AdminDashboard modals and mobile drawer
+  const [activeTab, setActiveTab] = useState("visao-geral");
+  const [showPDVModal, setShowPDVModal] = useState(false);
+  const [expenses, setExpenses] = useState<any[]>([]);
+  const [refreshCaixaSignal, setRefreshCaixaSignal] = useState(0);
+
+  // Dismiss on ESC for AdminDashboard modals + Power-user cashier hotkeys (F1, F2, F3, F4)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // 1. Modals close on Escape
       if (e.key === 'Escape') {
         if (showPrintPreview) {
           setShowPrintPreview(false);
@@ -854,17 +1056,57 @@ export default function AdminDashboard() {
           setSelectedSessionForDetails(null);
         } else if (isMobileMenuOpen) {
           setIsMobileMenuOpen(false);
+        } else if (showPDVModal) {
+          setShowPDVModal(false);
+        } else if (showStoreMenu) {
+          setShowStoreMenu(false);
+        } else if (editingOrder) {
+          setEditingOrder(null);
+        } else if (assigningDelivery) {
+          setAssigningDelivery(null);
         }
+        return;
+      }
+
+      // Check if user is typing in an input/textarea/select
+      const activeTag = (document.activeElement as HTMLElement)?.tagName;
+      const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag) || (document.activeElement as HTMLElement)?.isContentEditable;
+      if (isInput) return;
+
+      // F2: Novo Pedido (PDV)
+      if (e.key === 'F2') {
+        e.preventDefault();
+        setShowPDVModal(true);
+      }
+      // F1 or Alt+V: Visão Geral
+      else if (e.key === 'F1' || (e.altKey && e.key.toLowerCase() === 'v')) {
+        e.preventDefault();
+        setActiveTab('visao-geral');
+      }
+      // F3 or Alt+P: Pedidos
+      else if (e.key === 'F3' || (e.altKey && e.key.toLowerCase() === 'p')) {
+        e.preventDefault();
+        setActiveTab('pedidos');
+      }
+      // F4 or Alt+C: Caixa
+      else if (e.key === 'F4' || (e.altKey && e.key.toLowerCase() === 'c')) {
+        e.preventDefault();
+        setActiveTab('caixa');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [showPrintPreview, reportModal.isOpen, isPasswordModalOpen, selectedSessionForDetails, isMobileMenuOpen]);
-
-  const [activeTab, setActiveTab] = useState("visao-geral");
-  const [showPDVModal, setShowPDVModal] = useState(false);
-  const [expenses, setExpenses] = useState<any[]>([]);
-  const [refreshCaixaSignal, setRefreshCaixaSignal] = useState(0);
+  }, [
+    showPrintPreview, 
+    reportModal.isOpen, 
+    isPasswordModalOpen, 
+    selectedSessionForDetails, 
+    isMobileMenuOpen, 
+    showPDVModal, 
+    showStoreMenu, 
+    editingOrder, 
+    assigningDelivery
+  ]);
 
   const [dateFilter, setDateFilter] = useState("hoje");
   const [customStartDate, setCustomStartDate] = useState('');
@@ -878,8 +1120,6 @@ export default function AdminDashboard() {
     customEndDateRef.current = customEndDate;
   }, [dateFilter, customStartDate, customEndDate]);
 
-  
-  
   const purgeAllTestData = async (showAlert = false) => {
     try {
       await supabase.from('orders').delete().neq('id', 0);
@@ -910,11 +1150,11 @@ export default function AdminDashboard() {
 
       await fetchDashboardData(true);
       if (showAlert) {
-        alert('Todos os dados de vendas, caixa, relatórios e clientes de teste foram zerados com sucesso!');
+        showToast('Todos os dados de vendas, caixa, relatórios e clientes de teste foram zerados com sucesso!', 'success');
       }
     } catch (err: any) {
       console.error('Erro ao zerar dados:', err);
-      if (showAlert) alert('Erro ao zerar dados: ' + (err.message || String(err)));
+      if (showAlert) showToast('Erro ao zerar dados: ' + (err.message || String(err)), 'error');
     }
   };
 
@@ -939,6 +1179,7 @@ export default function AdminDashboard() {
       clearTimeout(sessionTimeout);
       if (session?.user) {
         setIsAuthenticated(true);
+        try { localStorage.setItem('dobro_internal', '1'); } catch {}
         fetchRole(session.user.id).finally(() => setIsLoading(false));
       } else {
         setIsLoading(false);
@@ -1017,7 +1258,7 @@ export default function AdminDashboard() {
     setShowStoreMenu(false);
     
     if (action === 'open' && !dashboardData?.activeSessionId) {
-      alert("⚠️ Você precisa ABRIR O CAIXA primeiro (na aba 'Caixa') antes de abrir a loja para receber pedidos.");
+      showToast("⚠️ Você precisa ABRIR O CAIXA primeiro (na aba 'Caixa') antes de abrir a loja para receber pedidos.", 'warning');
       setActiveTab('caixa');
       return;
     }
@@ -1141,6 +1382,7 @@ export default function AdminDashboard() {
       }
 
       if (error) throw error;
+      try { localStorage.setItem('dobro_internal', '1'); } catch {}
       // isAuthenticated, userRole e isLoading são atualizados automaticamente
       // pelo listener onAuthStateChange configurado acima.
     } catch (err) {
@@ -1166,7 +1408,7 @@ export default function AdminDashboard() {
       fetchDashboardData(true);
     } catch (err: any) {
       console.error("Failed to toggle category pause status", err);
-      alert("Erro ao pausar categoria: " + err.message);
+      showToast("Erro ao pausar categoria: " + err.message, 'error');
     }
   };
 
@@ -1183,14 +1425,14 @@ export default function AdminDashboard() {
       fetchDashboardData(true);
     } catch (err: any) {
       console.error("Failed to toggle item pause status", err);
-      alert("Erro ao pausar item: " + err.message);
+      showToast("Erro ao pausar item: " + err.message, 'error');
     }
   };
 
 
   const handleExportCSV = () => {
     if (!allOrders || allOrders.length === 0) {
-      alert("Nenhum dado para exportar");
+      showToast("Nenhum dado para exportar.", 'warning');
       return;
     }
     const orders = allOrders;
@@ -1263,10 +1505,10 @@ export default function AdminDashboard() {
         type="button"
         onClick={() => setAssigningDelivery({ order })}
         title={responsible ? 'Alterar motoboy da entrega' : 'Vincular motoboy à entrega imediatamente'}
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono font-bold border cursor-pointer transition-all ${
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-medium border cursor-pointer transition-all ${
           responsible
             ? 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100 shadow-2xs'
-            : 'bg-amber-100 text-amber-950 border-amber-300 hover:bg-amber-200 animate-pulse'
+            : 'bg-amber-50 text-amber-950 border-amber-300 hover:bg-amber-100'
         }`}
       >
         <Bike size={13} className={responsible ? 'text-emerald-700' : 'text-amber-700'} />
@@ -1688,27 +1930,36 @@ export default function AdminDashboard() {
             <button 
               onClick={() => setActiveTab("visao-geral")} 
               className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'visao-geral' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
+              title="Visão Geral (F1 ou Alt+V)"
+              aria-label="Visão Geral (Atalho F1)"
             >
               <LayoutDashboard size={12} className={activeTab === 'visao-geral' ? 'text-stone-950' : 'text-[#745240]'} />
-              Visão Geral
+              <span>Visão Geral</span>
+              <kbd className="ml-auto text-[9px] font-mono opacity-50">F1</kbd>
             </button>
           )}
           {hasPermission('ver_pedidos') && (
             <button 
               onClick={() => setActiveTab("pedidos")} 
               className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'pedidos' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
+              title="Pedidos (F3 ou Alt+P)"
+              aria-label="Pedidos (Atalho F3)"
             >
               <ShoppingBag size={12} className={activeTab === 'pedidos' ? 'text-stone-950' : 'text-[#745240]'} />
-              Pedidos
+              <span>Pedidos</span>
+              <kbd className="ml-auto text-[9px] font-mono opacity-50">F3</kbd>
             </button>
           )}
           {hasPermission('gerenciar_caixa') && (
             <button 
               onClick={() => setActiveTab("caixa")} 
               className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'caixa' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
+              title="Caixa (F4 ou Alt+C)"
+              aria-label="Caixa (Atalho F4)"
             >
               <CreditCard size={12} className={activeTab === 'caixa' ? 'text-stone-950' : 'text-[#745240]'} />
-              Caixa
+              <span>Caixa</span>
+              <kbd className="ml-auto text-[9px] font-mono opacity-50">F4</kbd>
             </button>
           )}
           {hasPermission('gerenciar_caixa') && (
@@ -2054,6 +2305,15 @@ export default function AdminDashboard() {
                   }}
                   align="right"
                 />
+                <button
+                  type="button"
+                  onClick={handleCopyCardapioLink}
+                  title="Copiar o link oficial do cardápio digital para enviar aos clientes ou compartilhar"
+                  className="h-7 px-2.5 rounded-lg border border-[#d5af7a]/60 bg-[#083d07] text-[#fdfbf7] hover:bg-[#0b520a] transition-all cursor-pointer shadow-2xs flex items-center gap-1.5 text-[11px] font-mono font-bold"
+                >
+                  {copiedCardapioLink ? <Check size={12} className="text-[#d5af7a]" /> : <Copy size={12} className="text-[#d5af7a]" />}
+                  <span>{copiedCardapioLink ? 'Link Copiado!' : 'Copiar link'}</span>
+                </button>
                 <button
                   onClick={() => fetchDashboardData()}
                   className="h-7 px-2 rounded-lg border border-stone-200 bg-white text-stone-600 hover:text-stone-950 hover:bg-stone-50 transition-colors cursor-pointer shadow-2xs flex items-center gap-1 text-[11px] font-mono font-medium"
@@ -2775,9 +3035,12 @@ export default function AdminDashboard() {
                       <button
                         onClick={() => setShowPDVModal(true)}
                         className="flex items-center gap-1.5 px-3.5 h-8 bg-[#083D07] hover:bg-[#0b520a] active:bg-[#062b06] text-[#FDFBF7] rounded-lg text-xs font-bold tracking-wide shadow-xs transition-all cursor-pointer border border-[#D5AF7A]/40"
+                        title="Novo Pedido / Lançar PDV (Atalho F2)"
+                        aria-label="Novo Pedido (Atalho F2)"
                       >
                         <Plus size={15} className="stroke-[2.5]" />
                         <span>Novo Pedido</span>
+                        <kbd className="hidden sm:inline-block text-[10px] bg-[#062b06] border border-[#D5AF7A]/40 px-1 py-0.5 rounded font-mono text-[#D5AF7A]">F2</kbd>
                       </button>
                     </div>
                   </div>
@@ -3044,11 +3307,7 @@ export default function AdminDashboard() {
                                       ? (order.paymentMethod || order.payment_method || 'Dinheiro')
                                       : paymentLabel(order.paymentMethod || order.payment_method)}
                                   </span>
-                                  {(order.nif || order.customer_nif) && (
-                                    <span className="text-[10px] font-semibold bg-stone-100 text-stone-600 px-1.5 rounded border border-stone-200">
-                                      CPF: {order.nif || order.customer_nif}
-                                    </span>
-                                  )}
+
                                 </div>
 
                                 {order.changeFor && Number(order.changeFor) > 0 && (
@@ -3076,7 +3335,7 @@ export default function AdminDashboard() {
                                         </span>
                                         <div className="min-w-0">
                                           <div className="font-bold text-[#44210F] text-xs sm:text-sm leading-snug">
-                                            {item.name || 'Produto'}
+                                            {stripSizeSuffix(item.name || 'Produto')}
                                           </div>
 
                                           {/* Sabores Meio a Meio */}
@@ -3241,17 +3500,17 @@ export default function AdminDashboard() {
 
                   {/* VISUALIZAÇÃO EM TABELA */}
                   {ordersViewMode === 'table' && filteredList.length > 0 && (
-                    <div className="overflow-x-auto rounded-xl border border-[#E8D8D1]">
+                    <div className="overflow-x-auto rounded-xl border border-[#E8D8D1] bg-white shadow-xs">
                       <table className="min-w-full text-left">
                         <thead>
                           <tr className="border-b border-[#E8D8D1] text-[11px] font-mono font-bold text-[#745240] uppercase tracking-wider bg-[#FDFBF7]">
-                            <th className="py-3 px-4">Nº / Hora</th>
-                            <th className="py-3 px-4">Cliente / Contato</th>
-                            <th className="py-3 px-4">Tipo & Motoboy</th>
-                            <th className="py-3 px-4">Pagamento</th>
-                            <th className="py-3 px-4">Valor</th>
-                            <th className="py-3 px-4 text-center">Status</th>
-                            <th className="py-3 px-4 text-right">Ações</th>
+                            <th className="py-2.5 px-3.5 whitespace-nowrap">Nº / Hora</th>
+                            <th className="py-2.5 px-3.5 whitespace-nowrap">Cliente / Contato</th>
+                            <th className="py-2.5 px-3.5 whitespace-nowrap">Tipo & Motoboy</th>
+                            <th className="py-2.5 px-3.5 whitespace-nowrap">Pagamento</th>
+                            <th className="py-2.5 px-3.5 whitespace-nowrap">Valor</th>
+                            <th className="py-2.5 px-3.5 text-center whitespace-nowrap">Status</th>
+                            <th className="py-2.5 px-3.5 text-right whitespace-nowrap">Ações</th>
                           </tr>
                         </thead>
                         <tbody className="text-xs divide-y divide-[#E8D8D1]/60">
@@ -3262,100 +3521,140 @@ export default function AdminDashboard() {
 
                             return (
                               <tr key={order.id} className="hover:bg-[#FDFBF7]/80 transition-colors">
-                                <td className="py-3 px-4">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="font-mono font-bold text-[#44210F] tabular-nums">#{order.id}</span>
-                                    {(order.isEdited || order.is_edited) && (
-                                      <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
-                                        Editado
-                                      </span>
-                                    )}
-                                  </div>
-                                  <div className="text-[11px] text-stone-500 mt-0.5 flex items-center gap-1 font-mono">
-                                    <span className="font-semibold text-stone-700">
+                                {/* Nº / Hora */}
+                                <td className="py-2.5 px-3.5 whitespace-nowrap">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-mono font-bold text-[#44210F] text-sm tabular-nums">#{order.id}</span>
+                                    <span className="font-mono text-xs font-semibold text-stone-700">
                                       {new Date(order.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                     {order.status !== 'Finalizado' && order.status !== 'Cancelado' && elapsed.text && (
-                                      <span className="text-[10px] text-stone-400">({elapsed.text})</span>
+                                      <span className="text-[11px] text-stone-400 font-mono">
+                                        ({elapsed.text})
+                                      </span>
+                                    )}
+                                    {(order.isEdited || order.is_edited) && (
+                                      <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-300">
+                                        Editado
+                                      </span>
                                     )}
                                   </div>
                                 </td>
 
                                 {/* Cliente & Contato */}
-                                <td className="py-3 px-4">
-                                  <div className="font-bold text-[#44210F] text-xs sm:text-sm">
+                                <td className="py-2.5 px-3.5 whitespace-nowrap">
+                                  <div className="font-bold text-[#44210F] text-xs">
                                     {order.customerName || order.customer_name || 'Cliente'}
                                   </div>
-                                  <div className="flex items-center gap-2 mt-0.5 text-[11px] text-stone-500 font-mono">
-                                    {(order.customerPhone || order.customer_phone) && (
+                                  {(order.customerPhone || order.customer_phone) && (
+                                    <div className="mt-0.5">
                                       <a
                                         href={`tel:${order.customerPhone || order.customer_phone}`}
-                                        className="hover:text-[#44210F] font-semibold transition-colors"
+                                        className="font-mono text-[11px] text-stone-500 hover:text-[#083D07] font-semibold transition-colors"
                                       >
                                         {order.customerPhone || order.customer_phone}
                                       </a>
-                                    )}
-                                    {(order.nif || order.customer_nif) && (
-                                      <span className="px-1 bg-stone-100 rounded text-[10px] font-semibold border border-stone-200">
-                                        CPF: {order.nif || order.customer_nif}
-                                      </span>
-                                    )}
-                                  </div>
-                                </td>
-
-                                <td className="py-3 px-4">
-                                  {(() => {
-                                    const normType = normalizeOrderType(rawType);
-                                    const isDel = normType === 'entrega';
-                                    const isRet = normType === 'retirada';
-                                    return (
-                                      <span
-                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${
-                                          isDel
-                                            ? 'bg-sky-50 text-sky-800 border-sky-200'
-                                            : isRet
-                                            ? 'bg-amber-50 text-amber-800 border-amber-200'
-                                            : 'bg-stone-100 text-stone-700 border-stone-200'
-                                        }`}
-                                      >
-                                        {isDel ? (
-                                          <Bike size={12} className="text-sky-600" />
-                                        ) : isRet ? (
-                                          <ShoppingBag size={12} className="text-amber-600" />
-                                        ) : (
-                                          <Store size={12} className="text-stone-500" />
-                                        )}
-                                        <span>{isDel ? 'Entrega' : isRet ? 'Retirada' : 'Balcão'}</span>
-                                      </span>
-                                    );
-                                  })()}
-                                  {isDelivery && (
-                                    <div className="mt-1">{renderMotoboyBadge(order)}</div>
+                                    </div>
                                   )}
                                 </td>
 
-                                <td className="py-3 px-4">
-                                  <div className="flex items-center gap-1.5 flex-wrap">
-                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold font-mono bg-[#FDFBF7] text-[#44210F] border border-[#E8D8D1]">
-                                      {order.paymentMethod || order.payment_method || 'Dinheiro'}
+                                {/* Tipo & Motoboy (Linha Única Compacta) */}
+                                <td className="py-2.5 px-3.5 whitespace-nowrap">
+                                  {(() => {
+                                    const normType = normalizeOrderType(rawType);
+                                    if (normType === 'retirada') {
+                                      return (
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                                          <ShoppingBag size={13} className="text-amber-600" />
+                                          <span>Retirada</span>
+                                        </span>
+                                      );
+                                    }
+                                    if (normType === 'balcao' || normType === 'mesa') {
+                                      return (
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200">
+                                          <Store size={13} className="text-stone-500" />
+                                          <span>Balcão</span>
+                                        </span>
+                                      );
+                                    }
+
+                                    // Entrega: badge unificado (Sem duplo badge e sem esticar a linha)
+                                    const provider = order.deliveryProvider || order.delivery_provider;
+                                    const motoboyId = order.motoboyId || order.motoboy_id;
+                                    const cost = order.deliveryCost !== undefined && order.deliveryCost !== null ? order.deliveryCost : order.delivery_cost;
+                                    const responsible = getDeliveryResponsibleLabel(provider, motoboyId, motoboys);
+
+                                    if (responsible) {
+                                      return (
+                                        <button
+                                          type="button"
+                                          onClick={() => setAssigningDelivery({ order })}
+                                          title="Clique para alterar o motoboy"
+                                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 transition-colors cursor-pointer"
+                                        >
+                                          <Bike size={13} className="text-emerald-700" />
+                                          <span>{responsible}</span>
+                                          {cost !== null && cost !== undefined && (
+                                            <span className="font-mono text-emerald-800 font-normal">
+                                              (R$ {Number(cost).toFixed(2).replace('.', ',')})
+                                            </span>
+                                          )}
+                                        </button>
+                                      );
+                                    }
+
+                                    return (
+                                      <button
+                                        type="button"
+                                        onClick={() => setAssigningDelivery({ order })}
+                                        title="Clique para vincular motoboy"
+                                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 transition-colors cursor-pointer"
+                                      >
+                                        <Bike size={13} className="text-amber-700" />
+                                        <span>Entrega • <strong className="font-semibold underline decoration-amber-400">+ Motoboy</strong></span>
+                                      </button>
+                                    );
+                                  })()}
+                                </td>
+
+                                {/* Forma de Pagamento */}
+                                <td className="py-2.5 px-3.5 whitespace-nowrap">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-medium text-stone-700">
+                                      {paymentLabel(order.paymentMethod || order.payment_method) === 'Outros'
+                                        ? (order.paymentMethod || order.payment_method || 'Dinheiro')
+                                        : paymentLabel(order.paymentMethod || order.payment_method)}
                                     </span>
                                     {order.changeFor && Number(order.changeFor) > 0 && (
-                                      <span className="text-[10px] font-semibold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                                      <span className="text-[10px] font-mono font-semibold text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
                                         Troco R$ {Number(order.changeFor).toFixed(0)}
                                       </span>
                                     )}
                                   </div>
                                 </td>
 
-                                <td className="py-3 px-4 font-bold font-mono tabular-nums text-[#44210F] text-sm">
+                                {/* Valor Total */}
+                                <td className="py-2.5 px-3.5 font-bold font-mono tabular-nums text-[#44210F] text-sm whitespace-nowrap">
                                   R$ {Number(order.totalAmount || order.total_amount || 0).toFixed(2).replace('.', ',')}
                                 </td>
 
-                                <td className="py-3 px-4 text-center">
+                                {/* Status */}
+                                <td className="py-2.5 px-3.5 text-center whitespace-nowrap">
                                   <select
                                     value={order.status}
                                     onChange={(e) => changeOrderStatus(order, e.target.value)}
-                                    className="px-2.5 py-1 rounded-lg text-[11px] font-semibold border border-[#E8D8D1] bg-white text-[#44210F] cursor-pointer outline-none hover:bg-stone-50 transition-all"
+                                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold border cursor-pointer outline-none transition-all ${
+                                      order.status === 'Pendente'
+                                        ? 'bg-amber-50 text-amber-900 border-amber-300'
+                                        : order.status === 'Em Preparo'
+                                        ? 'bg-[#E5DDD4] text-[#083D07] border-[#D5AF7A]'
+                                        : order.status === 'Saiu para Entrega'
+                                        ? 'bg-sky-50 text-sky-900 border-sky-300'
+                                        : order.status === 'Finalizado'
+                                        ? 'bg-emerald-50 text-emerald-900 border-emerald-300'
+                                        : 'bg-rose-50 text-rose-900 border-rose-300'
+                                    }`}
                                     style={{ textAlignLast: 'center' }}
                                     title="Alterar status"
                                   >
@@ -3367,12 +3666,13 @@ export default function AdminDashboard() {
                                   </select>
                                 </td>
 
-                                <td className="py-3 px-4 text-right">
+                                {/* Ações */}
+                                <td className="py-2.5 px-3.5 text-right whitespace-nowrap">
                                   <div className="flex items-center justify-end gap-1.5">
                                     {order.status === 'Pendente' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, 'Em Preparo')}
-                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-[#FDFBF7] transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
+                                        className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-[#FDFBF7] transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
                                         title="Iniciar Preparo"
                                       >
                                         Preparo
@@ -3381,8 +3681,8 @@ export default function AdminDashboard() {
                                     {order.status === 'Em Preparo' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, isDelivery ? 'Saiu para Entrega' : 'Finalizado')}
-                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-[#FDFBF7] transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
-                                        title={isDelivery ? 'Despachar' : 'Finalizar'}
+                                        className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-[#FDFBF7] transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
+                                        title={isDelivery ? 'Despachar Entrega' : 'Finalizar Pedido'}
                                       >
                                         {isDelivery ? 'Despachar' : 'Finalizar'}
                                       </button>
@@ -3390,7 +3690,7 @@ export default function AdminDashboard() {
                                     {order.status === 'Saiu para Entrega' && (
                                       <button
                                         onClick={() => changeOrderStatus(order, 'Finalizado')}
-                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-white transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
+                                        className="text-xs font-bold px-2.5 py-1 rounded-lg bg-[#083D07] hover:bg-[#0b520a] text-white transition-colors cursor-pointer border border-[#D5AF7A]/40 shadow-xs"
                                         title="Concluir Pedido"
                                       >
                                         Concluir
@@ -3490,6 +3790,16 @@ export default function AdminDashboard() {
                   />
 
                   <button
+                    type="button"
+                    onClick={handleCopyCardapioLink}
+                    title="Copiar o link oficial do cardápio digital para enviar aos clientes ou compartilhar"
+                    className="h-7 px-2.5 rounded-lg border border-[#d5af7a]/60 bg-[#083d07] text-[#fdfbf7] hover:bg-[#0b520a] transition-all cursor-pointer shadow-2xs flex items-center gap-1.5 text-[11px] font-mono font-bold"
+                  >
+                    {copiedCardapioLink ? <Check size={12} className="text-[#d5af7a]" /> : <Copy size={12} className="text-[#d5af7a]" />}
+                    <span>{copiedCardapioLink ? 'Link Copiado!' : 'Copiar link'}</span>
+                  </button>
+
+                  <button
                     onClick={() => fetchDashboardData()}
                     className="h-7 px-2 rounded-lg border border-stone-200 bg-white text-stone-700 hover:text-stone-950 hover:bg-stone-50 transition-colors cursor-pointer shadow-2xs flex items-center gap-1.5 text-[10px] font-bold"
                   >
@@ -3522,7 +3832,7 @@ export default function AdminDashboard() {
                 <ReportCard
                   customDelay={0.10}
                   title="Ticket Médio"
-                  value={formatCurrency(dashboardData.ticketMedio)}
+                  value={formatCurrency(dashboardData?.ticketMedio ?? 0)}
                   icon={<TrendingUp size={14} strokeWidth={1.5} className="text-emerald-950" />}
                   onClick={() => setReportModal({isOpen: true, type: 'ticket_medio', title: 'Cálculo e Análise do Ticket Médio'})}
                   subtitle="Média por pedido e canais"
@@ -3591,7 +3901,7 @@ export default function AdminDashboard() {
                     placeholder="Buscar produto por nome, ingrediente ou ID..."
                     value={cardapioSearchTerm}
                     onChange={(e) => setCardapioSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-8 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#8b0000] focus:ring-1 focus:ring-[#8b0000] transition-colors shadow-2xs"
+                    className="w-full pl-9 pr-8 py-1.5 bg-white border border-stone-200 rounded-xl text-xs font-medium focus:outline-none focus:border-[#083d07] focus:ring-1 focus:ring-[#083d07] transition-colors shadow-2xs"
                   />
                   {cardapioSearchTerm && (
                     <button onClick={() => setCardapioSearchTerm('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs font-bold p-1 cursor-pointer">✕</button>
@@ -3692,29 +4002,42 @@ export default function AdminDashboard() {
                 <div key={cat.id} id={`admin-cat-${cat.id}`} className="scroll-mt-36 bg-white p-5 rounded-xl border border-[#E7E5E1] shadow-[0_1px_2px_rgba(28,25,23,0.04),0_1px_8px_rgba(28,25,23,0.04)] hover:shadow-[0_4px_12px_rgba(28,25,23,0.08)] hover:border-[#D4AF6A]/30 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
                     <div>
-                      <h2 className="text-lg font-bold text-stone-900">{cat.label}</h2>
-                      <p className="text-xs text-stone-500 font-mono">Total: {items.length} itens</p>
+                      <h2 className="text-lg font-bold text-[#44210F]">{cat.label}</h2>
+                      <p className="text-xs text-[#745240] font-mono">Total: {items.length} itens</p>
                     </div>
                     <button
                       onClick={() => togglePauseCategory(cat.group, allPaused)}
-                      className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer ${allPaused ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-rose-100 text-rose-700 hover:bg-rose-200 border border-rose-200'}`}
+                      className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-colors cursor-pointer ${
+                        allPaused 
+                          ? 'bg-[#083D07] text-white hover:bg-[#0b520a] border border-[#D5AF7A]/50 shadow-xs' 
+                          : 'bg-[#FDFBF7] text-[#745240] hover:text-rose-700 hover:bg-rose-50 border border-[#E8D8D1] hover:border-rose-300'
+                      }`}
                     >
-                      {allPaused ? 'Ativar Categoria' : 'Pausar Categoria'}
+                      {allPaused ? 'Publicar Categoria' : 'Pausar Categoria'}
                     </button>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5">
-                    {items.map((item) => (
-                      <div key={item.id} className={`p-3.5 rounded-xl border ${pausedItems.includes(item.id) ? 'border-rose-200 bg-rose-50/50' : 'border-[#E7E5E1] bg-white'} shadow-xs hover:shadow-md transition-all flex gap-3 min-w-0 overflow-hidden`}>
+                    {items.map((item) => {
+                      const isItemPaused = pausedItems.includes(item.id);
+                      return (
+                      <div 
+                        key={item.id} 
+                        className={`p-3.5 rounded-xl border transition-all flex gap-3 min-w-0 overflow-hidden ${
+                          isItemPaused 
+                            ? 'border-[#E8D8D1] bg-[#FAF8F5]/80 opacity-80 shadow-2xs' 
+                            : 'border-[#D5AF7A]/60 bg-white shadow-xs hover:shadow-md hover:border-[#083D07]'
+                        }`}
+                      >
                         {item.imageUrl ? (
                           <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-stone-100 relative border border-stone-200/60">
                              <img 
                                src={item.imageUrl.startsWith('http') ? item.imageUrl : (item.imageUrl.startsWith('/') ? item.imageUrl : '/' + item.imageUrl)} 
                                alt={item.name} 
-                               className={`w-full h-full object-cover ${pausedItems.includes(item.id) ? 'grayscale opacity-50' : ''}`}
+                               className={`w-full h-full object-cover ${isItemPaused ? 'grayscale opacity-50' : ''}`}
                                onError={(e) => { (e.target as HTMLElement).parentElement!.style.display = 'none'; }}
                              />
-                             {pausedItems.includes(item.id) && (
+                             {isItemPaused && (
                                <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-xs text-white text-[9px] font-bold uppercase tracking-wider">
                                  Pausado
                                </div>
@@ -3723,55 +4046,42 @@ export default function AdminDashboard() {
                         ) : null}
                         <div className="flex-1 min-w-0 flex flex-col justify-between">
                           <div>
-                            <h3 className={`font-bold text-xs truncate ${pausedItems.includes(item.id) ? 'text-stone-400 line-through' : 'text-stone-900'}`}>{item.name}</h3>
+                            <div className="flex items-center justify-between gap-1 mb-1">
+                              <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase ${
+                                isItemPaused
+                                  ? 'bg-amber-100/80 text-amber-900 border border-amber-300'
+                                  : 'bg-[#083D07]/10 text-[#083D07] border border-[#083D07]/25 font-bold'
+                              }`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${isItemPaused ? 'bg-amber-500' : 'bg-[#083D07]'}`} />
+                                <span>{isItemPaused ? 'Pausado' : 'Publicado'}</span>
+                              </span>
+                            </div>
+                            <h3 className={`font-bold text-xs truncate ${isItemPaused ? 'text-stone-400 line-through' : 'text-[#44210F]'}`}>{item.name}</h3>
                             <p className="text-[11px] text-stone-500 mt-0.5 line-clamp-2 leading-snug">{item.ingredients}</p>
                           </div>
                           <div className="mt-2 flex flex-col gap-1.5">
                             <div className="flex justify-between items-center gap-1">
-                              <span className="font-bold text-xs text-stone-900 font-mono shrink-0">
-                                {item.priceSingle ? `R$ ${Number(item.priceSingle).toFixed(2)}` : (item.priceP ? `Pq: R$ ${Number(item.priceP).toFixed(2)}` : '')}
+                              <span className="font-bold text-xs text-[#44210F] font-mono shrink-0">
+                                R$ {Number(item.priceSingle || item.priceG || item.priceM || item.price || 0).toFixed(2).replace('.', ',')}
                               </span>
                               <button
                                 onClick={() => togglePauseItem(item.id)}
-                                className={`text-[10px] font-bold px-2 py-1 rounded-md transition-colors cursor-pointer shrink-0 ${pausedItems.includes(item.id) ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-rose-600 text-white hover:bg-rose-700'}`}
+                                className={`text-[10px] font-bold px-2.5 py-1 rounded-md transition-colors cursor-pointer shrink-0 ${
+                                  isItemPaused 
+                                    ? 'bg-[#083D07] text-[#FDFBF7] hover:bg-[#0b520a] border border-[#D5AF7A]/50 shadow-2xs' 
+                                    : 'bg-[#FDFBF7] text-[#745240] hover:text-rose-700 hover:bg-rose-50 border border-[#E8D8D1] hover:border-rose-300'
+                                }`}
                               >
-                                {pausedItems.includes(item.id) ? 'Ativar Item' : 'Pausar Item'}
+                                {isItemPaused ? 'Ativar Item' : 'Pausar'}
                               </button>
                             </div>
                             
-                            {/* Size-specific pausing for pizzas */}
-                            {item.priceM !== undefined && item.priceG !== undefined && (
-                              <div className="flex items-center justify-between border-t border-stone-100 pt-1.5 mt-0.5 gap-1">
-                                <span className="text-[9px] font-mono font-semibold text-stone-400 shrink-0">Tamanhos:</span>
-                                <div className="flex gap-1 shrink-0">
-                                  <button
-                                    onClick={() => togglePauseItem(`${item.id}-P`)}
-                                    className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${pausedItems.includes(`${item.id}-P`) ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'}`}
-                                    title={pausedItems.includes(`${item.id}-P`) ? 'Ativar Tamanho P' : 'Pausar Tamanho P'}
-                                  >
-                                    P {pausedItems.includes(`${item.id}-P`) ? '✕' : ''}
-                                  </button>
-                                  <button
-                                    onClick={() => togglePauseItem(`${item.id}-M`)}
-                                    className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${pausedItems.includes(`${item.id}-M`) ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'}`}
-                                    title={pausedItems.includes(`${item.id}-M`) ? 'Ativar Tamanho M' : 'Pausar Tamanho M'}
-                                  >
-                                    M {pausedItems.includes(`${item.id}-M`) ? '✕' : ''}
-                                  </button>
-                                  <button
-                                    onClick={() => togglePauseItem(`${item.id}-G`)}
-                                    className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${pausedItems.includes(`${item.id}-G`) ? 'bg-rose-100 text-rose-700 border-rose-300' : 'bg-stone-100 text-stone-700 border-stone-200 hover:bg-stone-200'}`}
-                                    title={pausedItems.includes(`${item.id}-G`) ? 'Ativar Tamanho G' : 'Pausar Tamanho G'}
-                                  >
-                                    G {pausedItems.includes(`${item.id}-G`) ? '✕' : ''}
-                                  </button>
-                                </div>
-                              </div>
-                            )}
+
                           </div>
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -3913,10 +4223,9 @@ export default function AdminDashboard() {
                     return d ? (d.getTime() >= (new Date().getTime() - 7 * 24 * 60 * 60 * 1000)) : false;
                   });
                 } else if (reportModal.type === 'fluxo_caixa') {
-                  const todayStr = new Date().toISOString().split('T')[0];
+                  const todayStr = toLocalDateKey(new Date());
                   filteredReportOrders = allOrders.filter(o => {
-                    const d = safeGetDate(o.createdAt);
-                    return d ? (d.toISOString().split('T')[0] === todayStr) : false;
+                    return toLocalDateKey(o.createdAt) === todayStr;
                   });
                 } else if (reportModal.type === 'cancelamentos') {
                   filteredReportOrders = (filteredOrders || allOrders).filter(o => o.status === 'Cancelado' || o.status === 'cancelado');
@@ -4663,6 +4972,40 @@ export default function AdminDashboard() {
         onClose={() => setSelectedSessionForDetails(null)}
       />
     )}
+
+    {dashboardToast && (
+      <div 
+        role="status"
+        aria-live="polite"
+        className="fixed bottom-5 right-5 z-[100] max-w-sm w-full animate-in fade-in slide-in-from-bottom-3 duration-200"
+      >
+        <div className={`p-4 rounded-xl shadow-xl border flex items-start gap-3 backdrop-blur-md ${
+          dashboardToast.type === 'error'
+            ? 'bg-[#44210F] text-[#FDFBF7] border-rose-500/50'
+            : dashboardToast.type === 'warning'
+            ? 'bg-[#44210F] text-[#FDFBF7] border-amber-500/50'
+            : 'bg-[#44210F] text-[#FDFBF7] border-[#083D07]/60'
+        }`}>
+          {dashboardToast.type === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+          ) : dashboardToast.type === 'warning' ? (
+            <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          ) : (
+            <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold leading-relaxed font-sans">{dashboardToast.message}</p>
+          </div>
+          <button
+            onClick={() => setDashboardToast(null)}
+            className="text-[#E8D8D1]/60 hover:text-[#FDFBF7] p-1 rounded-lg transition-colors cursor-pointer"
+            aria-label="Fechar notificação"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    )}
     </>
   );
 }
@@ -4804,13 +5147,9 @@ function EditOrderModal({
   }, []);
 
   const [items, setItems] = useState<any[]>(() => {
-    let raw = order.items;
-    if (typeof raw === 'string') {
-      try { raw = JSON.parse(raw); } catch(e) { raw = []; }
-    }
-    if (Array.isArray(raw)) return JSON.parse(JSON.stringify(raw));
-    return [];
+    return safeParseItems(order.items);
   });
+
 
   const [discountAmount, setDiscountAmount] = useState<number>(order.discountAmount || order.discount_amount || 0);
   const [additionalAmount, setAdditionalAmount] = useState<number>(order.additionalAmount || order.additional_amount || 0);
@@ -5075,18 +5414,10 @@ function EditOrderModal({
       setSelectedExtras([]);
     }
 
-    const combinedSizeStr = `${item.size || ''} ${item.name || ''}`.toLowerCase();
-    let sizeKey = 'priceSingle';
-    if (combinedSizeStr.includes('super big') || combinedSizeStr.includes('4 sab')) sizeKey = 'priceSuperBig';
-    else if (combinedSizeStr.includes('big') || combinedSizeStr.includes('3 sab')) sizeKey = 'priceBig';
-    else if (combinedSizeStr.includes('grande') || combinedSizeStr.includes('(g)') || combinedSizeStr.includes('(gr)') || combinedSizeStr.includes('2 sab')) sizeKey = 'priceG';
-    else if (combinedSizeStr.includes('média') || combinedSizeStr.includes('media') || combinedSizeStr.includes('(m)') || combinedSizeStr.includes('(md)')) sizeKey = 'priceM';
-    else if (combinedSizeStr.includes('pequena') || combinedSizeStr.includes('(p)') || combinedSizeStr.includes('(pq)')) sizeKey = 'priceP';
-
-    setSelectedSize(sizeKey);
+    setSelectedSize('priceSingle');
 
     let baseItem = item.menuItem;
-    const rawName = item.name || '';
+    const rawName = stripSizeSuffix(item.name || '');
     const extraFlavorsFound: { id: string; search: string }[] = [];
 
     if (!baseItem) {
@@ -5152,23 +5483,7 @@ function EditOrderModal({
 
   const currentBasePrice = React.useMemo(() => {
     if (isCurrentSelectionPizza && selectedBaseMenuItem) {
-      const extraFlavors = customAdditionalFlavors
-        .filter(f => f.id || f.search)
-        .map(f => menuItems.find(m => m.id === f.id) || { id: f.id, name: f.search, priceSingle: 0 });
-      if (selectedSize === 'priceP') return getPizzaPriceForSize(selectedBaseMenuItem, 'priceP');
-      if (selectedSize === 'priceM') return getPizzaPriceForSize(selectedBaseMenuItem, 'priceM');
-      if (selectedSize === 'priceG') {
-        const allPricesG = [getPizzaPriceForSize(selectedBaseMenuItem, 'priceG'), ...extraFlavors.map(f => getPizzaPriceForSize(f, 'priceG'))];
-        return Math.max(...allPricesG) || getPizzaPriceForSize(selectedBaseMenuItem, 'priceG');
-      }
-      if (selectedSize === 'priceBig') {
-        const allPricesBig = [getPizzaPriceForSize(selectedBaseMenuItem, 'priceBig'), ...extraFlavors.map(f => getPizzaPriceForSize(f, 'priceBig'))];
-        return Math.max(...allPricesBig) || getPizzaPriceForSize(selectedBaseMenuItem, 'priceBig');
-      }
-      if (selectedSize === 'priceSuperBig') {
-        const allPricesSB = [getPizzaPriceForSize(selectedBaseMenuItem, 'priceSuperBig'), ...extraFlavors.map(f => getPizzaPriceForSize(f, 'priceSuperBig'))];
-        return Math.max(...allPricesSB) || getPizzaPriceForSize(selectedBaseMenuItem, 'priceSuperBig');
-      }
+      return selectedBaseMenuItem.priceSingle || selectedBaseMenuItem.priceG || selectedBaseMenuItem.price || 0;
     }
     if (editingItemIndex !== null && items[editingItemIndex]) {
       const it = items[editingItemIndex];
@@ -5176,7 +5491,7 @@ function EditOrderModal({
       return it.basePrice ?? (it.priceCalculated ? it.priceCalculated - prevExtrasSum : it.price ?? 0);
     }
     return selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0;
-  }, [isCurrentSelectionPizza, selectedBaseMenuItem, selectedSize, customAdditionalFlavors, editingItemIndex, items]);
+  }, [isCurrentSelectionPizza, selectedBaseMenuItem, editingItemIndex, items]);
 
   const currentExtrasTotal = React.useMemo(() => {
     return selectedExtras.reduce((sum, e) => sum + (Number(e.price) || 0), 0);
@@ -5192,30 +5507,7 @@ function EditOrderModal({
       priceSingle: 0
     };
 
-    const extraFlavors = customAdditionalFlavors
-      .filter(f => f.id || f.search)
-      .map(f => menuItems.find(m => m.id === f.id) || { id: f.id, name: f.search, priceSingle: 0 });
-
-    const totalFlavors = 1 + extraFlavors.length;
-
-    let basePrice = getPizzaPriceForSize(menuItem, selectedSize);
-    let sizeName = 'Único';
-    if (selectedSize === 'priceP') { basePrice = getPizzaPriceForSize(menuItem, 'priceP'); sizeName = 'Pequena (P)'; }
-    else if (selectedSize === 'priceM') { basePrice = getPizzaPriceForSize(menuItem, 'priceM'); sizeName = 'Média (M)'; }
-    else if (selectedSize === 'priceG') {
-      const allPricesG = [getPizzaPriceForSize(menuItem, 'priceG'), ...extraFlavors.map(f => getPizzaPriceForSize(f, 'priceG'))];
-      basePrice = Math.max(...allPricesG) || basePrice;
-      sizeName = 'Grande (G)';
-    } else if (selectedSize === 'priceBig') {
-      const allPricesBig = [getPizzaPriceForSize(menuItem, 'priceBig'), ...extraFlavors.map(f => getPizzaPriceForSize(f, 'priceBig'))];
-      basePrice = Math.max(...allPricesBig) || basePrice;
-      sizeName = 'Big';
-    } else if (selectedSize === 'priceSuperBig') {
-      const allPricesSB = [getPizzaPriceForSize(menuItem, 'priceSuperBig'), ...extraFlavors.map(f => getPizzaPriceForSize(f, 'priceSuperBig'))];
-      basePrice = Math.max(...allPricesSB) || basePrice;
-      sizeName = 'Super Big';
-    }
-
+    let basePrice = menuItem.priceSingle || menuItem.priceG || menuItem.priceM || menuItem.price || 0;
     if (basePrice === 0 && editingItemIndex !== null) {
       const prevItem = items[editingItemIndex];
       const prevExtrasSum = (prevItem.extras || []).reduce((s: number, e: any) => s + (Number(e.price) || 0), 0);
@@ -5225,23 +5517,18 @@ function EditOrderModal({
     const extrasTotalPrice = selectedExtras.reduce((sum, e) => sum + (Number(e.price) || 0), 0);
     const finalPriceWithExtras = Number((basePrice + extrasTotalPrice).toFixed(2));
 
-    let itemName = menuItem.name;
-    if (extraFlavors.length > 0) {
-      const fraction = `1/${totalFlavors}`;
-      const allNames = [menuItem, ...extraFlavors].map(f => `${fraction} ${f.name}`);
-      itemName = allNames.join(' + ');
-    }
+    const cleanItemName = stripSizeSuffix(menuItem.name || selectedProductSearch.trim());
 
     const newItem = {
       menuItem: menuItem,
-      name: itemName,
+      name: cleanItemName,
       quantity: editingItemIndex !== null ? (items[editingItemIndex]?.quantity || 1) : 1,
-      size: sizeName,
+      size: undefined,
       basePrice: basePrice,
       priceCalculated: finalPriceWithExtras,
       price: finalPriceWithExtras,
       extras: selectedExtras.map(e => ({ id: e.id, name: e.name, price: Number(e.price) || 0 })),
-      additionalFlavors: extraFlavors
+      additionalFlavors: []
     };
 
     if (editingItemIndex !== null) {
@@ -5316,7 +5603,7 @@ function EditOrderModal({
       motoboyId: effectiveMotoboyId,
       delivery_cost: orderType === 'entrega' && effectiveProvider ? finalCost : null,
       deliveryCost: orderType === 'entrega' && effectiveProvider ? finalCost : null,
-      items: items,
+      items: items.map((it: any) => ({ ...it, name: stripSizeSuffix(it.name || ''), size: undefined })),
       discount_amount: Number(discountAmount) || 0,
       additional_amount: Number(additionalAmount) || 0,
       discountAmount: Number(discountAmount) || 0,
@@ -5758,7 +6045,7 @@ function EditOrderModal({
                           <div className="flex-1 min-w-0">
                             <div className="font-semibold text-xs text-[#44210F] truncate">{formatItemNameForPrint(item)}</div>
                             <div className="text-[11px] text-[#745240] font-normal">
-                              {item.size ? `${item.size} • ` : ''}R$ {price.toFixed(2).replace('.', ',')} un.
+                              R$ {price.toFixed(2).replace('.', ',')} un.
                             </div>
                             {/* Tags de Extras Adicionados */}
                             {item.extras && item.extras.length > 0 && (
@@ -5945,7 +6232,7 @@ function EditOrderModal({
                                 )}
                               </div>
                               <span className="text-xs font-mono font-medium text-[#083D07] shrink-0">
-                                {isP ? `a partir de R$ ${displayPrice.toFixed(2).replace('.', ',')}` : `R$ ${displayPrice.toFixed(2).replace('.', ',')}`}
+                                R$ {displayPrice.toFixed(2).replace('.', ',')}
                               </span>
                             </div>
                           );
@@ -5955,60 +6242,16 @@ function EditOrderModal({
                   )}
                 </div>
 
-                {/* Size Selection */}
-                {isCurrentSelectionPizza && selectedBaseMenuItem && (selectedBaseMenuItem.priceP || selectedBaseMenuItem.priceM || selectedBaseMenuItem.priceG || selectedBaseMenuItem.priceBig || selectedBaseMenuItem.priceSuperBig) ? (
-                  <div className="space-y-1.5 pt-2 border-t border-[#E8D8D1]/80">
-                    <div className="flex items-center justify-between">
-                      <label className="text-xs font-medium text-[#745240]">
-                        Tamanho da Pizza
-                      </label>
-                      <span className="text-xs font-semibold text-[#083D07]">
-                        {selectedSize === 'priceSuperBig' ? 'Até 4 Sabores' : selectedSize === 'priceBig' ? 'Até 3 Sabores' : selectedSize === 'priceG' ? 'Até 2 Sabores' : '1 Sabor'}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-5 gap-1.5">
-                      {[
-                        { key: 'priceP', label: 'P', sub: '1 Sab' },
-                        { key: 'priceM', label: 'M', sub: '1 Sab' },
-                        { key: 'priceG', label: 'G', sub: '2 Sab' },
-                        { key: 'priceBig', label: 'Big', sub: '3 Sab' },
-                        { key: 'priceSuperBig', label: 'Super Big', sub: '4 Sab' }
-                      ].map(sz => {
-                        const isSelected = selectedSize === sz.key;
-                        const szPrice = selectedBaseMenuItem ? getPizzaPriceForSize(selectedBaseMenuItem, sz.key) : 0;
-                        return (
-                          <button
-                            key={sz.key}
-                            type="button"
-                            onClick={() => handleSelectSize(sz.key)}
-                            className={`py-2 px-1.5 rounded-lg flex flex-col items-center justify-center transition-all cursor-pointer border text-center ${
-                              isSelected
-                                ? 'bg-[#E5DDD4] text-[#44210F] font-bold border-[#D5AF7A] shadow-xs'
-                                : 'bg-white text-[#745240] font-medium border-[#E8D8D1] hover:bg-[#FDFBF7]'
-                            }`}
-                          >
-                            <span className="text-xs leading-tight">{sz.label}</span>
-                            <span className="text-[10px] opacity-75 leading-tight">{sz.sub}</span>
-                            {szPrice > 0 && (
-                              <span className="text-[10px] font-mono mt-0.5 leading-none font-semibold text-[#083D07]">
-                                R$ {szPrice.toFixed(0)}
-                              </span>
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
+                {/* Dobro: Tamanho Único 28cm */}
+                {selectedProductId && (
+                  <div className="flex items-center justify-between px-3 py-2 bg-white rounded-lg text-xs font-medium text-[#44210F] border border-[#E8D8D1]">
+                    <span className="text-[11px] text-[#745240] font-semibold">
+                      {isPizzaItem(selectedBaseMenuItem) ? 'Pizza Dobro (Tamanho Único 28cm)' : 'Item Selecionado'}
+                    </span>
+                    <span className="font-mono font-bold text-[#083D07]">
+                      R$ {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.priceG || selectedBaseMenuItem?.price || 0).toFixed(2).replace('.', ',')}
+                    </span>
                   </div>
-                ) : (
-                  selectedProductId && (
-                    <div className="flex items-center justify-between px-3 py-1.5 bg-white rounded-lg text-xs font-medium text-[#44210F] border border-[#E8D8D1]">
-                      <span className="text-[11px] text-[#745240]">{isPizzaItem(selectedBaseMenuItem) ? 'Tamanho único 28cm' : 'Item simples'}</span>
-                      <span className="font-mono font-bold text-[#083D07]">
-                        R$ {(selectedBaseMenuItem?.priceSingle || selectedBaseMenuItem?.price || 0).toFixed(2).replace('.', ',')}
-                      </span>
-                    </div>
-                  )
                 )}
 
                 {/* Seletor de Adicionais Extras */}

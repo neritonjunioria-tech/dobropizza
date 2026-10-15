@@ -19,7 +19,7 @@ import { CartItem } from "./types";
 import { playVictorySound } from "./utils/sound";
 import { getLisbonDate } from "./utils/date";
 import { hapticLight, hapticMedium, hapticSuccess } from "./utils/haptics";
-import { Search, Plus, ShoppingBag, X, Instagram, MapPin, ChevronDown, ArrowUp, Flame, Star, Sandwich, CupSoda, Pizza, Leaf, Cake, Tag, CalendarDays, type LucideIcon } from "lucide-react";
+import { Search, Plus, ShoppingBag, X, Instagram, MapPin, ChevronDown, ArrowUp, Flame, Star, Sandwich, CupSoda, Pizza, Leaf, Cake, Tag, CalendarDays, Clock, type LucideIcon } from "lucide-react";
 import Cart from "./components/Cart";
 import MenuItemCard from "./components/MenuItemCard";
 import PizzaModal from "./components/PizzaModal";
@@ -70,9 +70,129 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   promocoes: Tag,
   "menu-do-dia": CalendarDays,
 };
+
 const stripEmoji = (s: string) => s.replace(/[\p{Extended_Pictographic}\u{FE0F}\u{200D}]/gu, "").replace(/\s{2,}/g, " ").trim();
 
 import { useAnalytics } from './hooks/useAnalytics';
+
+function groupSchedule(schedule: any[]) {
+  if (!schedule || schedule.length === 0) return [];
+  const groups: { days: string; label: string; isClosed: boolean; isCurrentGroup: boolean }[] = [];
+  
+  let current: { startDay: string; endDay: string; label: string; isClosed: boolean; hasToday: boolean } | null = null;
+  const shortNames: Record<number, string> = { 1: 'Seg', 2: 'Ter', 3: 'Qua', 4: 'Qui', 5: 'Sex', 6: 'Sáb', 0: 'Dom' };
+
+  for (const item of schedule) {
+    const sName = shortNames[item.dayOfWeek] || (item.dayName ? item.dayName.slice(0, 3) : '');
+    if (!current) {
+      current = { startDay: sName, endDay: sName, label: item.label, isClosed: item.isClosed, hasToday: item.isToday };
+    } else if (current.label === item.label) {
+      current.endDay = sName;
+      if (item.isToday) current.hasToday = true;
+    } else {
+      const daysStr = current.startDay === current.endDay ? current.startDay : `${current.startDay} a ${current.endDay}`;
+      groups.push({ days: daysStr, label: current.label, isClosed: current.isClosed, isCurrentGroup: current.hasToday });
+      current = { startDay: sName, endDay: sName, label: item.label, isClosed: item.isClosed, hasToday: item.isToday };
+    }
+  }
+  if (current) {
+    const daysStr = current.startDay === current.endDay ? current.startDay : `${current.startDay} a ${current.endDay}`;
+    groups.push({ days: daysStr, label: current.label, isClosed: current.isClosed, isCurrentGroup: current.hasToday });
+  }
+  return groups;
+}
+
+function StoreStatusBadge({ businessStatus, align = 'right' }: { businessStatus: ReturnType<typeof useBusinessHours>; align?: 'left' | 'right' }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  if (businessStatus.loading) return null;
+
+  const isClosed = !businessStatus.isOpen;
+  const groupedSchedule = groupSchedule(businessStatus.schedule || []);
+
+  return (
+    <div 
+      className="relative inline-block"
+      onMouseEnter={() => { if (isClosed) setIsHovered(true); }}
+      onMouseLeave={() => { setIsHovered(false); }}
+      onClick={() => { if (isClosed) setIsHovered(prev => !prev); }}
+    >
+      <div 
+        className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-2.5 py-1 md:px-3 md:py-1 rounded-full text-[11px] font-semibold border transition-all select-none ${
+          !isClosed
+            ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+            : "bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100 hover:border-amber-300 cursor-pointer shadow-2xs"
+        }`}
+        title={isClosed ? "Passe o mouse para ver os horários" : undefined}
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${!isClosed ? "bg-[#083d07] animate-pulse" : "bg-amber-600"}`} />
+        <span>{!isClosed ? "Aberto" : "Fechado"}</span>
+      </div>
+
+      {/* Informativo dinâmico, minimalista, compacto e discreto */}
+      {isClosed && isHovered && (
+        <div 
+          className={`absolute top-full mt-1.5 z-[999] w-56 sm:w-60 bg-white/98 backdrop-blur-md rounded-xl shadow-lg border border-stone-200/90 p-2.5 text-stone-800 animate-in fade-in zoom-in-95 duration-100 pointer-events-auto ${
+            align === 'left' ? 'left-0' : 'right-0'
+          }`}
+          style={{ filter: 'drop-shadow(0 8px 20px rgba(0, 0, 0, 0.08))' }}
+        >
+          {/* Seta discreta */}
+          <div 
+            className={`absolute -top-1 w-2.5 h-2.5 bg-white border-t border-l border-stone-200/90 transform rotate-45 ${
+              align === 'left' ? 'left-4' : 'right-4'
+            }`} 
+          />
+
+          {/* Cabeçalho sutil */}
+          <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-stone-100">
+            <div className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3 text-[#083d07]" />
+              <span className="text-[10px] font-bold text-stone-800 uppercase tracking-wide">
+                Atendimento
+              </span>
+            </div>
+            {businessStatus.todayLabel && (
+              <span className="text-[9px] font-mono text-amber-800 bg-amber-50 px-1 py-0.2 rounded font-semibold">
+                Hoje
+              </span>
+            )}
+          </div>
+
+          {/* Lista agrupada (apenas 1 a 3 linhas compactas) */}
+          <div className="space-y-0.5">
+            {groupedSchedule.length > 0 ? (
+              groupedSchedule.map((group, idx) => (
+                <div 
+                  key={idx}
+                  className={`flex items-center justify-between py-0.5 px-1.5 rounded text-[11px] ${
+                    group.isCurrentGroup 
+                      ? "bg-amber-50/80 font-semibold text-stone-900" 
+                      : "text-stone-600"
+                  }`}
+                >
+                  <div className="flex items-center gap-1">
+                    {group.isCurrentGroup && (
+                      <span className="w-1 h-1 rounded-full bg-amber-600 shrink-0" />
+                    )}
+                    <span>{group.days}</span>
+                  </div>
+                  <span className={`font-mono text-[10px] ${group.isClosed ? "text-amber-800/80" : "text-stone-800"}`}>
+                    {group.label}
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="text-[10px] text-stone-500 py-0.5">
+                {businessStatus.todayLabel || 'Fechado no momento'}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default // App principal
 function App() {
@@ -311,17 +431,6 @@ function App() {
     );
   }
 
-  const storeStatusBadge = businessStatus.loading ? null : (
-    <div className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1 md:px-3.5 md:py-1.5 rounded-full text-xs font-semibold border ${
-      businessStatus.isOpen
-        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-        : "bg-amber-50 text-amber-800 border-amber-200"
-    }`}>
-      <span className={`w-2 h-2 rounded-full ${businessStatus.isOpen ? "bg-[#083d07] animate-pulse" : "bg-amber-600"}`} />
-      <span>{businessStatus.isOpen ? "Aberto" : "Fechado"}</span>
-    </div>
-  );
-
   return (
     <div className="min-h-screen bg-[#fdfbf7] font-sans text-[#44210f] scroll-smooth pb-20 lg:pb-0">
       {/* Navbar Topo */}
@@ -341,7 +450,9 @@ function App() {
             </div>
 
             {/* Status da loja: no celular fica à direita do logo; no computador, ao lado da busca */}
-            <div className="md:hidden">{storeStatusBadge}</div>
+            <div className="md:hidden">
+              <StoreStatusBadge businessStatus={businessStatus} align="right" />
+            </div>
           </div>
           
           <div className="flex items-center gap-4 w-full md:w-auto">
@@ -355,14 +466,16 @@ function App() {
                  onChange={(e) => setSearchTerm(e.target.value)}
                />
             </div>
-            <div className="hidden md:block">{storeStatusBadge}</div>
+            <div className="hidden md:block">
+              <StoreStatusBadge businessStatus={businessStatus} align="right" />
+            </div>
           </div>
         </div>
       </header>
 
       {!businessStatus.loading && !businessStatus.isOpen && (
         <div className="bg-[#44210f] text-[#fdfbf7] text-center py-2 px-4 text-sm font-medium border-b border-[#d5af7a]/30">
-          Estamos preparando a casa{businessStatus.todayLabel ? ` — hoje funcionamos das ${businessStatus.todayLabel}` : ''}. Você pode navegar pelo cardápio e preparar o seu pedido com calma!
+          Por enquanto, o forno está desligado. Já já tem Dobro!{businessStatus.todayLabel ? ` (Horário de atendimento: ${businessStatus.todayLabel})` : ''}
         </div>
       )}
 
