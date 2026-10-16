@@ -235,147 +235,178 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
   if (!session) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-3 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#111110] rounded-none sm:rounded-xl w-full h-full sm:h-auto sm:max-w-[1380px] sm:max-h-[95vh] flex flex-col shadow-2xl border-0 sm:border border-[#0b520a] relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-stone-900/70 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-[#FAF8F5] rounded-none sm:rounded-2xl w-full h-full sm:h-auto sm:max-w-6xl sm:max-h-[92vh] flex flex-col shadow-2xl border border-stone-200/90 relative overflow-hidden">
         
-        {/* CABEÇALHO ULTRA DENSO (BOLDER) */}
-        <div className="px-3.5 py-1.5 bg-[#0a0a09] border-b border-[#0b520a] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <span className={`w-2 h-2 rounded-full ${session.status === 'fechado' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
-            <h2 className="font-mono font-bold text-white text-base sm:text-lg tracking-tight flex items-center gap-2">
-              FECHAMENTO
+        {/* CABEÇALHO CLEAN & REFINADO */}
+        <div className="px-5 py-3.5 bg-white border-b border-stone-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 shrink-0">
+          <div className="flex items-center gap-3">
+            <span className={`w-2.5 h-2.5 rounded-full ${session.status === 'fechado' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}`} />
+            <h2 className="font-sans font-black text-stone-900 text-base sm:text-lg tracking-tight flex items-center gap-2">
+              Relatório de Fechamento de Caixa
             </h2>
-            <span className={`text-[9.5px] font-mono font-bold px-2 py-0.5 rounded uppercase border ${
-              session.status === 'fechado' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+            <span className={`text-[10.5px] font-mono font-bold px-2.5 py-0.5 rounded-full uppercase border ${
+              session.status === 'fechado' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-amber-50 text-amber-700 border-amber-200'
             }`}>
-              {session.status === 'fechado' ? 'FECHADO' : 'EM ABERTO'}
+              {session.status === 'fechado' ? 'Sessão Fechada' : 'Em Aberto'}
             </span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex bg-[#083d07] rounded p-1 border border-[#0b520a]">
-              <button onClick={() => setActiveTab('balanco')} className={`px-3 py-1 text-xs font-mono font-bold rounded ${activeTab === 'balanco' ? 'bg-[#083d07] text-[#fdfbf7]' : 'text-stone-400 hover:text-white'}`}>BALANÇO</button>
-              <button onClick={() => setActiveTab('pedidos')} className={`px-3 py-1 text-xs font-mono font-bold rounded flex items-center gap-1.5 ${activeTab === 'pedidos' ? 'bg-[#083d07] text-[#fdfbf7]' : 'text-stone-400 hover:text-white'}`}>
-                PEDIDOS <span className={`px-1.5 py-0.5 rounded text-[9px] ${activeTab === 'pedidos' ? 'bg-black/20' : 'bg-[#0b520a]'}`}>{summary.totalOrdersCount}</span>
+          <div className="flex items-center gap-3">
+            <div className="inline-flex bg-stone-100 p-1 rounded-xl border border-stone-200">
+              <button 
+                onClick={() => setActiveTab('balanco')} 
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  activeTab === 'balanco' ? 'bg-white text-stone-900 shadow-xs font-bold' : 'text-stone-500 hover:text-stone-900'
+                }`}
+              >
+                Balanço Financeiro
+              </button>
+              <button 
+                onClick={() => setActiveTab('pedidos')} 
+                className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-2 transition-all cursor-pointer ${
+                  activeTab === 'pedidos' ? 'bg-white text-stone-900 shadow-xs font-bold' : 'text-stone-500 hover:text-stone-900'
+                }`}
+              >
+                Pedidos <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                  activeTab === 'pedidos' ? 'bg-stone-900 text-white' : 'bg-stone-200 text-stone-700'
+                }`}>{summary.totalOrdersCount}</span>
               </button>
             </div>
-            <button onClick={onClose} className="p-1.5 text-stone-400 hover:text-white bg-[#083d07] hover:bg-[#0b520a] rounded transition-colors"><X size={16} /></button>
+            <button 
+              onClick={onClose} 
+              className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-xl transition-colors cursor-pointer"
+              title="Fechar (ESC)"
+            >
+              <X size={18} />
+            </button>
           </div>
         </div>
 
         {/* ESTATÍSTICAS INLINE NO TOPO */}
         {activeTab === 'balanco' && (
-          <div className="px-3 py-1 bg-[#083d07]/60 border-b border-[#0b520a] flex items-center justify-between gap-3 shrink-0 overflow-x-auto no-scrollbar">
-            <div className="flex gap-4 sm:gap-6 min-w-max">
+          <div className="px-5 py-2.5 bg-white border-b border-stone-200/80 flex items-center justify-between gap-4 shrink-0 overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-6 sm:gap-8 min-w-max">
               <div className="flex flex-col">
-                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Faturamento Bruto</span>
-                <span className="font-mono text-white font-bold text-xs sm:text-sm leading-tight">R$ {summary.totalRevenue.toFixed(2)}</span>
+                <span className="text-[10px] font-semibold text-stone-400 uppercase tracking-wider">Faturamento Bruto</span>
+                <span className="font-mono text-stone-900 font-extrabold text-sm sm:text-base leading-tight">R$ {summary.totalRevenue.toFixed(2)}</span>
               </div>
-              <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
-                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Dinheiro</span>
-                <span className="font-mono text-emerald-400 font-bold text-xs sm:text-sm leading-tight">R$ {summary.totalDinheiro.toFixed(2)}</span>
+              <div className="flex flex-col border-l border-stone-200 pl-6 sm:pl-8">
+                <span className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">Dinheiro em Vendas</span>
+                <span className="font-mono text-emerald-700 font-extrabold text-sm sm:text-base leading-tight">R$ {summary.totalDinheiro.toFixed(2)}</span>
               </div>
-              <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
-                <span className="text-[9px] font-mono text-stone-500 uppercase tracking-wider">Pix</span>
-                <span className="font-mono text-blue-400 font-bold text-xs sm:text-sm leading-tight">R$ {((summary.paymentTotals['Pix'] || 0) + (summary.paymentTotals['MB Way'] || 0)).toFixed(2)}</span>
+              <div className="flex flex-col border-l border-stone-200 pl-6 sm:pl-8">
+                <span className="text-[10px] font-semibold text-blue-600 uppercase tracking-wider">Pix</span>
+                <span className="font-mono text-blue-700 font-extrabold text-sm sm:text-base leading-tight">R$ {((summary.paymentTotals['Pix'] || 0) + (summary.paymentTotals['MB Way'] || 0)).toFixed(2)}</span>
               </div>
-              <div className="flex flex-col border-l border-[#0b520a] pl-4 sm:pl-6">
-                <span className="text-[9px] font-mono text-[#d5af7a]/70 uppercase tracking-wider">Caixa (Fundo + Vendas)</span>
-                <span className="font-mono text-[#d5af7a] font-bold text-xs sm:text-sm leading-tight">R$ {(summary.fundoInicial + summary.totalDinheiro).toFixed(2)}</span>
+              <div className="flex flex-col border-l border-stone-200 pl-6 sm:pl-8">
+                <span className="text-[10px] font-semibold text-[#745240] uppercase tracking-wider">Gaveta (Fundo + Dinheiro)</span>
+                <span className="font-mono text-[#44210F] font-extrabold text-sm sm:text-base leading-tight">R$ {(summary.fundoInicial + summary.totalDinheiro).toFixed(2)}</span>
               </div>
             </div>
             
-            <div className="text-[9px] font-mono text-stone-500 flex gap-2.5 text-right shrink-0">
-              <span>ABERTURA: {format(new Date(session.opened_at), "HH:mm", { locale: ptBR })}</span>
-              {session.closed_at && <span>FECHAMENTO: {format(new Date(session.closed_at), "HH:mm", { locale: ptBR })}</span>}
+            <div className="text-[11px] font-mono text-stone-500 flex gap-4 text-right shrink-0">
+              <span>Abertura: <strong className="text-stone-800">{format(new Date(session.opened_at), "HH:mm", { locale: ptBR })}</strong></span>
+              {session.closed_at && <span>Fechamento: <strong className="text-stone-800">{format(new Date(session.closed_at), "HH:mm", { locale: ptBR })}</strong></span>}
             </div>
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto bg-[#111110]">
+        <div className="flex-1 overflow-y-auto bg-[#FAF8F5]">
           {loading ? (
-            <div className="py-20 flex flex-col items-center justify-center text-stone-500">
-              <div className="w-8 h-8 border-2 border-[#0b520a] border-t-[#083d07] rounded-full animate-spin mb-4" />
-              <p className="font-mono text-xs uppercase tracking-widest">Auditando Sessão...</p>
+            <div className="py-20 flex flex-col items-center justify-center text-stone-400">
+              <div className="w-8 h-8 border-2 border-stone-300 border-t-[#083D07] rounded-full animate-spin mb-4" />
+              <p className="font-mono text-xs uppercase tracking-widest text-stone-500">Auditando Sessão...</p>
             </div>
           ) : activeTab === 'balanco' ? (
             
             /* ========================================================= */
-            /* ABA 1: BALANÇO & CONFERÊNCIA FINANCEIRA (GRID COMPACTA ZERO SCROLL) */
+            /* ABA 1: BALANÇO & CONFERÊNCIA FINANCEIRA (CLEAN, AMPLO & SEM ROLAGEM) */
             /* ========================================================= */
-            <div className="p-2 sm:p-2.5 grid grid-cols-1 lg:grid-cols-3 gap-2 items-start">
+            <div className="p-4 sm:p-5 grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
               
               {/* COLUNA 1: CANAIS */}
-              <div className="bg-[#083d07] border border-[#0b520a] rounded-lg p-2 flex flex-col">
-                <h3 className="font-mono text-[9px] text-stone-500 uppercase tracking-widest mb-1.5 border-b border-[#0b520a] pb-1 flex items-center gap-1.5">
-                  <Sparkles size={11} className="text-[#d5af7a]" /> Canais de Atendimento
-                </h3>
-                <div className="space-y-1.5 flex-1">
-                  
-                  {/* Entrega */}
-                  <div className="p-1.5 sm:p-2 rounded bg-black/40 border border-[#0b520a]/60">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <span className="font-mono text-[11px] font-bold text-stone-300 flex items-center gap-1.5">
-                        <Bike size={12} className="text-amber-500" /> ENTREGA
-                      </span>
-                      <span className="font-mono text-xs sm:text-sm font-bold text-white">R$ {summary.entrega.total.toFixed(2)}</span>
+              <div className="bg-white border border-stone-200/90 rounded-2xl p-4 flex flex-col shadow-xs justify-between">
+                <div>
+                  <h3 className="font-sans font-bold text-xs text-stone-700 uppercase tracking-wider mb-3 pb-2 border-b border-stone-100 flex items-center gap-2">
+                    <Sparkles size={14} className="text-[#D5AF7A]" /> Canais de Atendimento
+                  </h3>
+                  <div className="space-y-2.5">
+                    
+                    {/* Entrega */}
+                    <div className="p-3 rounded-xl bg-stone-50/80 border border-stone-200/60 hover:bg-stone-50 transition-colors">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-sans text-xs font-bold text-stone-800 flex items-center gap-2">
+                          <span className="p-1 rounded-md bg-amber-100 text-amber-700">
+                            <Bike size={14} />
+                          </span>
+                          ENTREGA
+                        </span>
+                        <span className="font-mono text-sm sm:text-base font-bold text-stone-900">R$ {summary.entrega.total.toFixed(2)}</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-stone-500 flex justify-between items-center pt-1 border-t border-stone-200/40">
+                        <span className="font-semibold text-stone-600">{summary.entrega.count} pedidos</span>
+                        {summary.entrega.count > 0 && <span className="truncate max-w-[200px] text-stone-400">{Object.entries(summary.entrega.orders.reduce((acc: Record<string, number>, o: any) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm}: R$ ${Number(val).toFixed(2).replace('.', ',')}`).join(' • ')}</span>}
+                      </div>
                     </div>
-                    <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
-                      <span>{summary.entrega.count} pedidos</span>
-                      {summary.entrega.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.entrega.orders.reduce((acc: Record<string, number>, o: any) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} R$ ${Number(val).toFixed(2).replace('.', ',')}`).join(' | ')}</span>}
-                    </div>
-                  </div>
 
-                  {/* Mesa */}
-                  <div className="p-1.5 sm:p-2 rounded bg-black/40 border border-[#0b520a]/60">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <span className="font-mono text-[11px] font-bold text-stone-300 flex items-center gap-1.5">
-                        <UtensilsCrossed size={12} className="text-emerald-500" /> MESA
-                      </span>
-                      <span className="font-mono text-xs sm:text-sm font-bold text-white">R$ {summary.mesa.total.toFixed(2)}</span>
+                    {/* Mesa */}
+                    <div className="p-3 rounded-xl bg-stone-50/80 border border-stone-200/60 hover:bg-stone-50 transition-colors">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-sans text-xs font-bold text-stone-800 flex items-center gap-2">
+                          <span className="p-1 rounded-md bg-emerald-100 text-emerald-700">
+                            <UtensilsCrossed size={14} />
+                          </span>
+                          MESA / SALÃO
+                        </span>
+                        <span className="font-mono text-sm sm:text-base font-bold text-stone-900">R$ {summary.mesa.total.toFixed(2)}</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-stone-500 flex justify-between items-center pt-1 border-t border-stone-200/40">
+                        <span className="font-semibold text-stone-600">{summary.mesa.count} pedidos</span>
+                        {summary.mesa.count > 0 && <span className="truncate max-w-[200px] text-stone-400">{Object.entries(summary.mesa.orders.reduce((acc: Record<string, number>, o: any) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm}: R$ ${Number(val).toFixed(2).replace('.', ',')}`).join(' • ')}</span>}
+                      </div>
                     </div>
-                    <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
-                      <span>{summary.mesa.count} pedidos</span>
-                      {summary.mesa.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.mesa.orders.reduce((acc: Record<string, number>, o: any) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} R$ ${Number(val).toFixed(2).replace('.', ',')}`).join(' | ')}</span>}
-                    </div>
-                  </div>
 
-                  {/* Retirada */}
-                  <div className="p-1.5 sm:p-2 rounded bg-black/40 border border-[#0b520a]/60">
-                    <div className="flex justify-between items-center mb-0.5">
-                      <span className="font-mono text-[11px] font-bold text-stone-300 flex items-center gap-1.5">
-                        <ShoppingBag size={12} className="text-sky-500" /> RETIRADA
-                      </span>
-                      <span className="font-mono text-xs sm:text-sm font-bold text-white">R$ {summary.retirada.total.toFixed(2)}</span>
+                    {/* Retirada */}
+                    <div className="p-3 rounded-xl bg-stone-50/80 border border-stone-200/60 hover:bg-stone-50 transition-colors">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-sans text-xs font-bold text-stone-800 flex items-center gap-2">
+                          <span className="p-1 rounded-md bg-sky-100 text-sky-700">
+                            <ShoppingBag size={14} />
+                          </span>
+                          RETIRADA NO BALCÃO
+                        </span>
+                        <span className="font-mono text-sm sm:text-base font-bold text-stone-900">R$ {summary.retirada.total.toFixed(2)}</span>
+                      </div>
+                      <div className="text-[11px] font-mono text-stone-500 flex justify-between items-center pt-1 border-t border-stone-200/40">
+                        <span className="font-semibold text-stone-600">{summary.retirada.count} pedidos</span>
+                        {summary.retirada.count > 0 && <span className="truncate max-w-[200px] text-stone-400">{Object.entries(summary.retirada.orders.reduce((acc: Record<string, number>, o: any) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm}: R$ ${Number(val).toFixed(2).replace('.', ',')}`).join(' • ')}</span>}
+                      </div>
                     </div>
-                    <div className="text-[9px] font-mono text-stone-500 flex justify-between items-center">
-                      <span>{summary.retirada.count} pedidos</span>
-                      {summary.retirada.count > 0 && <span className="truncate max-w-[180px]">{Object.entries(summary.retirada.orders.reduce((acc: Record<string, number>, o: any) => { const pm = paymentLabel(o.payment_method || o.paymentMethod); acc[pm] = (acc[pm] || 0) + Number(o.total_amount || o.totalAmount || 0); return acc; }, {})).map(([pm, val]) => `${pm} R$ ${Number(val).toFixed(2).replace('.', ',')}`).join(' | ')}</span>}
-                    </div>
-                  </div>
 
+                  </div>
                 </div>
               </div>
 
               {/* COLUNA 2: PAGAMENTOS E MOVS */}
-              <div className="bg-[#083d07] border border-[#0b520a] rounded-lg p-2 flex flex-col gap-1.5">
+              <div className="bg-white border border-stone-200/90 rounded-2xl p-4 flex flex-col justify-between shadow-xs gap-3">
                 
                 {/* Pagamentos */}
                 <div>
-                  <h3 className="font-mono text-[9px] text-stone-500 uppercase tracking-widest mb-1.5 border-b border-[#0b520a] pb-1 flex items-center gap-1.5">
-                    <CreditCard size={11} /> Recebimentos
+                  <h3 className="font-sans font-bold text-xs text-stone-700 uppercase tracking-wider mb-2.5 pb-2 border-b border-stone-100 flex items-center gap-2">
+                    <CreditCard size={14} className="text-stone-500" /> Recebimentos por Forma
                   </h3>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {Object.entries(summary.paymentTotals).map(([pm, val]: any) => {
                       const pct = summary.totalRevenue > 0 ? (val / summary.totalRevenue) * 100 : 0;
                       return (
-                        <div key={pm}>
-                          <div className="flex justify-between text-[11px] font-mono mb-0.5">
-                            <span className="text-stone-300">{pm}</span>
-                            <span className="font-bold text-white">R$ {val.toFixed(2)}</span>
+                        <div key={pm} className="p-2 rounded-lg bg-stone-50/70 border border-stone-200/40">
+                          <div className="flex justify-between items-center text-xs font-mono mb-1">
+                            <span className="font-semibold text-stone-700">{pm}</span>
+                            <span className="font-bold text-stone-900">R$ {val.toFixed(2)}</span>
                           </div>
-                          <div className="h-1 w-full bg-[#0b520a] rounded-full overflow-hidden">
-                            <div className="h-full bg-stone-400" style={{ width: `${pct}%` }} />
+                          <div className="h-1.5 w-full bg-stone-200/70 rounded-full overflow-hidden">
+                            <div className="h-full bg-[#083D07] rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
                       );
@@ -384,28 +415,33 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
                 </div>
 
                 {/* Movimentações */}
-                <div className="flex-1 mt-0.5 border-t border-[#0b520a] pt-1.5">
-                  <h3 className="font-mono text-[9px] text-stone-500 uppercase tracking-widest mb-1 border-b border-[#0b520a] pb-0.5">Movimentações Avulsas</h3>
-                  <div className="grid grid-cols-2 gap-1.5 mb-1">
-                    <div className="bg-emerald-950/30 border border-emerald-900/50 px-2 py-1 rounded">
-                      <span className="text-[8.5px] font-mono text-emerald-500 block leading-tight">SUPRIMENTOS</span>
-                      <span className="text-emerald-400 font-mono font-bold text-xs leading-tight">+ R$ {summary.suprimentosTotal.toFixed(2)}</span>
+                <div className="mt-1 border-t border-stone-100 pt-2.5">
+                  <h3 className="font-sans font-bold text-xs text-stone-700 uppercase tracking-wider mb-2 flex items-center justify-between">
+                    <span>Movimentações Avulsas</span>
+                    <span className="text-[10px] font-normal text-stone-400">Entradas e Saídas</span>
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="bg-emerald-50 border border-emerald-200/80 p-2.5 rounded-xl">
+                      <span className="text-[9.5px] font-bold font-mono text-emerald-700 block leading-tight">SUPRIMENTOS</span>
+                      <span className="text-emerald-800 font-mono font-extrabold text-sm leading-tight">+ R$ {summary.suprimentosTotal.toFixed(2)}</span>
                     </div>
-                    <div className="bg-rose-950/30 border border-rose-900/50 px-2 py-1 rounded">
-                      <span className="text-[8.5px] font-mono text-rose-500 block leading-tight">SANGRIAS</span>
-                      <span className="text-rose-400 font-mono font-bold text-xs leading-tight">- R$ {summary.sangriasTotal.toFixed(2)}</span>
+                    <div className="bg-rose-50 border border-rose-200/80 p-2.5 rounded-xl">
+                      <span className="text-[9.5px] font-bold font-mono text-rose-700 block leading-tight">SANGRIAS</span>
+                      <span className="text-rose-800 font-mono font-extrabold text-sm leading-tight">- R$ {summary.sangriasTotal.toFixed(2)}</span>
                     </div>
                   </div>
-                  <div className="max-h-16 overflow-y-auto pr-1 space-y-0.5">
+                  <div className="max-h-20 overflow-y-auto pr-1 space-y-1">
                     {sessionDetails?.movements && sessionDetails.movements.length > 0 ? (
                       sessionDetails.movements.map((m: any, idx: number) => (
-                        <div key={idx} className="flex justify-between text-[9px] font-mono">
-                          <span className="text-stone-400 uppercase truncate max-w-[150px]">{m.type} {m.notes ? `(${m.notes})` : ''}</span>
-                          <span className={m.type === 'suprimento' ? 'text-emerald-400' : 'text-rose-400'}>{m.type === 'suprimento' ? '+' : '-'}R$ {Number(m.amount||0).toFixed(2)}</span>
+                        <div key={idx} className="flex justify-between items-center text-[10.5px] font-mono px-2 py-1 rounded bg-stone-50 border border-stone-200/40">
+                          <span className="text-stone-700 uppercase truncate max-w-[170px] font-medium">{m.type} {m.notes ? `(${m.notes})` : ''}</span>
+                          <span className={`font-bold ${m.type === 'suprimento' ? 'text-emerald-700' : 'text-rose-700'}`}>
+                            {m.type === 'suprimento' ? '+' : '-'}R$ {Number(m.amount||0).toFixed(2)}
+                          </span>
                         </div>
                       ))
                     ) : (
-                      <span className="text-[9px] font-mono text-stone-500 italic">Nenhuma movimentação avulsa</span>
+                      <span className="text-[10px] font-mono text-stone-400 italic block py-0.5">Nenhuma movimentação avulsa registrada</span>
                     )}
                   </div>
                 </div>
@@ -413,51 +449,63 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
               </div>
 
               {/* COLUNA 3: AUDITORIA GAVETA */}
-              <div className="bg-[#1a1a18] border border-[#d5af7a]/20 rounded-lg p-2 flex flex-col shadow-[inset_0_0_20px_rgba(253,222,88,0.02)]">
-                <div className="flex items-center justify-between border-b border-[#0b520a] pb-1 mb-1.5">
-                  <h3 className="font-mono text-[9px] text-[#d5af7a] uppercase tracking-widest flex items-center gap-1.5">
-                    <Wallet size={11} /> Auditoria da Gaveta
-                  </h3>
-                  <span className={`text-[8.5px] font-mono font-bold px-1.5 py-0.5 rounded uppercase border ${summary.difference === 0 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-rose-400 border-rose-500/30 bg-rose-500/10'}`}>
-                    {summary.difference === 0 ? 'EXATA' : summary.difference < 0 ? `FALTA R$ ${Math.abs(summary.difference).toFixed(2)}` : `SOBRA R$ ${summary.difference.toFixed(2)}`}
-                  </span>
-                </div>
-
-                <div className="space-y-1 mb-1.5">
-                  <div className="flex justify-between items-center px-2 py-1 rounded bg-[#083d07]/80 border border-[#0b520a]/50">
-                    <span className="text-[9px] font-mono text-stone-400">FUNDO ABERTURA</span>
-                    <span className="font-mono text-xs text-stone-200">R$ {summary.fundoInicial.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center px-2 py-1 rounded bg-[#083d07]/80 border border-[#0b520a]/50">
-                    <span className="text-[9px] font-mono text-stone-400">(+) DINHEIRO VENDAS</span>
-                    <span className="font-mono text-xs text-emerald-400">+ R$ {summary.totalDinheiro.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between items-center px-2 py-1 rounded bg-[#083d07]/80 border border-[#0b520a]/50">
-                    <span className="text-[9px] font-mono text-stone-400">(+/-) MOVS MANUAIS</span>
-                    <span className={`font-mono text-xs ${summary.netManualMovements >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                      {summary.netManualMovements >= 0 ? '+' : ''}R$ {summary.netManualMovements.toFixed(2)}
+              <div className="bg-white border-2 border-stone-200 rounded-2xl p-4 flex flex-col justify-between shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-3">
+                    <h3 className="font-sans font-bold text-xs text-stone-900 uppercase tracking-wider flex items-center gap-2">
+                      <Wallet size={15} className="text-[#083D07]" /> Auditoria da Gaveta
+                    </h3>
+                    <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full uppercase border ${
+                      summary.difference === 0 
+                        ? 'text-emerald-800 border-emerald-300 bg-emerald-50' 
+                        : summary.difference < 0 
+                        ? 'text-rose-800 border-rose-300 bg-rose-50' 
+                        : 'text-blue-800 border-blue-300 bg-blue-50'
+                    }`}>
+                      {summary.difference === 0 ? '✓ CONFERÊNCIA EXATA' : summary.difference < 0 ? `FALTA R$ ${Math.abs(summary.difference).toFixed(2)}` : `SOBRA R$ ${summary.difference.toFixed(2)}`}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center px-2 py-1.5 rounded bg-[#083d07]/10 border border-[#d5af7a]/30 mt-0.5 shadow-[0_0_15px_rgba(253,222,88,0.05)]">
-                    <span className="text-[9px] font-mono text-[#d5af7a] font-bold">(=) SALDO ESPERADO</span>
-                    <span className="font-mono text-sm font-bold text-[#d5af7a]">R$ {summary.expectedCash.toFixed(2)}</span>
+
+                  <div className="space-y-1.5 mb-2.5">
+                    <div className="flex justify-between items-center px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200/60 text-xs">
+                      <span className="font-mono text-stone-500 text-[11px]">Fundo de Abertura</span>
+                      <span className="font-mono text-stone-800 font-bold">R$ {summary.fundoInicial.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200/60 text-xs">
+                      <span className="font-mono text-stone-500 text-[11px]">(+) Dinheiro em Vendas</span>
+                      <span className="font-mono text-emerald-700 font-bold">+ R$ {summary.totalDinheiro.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200/60 text-xs">
+                      <span className="font-mono text-stone-500 text-[11px]">(+/-) Movs Manuais</span>
+                      <span className={`font-mono font-bold ${summary.netManualMovements >= 0 ? 'text-emerald-700' : 'text-rose-700'}`}>
+                        {summary.netManualMovements >= 0 ? '+' : ''}R$ {summary.netManualMovements.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center px-3.5 py-2.5 rounded-xl bg-[#083D07]/5 border border-[#083D07]/20 mt-1">
+                      <span className="font-sans text-xs font-bold text-[#083D07]">(=) SALDO ESPERADO</span>
+                      <span className="font-mono text-base font-black text-[#083D07]">R$ {summary.expectedCash.toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
 
                 {session.status === 'fechado' && (
-                  <div className="mt-0.5 border-t border-[#0b520a] pt-1.5 space-y-1">
-                    <div className="flex justify-between items-center px-1">
-                      <span className="text-[9px] font-mono text-stone-400">VALOR CONTADO:</span>
-                      <span className="font-mono text-xs font-bold text-white bg-[#0b520a] px-2 py-0.5 rounded border border-stone-700">R$ {summary.countedCash.toFixed(2)}</span>
+                  <div className="mt-2 border-t border-stone-100 pt-2.5 space-y-2">
+                    <div className="flex justify-between items-center px-3 py-2 rounded-xl bg-stone-100 border border-stone-200">
+                      <span className="text-xs font-semibold text-stone-700">VALOR CONTADO:</span>
+                      <span className="font-mono text-sm font-bold text-stone-900 bg-white px-2.5 py-0.5 rounded-md border border-stone-200 shadow-2xs">R$ {summary.countedCash.toFixed(2)}</span>
                     </div>
-                    <div className={`flex justify-between items-center px-2 py-1 rounded ${summary.difference === 0 ? 'bg-emerald-950/40 text-emerald-400 border border-emerald-900/50' : 'bg-rose-950/40 text-rose-400 border border-rose-900/50'}`}>
-                      <span className="text-[9px] font-mono font-bold uppercase">Diferença:</span>
-                      <span className="font-mono text-sm font-black">{summary.difference >= 0 ? '+' : ''}R$ {summary.difference.toFixed(2)}</span>
+                    <div className={`flex justify-between items-center px-3 py-2 rounded-xl border ${
+                      summary.difference === 0 
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+                        : 'bg-rose-50 text-rose-800 border-rose-200'
+                    }`}>
+                      <span className="text-xs font-bold uppercase font-sans">Diferença de Caixa:</span>
+                      <span className="font-mono text-base font-black">{summary.difference >= 0 ? '+' : ''}R$ {summary.difference.toFixed(2)}</span>
                     </div>
                     {session.notes && (
-                      <div className="mt-1.5 p-2 bg-[#FAF7F2] border border-[#E8D8D1] rounded-lg text-xs font-sans text-[#44210F]">
-                        <span className="font-bold text-[#745240] text-[9.5px] uppercase font-mono block">Justificativa da Diferença:</span>
-                        <p className="mt-0.5 italic text-stone-800 text-[11px] leading-tight">{session.notes}</p>
+                      <div className="p-2.5 bg-stone-50 border border-stone-200/70 rounded-xl text-xs font-sans text-stone-800">
+                        <span className="font-bold text-stone-500 text-[10px] uppercase font-mono block">Justificativa da Diferença:</span>
+                        <p className="mt-0.5 italic text-stone-700 text-xs leading-relaxed">{session.notes}</p>
                       </div>
                     )}
                   </div>
@@ -840,23 +888,23 @@ export default function CashSessionDetailsModal({ session, onClose }: CashSessio
         {/* ========================================================= */}
         {/* RODAPÉ EXECUTIVO */}
         {/* ========================================================= */}
-        <div className="px-3.5 py-2 border-t border-stone-200 bg-white flex flex-col sm:flex-row justify-between items-center gap-2 shrink-0">
-          <div className="text-[11px] font-mono text-stone-500 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span>Auditoria concluída • <strong>{summary.totalOrdersCount} pedidos</strong> registrados</span>
+        <div className="px-5 py-3 border-t border-stone-200/90 bg-white flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0">
+          <div className="text-xs font-mono text-stone-500 flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span>Auditoria concluída • <strong>{summary.totalOrdersCount} pedidos</strong> no turno</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setActiveTab(activeTab === 'balanco' ? 'pedidos' : 'balanco')}
-              className="px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-[11px] font-bold rounded-lg transition-colors cursor-pointer font-mono border border-stone-300"
+              className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-bold rounded-xl transition-all cursor-pointer font-sans border border-stone-200 shadow-2xs"
             >
-              {activeTab === 'balanco' ? `Ver Pedidos (${summary.totalOrdersCount})` : 'Ver Balanço Financeiro'}
+              {activeTab === 'balanco' ? `Ver Lista de Pedidos (${summary.totalOrdersCount})` : 'Voltar ao Balanço Financeiro'}
             </button>
 
             <button
               onClick={onClose}
-              className="px-4 py-1.5 bg-[#062b06] hover:bg-[#0b520a] text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer font-mono shadow-xs"
+              className="px-5 py-2 bg-[#083D07] hover:bg-[#0B520A] text-white text-xs font-bold rounded-xl transition-all cursor-pointer font-sans shadow-xs"
             >
               Fechar Janela
             </button>
