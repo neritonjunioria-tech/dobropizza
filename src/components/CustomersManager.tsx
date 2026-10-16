@@ -234,7 +234,7 @@ export default function CustomersManager() {
           else if (typeof o.items === 'string') {
             try { itemsList = JSON.parse(o.items); } catch { itemsList = []; }
           }
-          o.parsedItems = itemsList;
+          (o as any).parsedItems = itemsList;
 
           itemsList.forEach((it: any) => {
             const itemName = stripSizeSuffix(String(it.name || '').trim());

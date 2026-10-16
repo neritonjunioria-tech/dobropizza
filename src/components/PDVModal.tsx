@@ -164,6 +164,28 @@ export default function PDVModal({
     }
   }, [isOpen]);
 
+  const [localSessionId, setLocalSessionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (activeSessionId) {
+        setLocalSessionId(activeSessionId);
+      } else {
+        supabase
+          .from('cash_sessions')
+          .select('id')
+          .eq('status', 'aberto')
+          .limit(1)
+          .maybeSingle()
+          .then(({ data }) => {
+            setLocalSessionId(data?.id || null);
+          });
+      }
+    }
+  }, [isOpen, activeSessionId]);
+
+  const effectiveSessionId = activeSessionId || localSessionId;
+
   // Order Details States
   const [orderType, setOrderType] = useState<'retirada' | 'mesa' | 'entrega'>('retirada');
   const [customerName, setCustomerName] = useState('');
@@ -847,7 +869,7 @@ export default function PDVModal({
         : (orderType === 'mesa' && tableNumber ? `Mesa ${tableNumber}` : null);
 
       const payload: any = {
-        cash_session_id: activeSessionId || null,
+        cash_session_id: effectiveSessionId || null,
         customer_name: customerNif.trim() ? `${customerName.trim()} (CPF: ${customerNif.trim()})` : customerName.trim(),
         nif: customerNif.trim() || null,
         customer_phone: customerPhone.trim() || null,
@@ -1010,7 +1032,7 @@ export default function PDVModal({
 
         {/* Right: Cash Session badge & Close */}
         <div className="flex items-center gap-3">
-          {activeSessionId ? (
+          {effectiveSessionId ? (
             <span className="text-[10px] font-bold text-green-700 bg-green-100 px-2.5 py-1 rounded-full uppercase tracking-wider">
               Caixa Aberto
             </span>

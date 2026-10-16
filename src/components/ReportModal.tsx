@@ -52,6 +52,7 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   onClose,
   filteredOrders = [],
   dashboardData,
+}) => {
   React.useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {

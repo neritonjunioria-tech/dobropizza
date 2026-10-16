@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { Lock, Unlock, Printer, BarChart3, ArrowDownCircle, ArrowUpCircle, AlertCircle, Search, ShoppingBag, Banknote, Smartphone, Wallet, CreditCard, Trash2 } from 'lucide-react';
+import { Lock, Unlock, Printer, BarChart3, ArrowDownCircle, ArrowUpCircle, AlertCircle, Search, ShoppingBag, Banknote, Smartphone, Wallet, CreditCard, Trash2, X } from 'lucide-react';
 import CashSessionDetailsModal from './reports/CashSessionDetailsModal';
 import { normalizePaymentMethod, normalizeOrderType, isOrderActive } from '../utils/paymentAndOrderHelper';
 import PeriodFilterCompact, { PeriodFilterOption } from './PeriodFilterCompact';
 
 interface CaixaManagerProps {
   refreshSignal?: number;
+  onSessionChange?: (session: any) => void;
 }
 
-export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) {
+export default function CaixaManager({ refreshSignal, onSessionChange }: CaixaManagerProps = {}) {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [openingAmount, setOpeningAmount] = useState('0.00');
@@ -301,6 +302,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
         setOpeningAmount('0.00');
         setClosedResult(null);
         setShowOpenModal(false);
+        onSessionChange?.(data);
         showToast('Caixa aberto com sucesso!', 'success');
       } else if (error) {
         console.error("Erro ao abrir caixa:", error);
@@ -483,6 +485,7 @@ export default function CaixaManager({ refreshSignal }: CaixaManagerProps = {}) 
       setClosingNotes('');
       setShowCloseModal(false);
       loadHistory();
+      onSessionChange?.(null);
       showToast('Caixa fechado e conferido com sucesso!', 'success');
     }
   };

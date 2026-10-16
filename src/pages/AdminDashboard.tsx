@@ -288,36 +288,59 @@ const safeParseItems = (items: any): any[] => {
 const CHART_COLORS = ["#083d07", "#d5af7a", "#745240", "#5f8f3e", "#b88a44", "#a89284"];
 
 
+let sharedAudioCtx: AudioContext | null = null;
+const getSharedAudioContext = () => {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return null;
+    if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+      sharedAudioCtx = new AudioCtx();
+    }
+    if (sharedAudioCtx.state === 'suspended') {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  } catch {
+    return null;
+  }
+};
+
 const playNotificationSound = () => {
   try {
-    const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioContext) return;
-    const ctx = new AudioContext();
-    
-    const playChime = (time: number, freq: number, duration: number) => {
-      const osc = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      osc.type = 'triangle'; // Softer, more bell-like
-      osc.frequency.setValueAtTime(freq, time);
-      
-      gainNode.gain.setValueAtTime(0, time);
-      gainNode.gain.linearRampToValueAtTime(0.6, time + 0.05);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, time + duration);
-      
-      osc.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      
-      osc.start(time);
-      osc.stop(time + duration);
+    const ctx = getSharedAudioContext();
+    if (!ctx) return;
+
+    const play = () => {
+      const playChime = (time: number, freq: number, duration: number) => {
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        osc.type = 'triangle'; // Softer, more bell-like
+        osc.frequency.setValueAtTime(freq, time);
+        
+        gainNode.gain.setValueAtTime(0, time);
+        gainNode.gain.linearRampToValueAtTime(0.7, time + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, time + duration);
+        
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        osc.start(time);
+        osc.stop(time + duration);
+      };
+
+      const t = ctx.currentTime;
+      // Turu-turu! (Sequence of clear notes for new order alert)
+      playChime(t, 1318.51, 0.18); // E6
+      playChime(t + 0.18, 1046.50, 0.22); // C6
+      playChime(t + 0.45, 1318.51, 0.18); // E6
+      playChime(t + 0.63, 1046.50, 0.45); // C6
     };
 
-    const t = ctx.currentTime;
-    // Turu-turu! (Sequence of notes)
-    playChime(t, 1318.51, 0.15); // E6
-    playChime(t + 0.15, 1046.50, 0.2); // C6
-    
-    playChime(t + 0.4, 1318.51, 0.15); // E6
-    playChime(t + 0.55, 1046.50, 0.4); // C6
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play).catch(play);
+    } else {
+      play();
+    }
   } catch (e) {
     console.log("Audio play failed", e);
   }
@@ -889,7 +912,7 @@ export default function AdminDashboard() {
       // Calcula APENAS o faturamento de cada dia específico recente (não a soma de todas as segundas da história)
       allDbOrders.forEach(order => {
         if (order.status === 'Cancelado' || order.status === 'cancelado') return;
-        const d = safeGetTime(order.createdAt);
+        const d = safeGetDate(order.createdAt);
         if (!d) return;
         const orderDateStr = toLocalDateKey(d);
         const dayIdx = d.getDay();
@@ -960,7 +983,8 @@ export default function AdminDashboard() {
         uniqueCustomers,
         paymentMethodsData,
         faturamentoNumerario,
-        faturamentoMBWay,
+        faturamentoPix,
+        faturamentoMBWay: 0,
         pendingOrders: pendingOrders.length,
         recentOrders: allDbOrders.filter(o => {
           // Se houver sessão de caixa aberta e o pedido pertencer a ela
@@ -1157,6 +1181,18 @@ export default function AdminDashboard() {
       if (showAlert) showToast('Erro ao zerar dados: ' + (err.message || String(err)), 'error');
     }
   };
+
+  useEffect(() => {
+    const unlockAudio = () => {
+      getSharedAudioContext();
+    };
+    window.addEventListener('click', unlockAudio);
+    window.addEventListener('keydown', unlockAudio);
+    return () => {
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('keydown', unlockAudio);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchRole = async (userId: string) => {
@@ -2205,7 +2241,7 @@ export default function AdminDashboard() {
 
         {activeTab === "caixa" && hasPermission('gerenciar_caixa') && (
           <div className="mt-1">
-            <CaixaManager />
+            <CaixaManager onSessionChange={() => fetchDashboardData(true)} />
           </div>
         )}
 
