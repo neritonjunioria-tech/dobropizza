@@ -73,7 +73,10 @@ export default function Cart({
   // Form State
   const [name, setName] = useState("");
   const [telefone, setTelefone] = useState("");
-  const [morada, setMorada] = useState("");
+  const [endereco, setEndereco] = useState("");
+  const [numero, setNumero] = useState("");
+  const [bloco, setBloco] = useState("");
+  const [referencia, setReferencia] = useState("");
   const [zona, setZona] = useState("");
   const [nif, setNif] = useState("");
   const [orderType, setOrderType] = useState<"Delivery" | "Takeaway">("Delivery");
@@ -138,7 +141,11 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
         const parsed = JSON.parse(saved);
         if (parsed.name) setName(parsed.name);
         if (parsed.telefone) setTelefone(parsed.telefone);
-        if (parsed.morada) setMorada(parsed.morada);
+        if (parsed.endereco) setEndereco(parsed.endereco);
+        else if (parsed.morada) setEndereco(parsed.morada);
+        if (parsed.numero) setNumero(parsed.numero);
+        if (parsed.bloco) setBloco(parsed.bloco);
+        if (parsed.referencia) setReferencia(parsed.referencia);
         if (parsed.zona) setZona(parsed.zona);
         if (parsed.nif) {
           setNif(parsed.nif);
@@ -163,6 +170,10 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
   const saveCustomerData = (updates: Partial<{
     name: string;
     telefone: string;
+    endereco: string;
+    numero: string;
+    bloco: string;
+    referencia: string;
     morada: string;
     zona: string;
     nif: string;
@@ -173,7 +184,10 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
       const current = {
         name,
         telefone,
-        morada,
+        endereco,
+        numero,
+        bloco,
+        referencia,
         zona,
         nif,
         orderType,
@@ -273,8 +287,11 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
       errors.push("Por favor, preencha o seu nome.");
     }
     if (orderType === "Delivery") {
-      if (!morada.trim()) {
-        errors.push("Por favor, preencha o endereço de entrega.");
+      if (!endereco.trim()) {
+        errors.push("Por favor, preencha o endereço (rua/avenida) de entrega.");
+      }
+      if (!numero.trim()) {
+        errors.push("Por favor, preencha o número do endereço (ou informe S/N).");
       }
       if (!zona.trim()) {
         errors.push("Por favor, selecione o bairro de entrega.");
@@ -295,6 +312,10 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
     let newTrackingCode: string | null = null;
     let orderSavedSuccessfully = false;
 
+    const fullDeliveryAddress = orderType === 'Delivery'
+      ? `${endereco.trim()}, Nº ${numero.trim()}${bloco.trim() ? ` - ${bloco.trim()}` : ''}${referencia.trim() ? ` (Ref: ${referencia.trim()})` : ''}`
+      : null;
+
     if (simulationMode) {
       // MODO SIMULAÇÃO: Gera identificadores de teste sem gravar no banco de produção da pizzaria
       const mockId = Math.floor(9000 + Math.random() * 999);
@@ -314,7 +335,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
           order_type: orderType,
           payment_method: finalPayment,
           total_amount: total,
-          delivery_address: orderType === 'Delivery' ? morada : null,
+          delivery_address: fullDeliveryAddress,
           delivery_zone: orderType === 'Delivery' ? zona : null,
           change_for: finalPayment === 'Dinheiro' ? trocoPara : null,
           nif: nif.trim() ? nif : null,
@@ -372,7 +393,14 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
 
     if (orderType === "Delivery") {
       text += `[ENDEREÇO DE ENTREGA]\n`;
-      text += `Endereço: ${morada}\n`;
+      text += `Rua: ${endereco.trim()}\n`;
+      text += `Número: ${numero.trim()}\n`;
+      if (bloco.trim()) {
+        text += `Bloco/Apto: ${bloco.trim()}\n`;
+      }
+      if (referencia.trim()) {
+        text += `Referência: ${referencia.trim()}\n`;
+      }
       text += `Bairro: ${zona}\n`;
       text += `-----------------------------------\n`;
       text += `🛵 Tempo est. de entrega:\n   ${deliveryTimeEstimate}\n`;
@@ -963,26 +991,85 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                     </div>
                   </div>
 
-                  {/* Se Entrega: Endereço & Bairro */}
+                  {/* Se Entrega: Endereço, Número, Bloco/Complemento, Referência & Bairro */}
                   {orderType === "Delivery" && (
-                    <div className="space-y-1.5 bg-emerald-50/30 p-2 rounded-lg border border-emerald-100">
-                      <div>
-                        <label className="block text-[10px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase">
-                          <MapPin className="w-2.5 h-2.5 text-[#083d07]" />
-                          <span>Endereço Completo *</span>
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Rua, número, complemento / apto"
-                          value={morada}
-                          onChange={(e) => {
-                            setMorada(e.target.value);
-                            saveCustomerData({ morada: e.target.value });
-                          }}
-                          className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
-                        />
+                    <div className="space-y-1.5 bg-emerald-50/40 p-2.5 rounded-xl border border-emerald-100">
+                      <div className="flex items-center gap-1 text-[10px] font-bold text-[#083d07] uppercase tracking-wider">
+                        <MapPin className="w-2.5 h-2.5 text-[#083d07]" />
+                        <span>Dados de Entrega</span>
                       </div>
 
+                      {/* Rua & Número */}
+                      <div className="grid grid-cols-12 gap-1.5">
+                        <div className="col-span-8">
+                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                            Endereço / Rua *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Ex: Rua das Flores"
+                            value={endereco}
+                            onChange={(e) => {
+                              setEndereco(e.target.value);
+                              saveCustomerData({ endereco: e.target.value });
+                            }}
+                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                          />
+                        </div>
+
+                        <div className="col-span-4">
+                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                            Número *
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Nº ou S/N"
+                            value={numero}
+                            onChange={(e) => {
+                              setNumero(e.target.value);
+                              saveCustomerData({ numero: e.target.value });
+                            }}
+                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Bloco/Apto & Referência */}
+                      <div className="grid grid-cols-2 gap-1.5">
+                        <div>
+                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                            Bloco / Apto / Casa
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Ex: Bloco B, Ap 12"
+                            value={bloco}
+                            onChange={(e) => {
+                              setBloco(e.target.value);
+                              saveCustomerData({ bloco: e.target.value });
+                            }}
+                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                            Ponto de Referência
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Ex: Próx. à padaria"
+                            value={referencia}
+                            onChange={(e) => {
+                              setReferencia(e.target.value);
+                              saveCustomerData({ referencia: e.target.value });
+                            }}
+                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Bairro */}
                       <div>
                         <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
                           Bairro de Entrega (São José dos Pinhais) *
