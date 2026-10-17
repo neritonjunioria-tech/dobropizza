@@ -601,35 +601,35 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
 
   // MAIN CART CONTENT (ULTRA-COMPACT, ELEGANT, HIGH-CONVERSION)
   const CartContent = (
-    <div className="bg-white lg:border border-gray-200 lg:rounded-2xl shadow-xs flex flex-col w-full relative">
+    <div className="bg-white lg:border border-gray-200 lg:rounded-2xl shadow-xs flex flex-col w-full relative max-h-[calc(100vh-6.5rem)] overflow-hidden">
       
       {/* BANNER DE SEGURANÇA: MODO TESTE EM AMBIENTE LOCAL */}
       {isDevHost && (
-        <div className="bg-emerald-50 border-b border-emerald-200 px-3 py-1.5 flex items-center justify-between text-xs text-emerald-950 shrink-0">
+        <div className="bg-emerald-50 border-b border-emerald-200 px-3 py-1 flex items-center justify-between text-xs text-emerald-950 shrink-0">
           <div className="flex items-center gap-1.5 min-w-0">
             <span className="text-xs">🛡️</span>
-            <span className="text-[11px] font-bold text-[#083d07]">
-              {simulationMode ? 'Modo Teste Ativo (Isolado da Pizzaria)' : 'Atenção: Modo Real (Envia à pizzaria)'}
+            <span className="text-[10px] font-bold text-[#083d07]">
+              {simulationMode ? 'Modo Teste Ativo' : 'Atenção: Modo Real (Pizzaria)'}
             </span>
           </div>
           <button
             type="button"
             onClick={() => setSimulationMode(!simulationMode)}
-            className={`text-[10px] font-bold px-2 py-0.5 rounded border transition-colors cursor-pointer ${
+            className={`text-[9px] font-bold px-1.5 py-0.5 rounded border transition-colors cursor-pointer ${
               simulationMode ? 'bg-[#083d07] text-white border-[#083d07]' : 'bg-white text-stone-700 border-stone-300'
             }`}
           >
-            {simulationMode ? 'ISOLADO (SEGURO)' : 'LIGAR GESTOR'}
+            {simulationMode ? 'ISOLADO' : 'LIGAR GESTOR'}
           </button>
         </div>
       )}
 
       {/* HEADER WITH DISCREET STEP TABS */}
-      <div className="bg-white border-b border-gray-100 p-3 shrink-0">
-        <div className="flex justify-between items-center mb-2">
+      <div className="bg-white border-b border-gray-100 p-2.5 sm:p-3 shrink-0">
+        <div className="flex justify-between items-center mb-1.5">
           <div className="flex items-center gap-1.5">
-            <ShoppingBag className="w-4 h-4 text-[#083d07]" />
-            <h2 className="text-[13px] font-black uppercase tracking-wide text-gray-800">
+            <ShoppingBag className="w-3.5 h-3.5 text-[#083d07]" />
+            <h2 className="text-xs font-black uppercase tracking-wide text-gray-800">
               {currentStep === 'items' ? 'Meu Pedido' : 'Entrega & Pagamento'}
             </h2>
             <span className="bg-gray-100 text-[#083d07] text-[10px] font-bold px-1.5 py-0.2 rounded-full">
@@ -659,11 +659,11 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
 
         {/* COMPACT STEP SWITCHER */}
         {items.length > 0 && (
-          <div className="grid grid-cols-2 gap-1 bg-stone-100 p-0.5 rounded-lg text-[11px] font-bold">
+          <div className="grid grid-cols-2 gap-1 bg-stone-100 p-0.5 rounded-lg text-[10.5px] font-bold">
             <button
               type="button"
               onClick={() => setCurrentStep('items')}
-              className={`py-1 px-2 rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              className={`py-0.5 px-2 rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 currentStep === 'items'
                   ? 'bg-white text-[#083d07] shadow-xs'
                   : 'text-gray-500 hover:text-gray-900'
@@ -677,7 +677,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
               onClick={() => {
                 if (items.length > 0) setCurrentStep('checkout');
               }}
-              className={`py-1 px-2 rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${
+              className={`py-0.5 px-2 rounded-md transition-all flex items-center justify-center gap-1 cursor-pointer ${
                 currentStep === 'checkout'
                   ? 'bg-[#083d07] text-[#fdfbf7] shadow-xs'
                   : 'text-gray-500 hover:text-gray-900'
@@ -688,23 +688,23 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
           </div>
         )}
 
-        {/* FREE DELIVERY PROGRESS BAR IN CART */}
-        {items.length > 0 && Number.isFinite(freeDeliveryThreshold) && (
-          <div className="mt-2.5 pt-2 border-t border-gray-100">
-            <div className="flex justify-between items-center text-[11px] font-bold mb-1">
+        {/* FREE DELIVERY PROGRESS BAR IN CART - Apenas na etapa 1 (itens) para liberar espaço no checkout */}
+        {items.length > 0 && currentStep === 'items' && Number.isFinite(freeDeliveryThreshold) && (
+          <div className="mt-2 pt-1.5 border-t border-gray-100">
+            <div className="flex justify-between items-center text-[10px] font-bold mb-1">
               {subtotal >= freeDeliveryThreshold ? (
                 <span className="text-emerald-700 flex items-center gap-1 font-extrabold animate-pulse">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
                   <span>Entrega Grátis Liberada!</span>
                 </span>
               ) : (
                 <span className="text-stone-600">
-                  Falta <strong className="text-[#083d07]">R$ {brl(freeDeliveryThreshold - subtotal)}</strong> para <strong>Entrega Grátis</strong>
+                  Falta <strong className="text-[#083d07]">R$ {brl(freeDeliveryThreshold - subtotal)}</strong> p/ <strong>Entrega Grátis</strong>
                 </span>
               )}
-              <span className="text-stone-400 font-medium text-[10px]">Meta: R$ {brl(freeDeliveryThreshold)}</span>
+              <span className="text-stone-400 font-medium text-[9px]">Meta: R$ {brl(freeDeliveryThreshold)}</span>
             </div>
-            <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden border border-stone-200/60">
+            <div className="w-full h-1 bg-stone-100 rounded-full overflow-hidden border border-stone-200/60">
               <div
                 className={`h-full transition-all duration-500 rounded-full ${
                   subtotal >= freeDeliveryThreshold
@@ -738,7 +738,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
       ) : (
         <>
           {/* BODY AREA - COMPACT & NATURAL */}
-          <div className="p-3 space-y-2.5">
+          <div className="p-2.5 sm:p-3 overflow-y-auto custom-scrollbar flex-1 space-y-2">
             
             {/* ======================================================== */}
             {/* STEP 1: COMPACT ITEMS REVIEW */}
@@ -902,10 +902,10 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
             {/* STEP 2: ULTRA-COMPACT CHECKOUT FORM */}
             {/* ======================================================== */}
             {currentStep === 'checkout' && (
-              <div className="space-y-2.5 animate-in fade-in duration-150">
+              <div className="space-y-2 animate-in fade-in duration-150">
                 
                 {/* BACK LINK + RESUMO EM 1 LINHA */}
-                <div className="flex items-center justify-between text-[11px] pb-1 border-b border-gray-100">
+                <div className="flex items-center justify-between text-[10.5px] pb-1 border-b border-gray-100">
                   <button
                     type="button"
                     onClick={() => setCurrentStep('items')}
@@ -914,8 +914,8 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                     <ArrowLeft className="w-3 h-3" />
                     <span>Editar itens</span>
                   </button>
-                  <span className="text-gray-500 font-medium">
-                    {totalItemCount} {totalItemCount === 1 ? 'item' : 'itens'} • Subtotal: R$ {brl(subtotal)}
+                  <span className="text-gray-500 font-medium text-[10px]">
+                    {totalItemCount} {totalItemCount === 1 ? 'item' : 'itens'} • R$ {brl(subtotal)}
                   </span>
                 </div>
 
@@ -927,7 +927,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                       setOrderType("Delivery");
                       saveCustomerData({ orderType: "Delivery" });
                     }}
-                    className={`py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                    className={`h-7 px-2 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
                       orderType === "Delivery"
                         ? "bg-[#083d07] text-white border-[#083d07] shadow-xs"
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
@@ -942,7 +942,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                       setOrderType("Takeaway");
                       saveCustomerData({ orderType: "Takeaway" });
                     }}
-                    className={`py-1.5 px-2 rounded-lg font-bold text-[11px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                    className={`h-7 px-2 rounded-lg font-bold text-[10.5px] transition-all flex items-center justify-center gap-1 border cursor-pointer ${
                       orderType === "Takeaway"
                         ? "bg-[#083d07] text-white border-[#083d07] shadow-xs"
                         : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50"
@@ -953,11 +953,11 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                 </div>
 
                 {/* FORM FIELDS */}
-                <div className="space-y-2">
-                  {/* Nome & Telemóvel em 2 colunas compactas */}
+                <div className="space-y-1.5">
+                  {/* Nome & WhatsApp em 2 colunas compactas */}
                   <div className="grid grid-cols-2 gap-1.5">
                     <div>
-                      <label className="block text-[10px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase">
+                      <label className="block text-[9px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase tracking-wide">
                         <User className="w-2.5 h-2.5 text-[#083d07]" />
                         <span>Nome *</span>
                       </label>
@@ -969,12 +969,12 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                           setName(e.target.value);
                           saveCustomerData({ name: e.target.value });
                         }}
-                        className="w-full h-8 bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                        className="w-full h-7 bg-gray-50/60 focus:bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none transition-colors"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase">
+                      <label className="block text-[9px] font-bold text-gray-600 mb-0.5 flex items-center gap-0.5 uppercase tracking-wide">
                         <Phone className="w-2.5 h-2.5 text-[#083d07]" />
                         <span>WhatsApp *</span>
                       </label>
@@ -986,24 +986,24 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                           setTelefone(e.target.value);
                           saveCustomerData({ telefone: e.target.value });
                         }}
-                        className="w-full h-8 bg-gray-50/50 focus:bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                        className="w-full h-7 bg-gray-50/60 focus:bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none transition-colors"
                       />
                     </div>
                   </div>
 
                   {/* Se Entrega: Endereço, Número, Bloco/Complemento, Referência & Bairro */}
                   {orderType === "Delivery" && (
-                    <div className="space-y-1.5 bg-emerald-50/40 p-2.5 rounded-xl border border-emerald-100">
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-[#083d07] uppercase tracking-wider">
+                    <div className="space-y-1 bg-emerald-50/40 p-2 rounded-lg border border-emerald-100">
+                      <div className="flex items-center gap-1 text-[9px] font-bold text-[#083d07] uppercase tracking-wider mb-0.5">
                         <MapPin className="w-2.5 h-2.5 text-[#083d07]" />
-                        <span>Dados de Entrega</span>
+                        <span>Endereço de Entrega</span>
                       </div>
 
                       {/* Rua & Número */}
                       <div className="grid grid-cols-12 gap-1.5">
                         <div className="col-span-8">
-                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
-                            Endereço / Rua *
+                          <label className="block text-[9px] font-bold text-gray-600 mb-0.5 uppercase">
+                            Rua / Endereço *
                           </label>
                           <input
                             type="text"
@@ -1013,23 +1013,23 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                               setEndereco(e.target.value);
                               saveCustomerData({ endereco: e.target.value });
                             }}
-                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                            className="w-full h-7 bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none transition-colors"
                           />
                         </div>
 
                         <div className="col-span-4">
-                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                          <label className="block text-[9px] font-bold text-gray-600 mb-0.5 uppercase">
                             Número *
                           </label>
                           <input
                             type="text"
-                            placeholder="Nº ou S/N"
+                            placeholder="Nº / S/N"
                             value={numero}
                             onChange={(e) => {
                               setNumero(e.target.value);
                               saveCustomerData({ numero: e.target.value });
                             }}
-                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                            className="w-full h-7 bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none transition-colors"
                           />
                         </div>
                       </div>
@@ -1037,7 +1037,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                       {/* Bloco/Apto & Referência */}
                       <div className="grid grid-cols-2 gap-1.5">
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                          <label className="block text-[9px] font-bold text-gray-500 mb-0.5 uppercase">
                             Bloco / Apto / Casa
                           </label>
                           <input
@@ -1048,12 +1048,12 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                               setBloco(e.target.value);
                               saveCustomerData({ bloco: e.target.value });
                             }}
-                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                            className="w-full h-7 bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none transition-colors"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
+                          <label className="block text-[9px] font-bold text-gray-500 mb-0.5 uppercase">
                             Ponto de Referência
                           </label>
                           <input
@@ -1064,15 +1064,15 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                               setReferencia(e.target.value);
                               saveCustomerData({ referencia: e.target.value });
                             }}
-                            className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none transition-colors"
+                            className="w-full h-7 bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none transition-colors"
                           />
                         </div>
                       </div>
 
                       {/* Bairro */}
                       <div>
-                        <label className="block text-[10px] font-bold text-gray-600 mb-0.5 uppercase">
-                          Bairro de Entrega (São José dos Pinhais) *
+                        <label className="block text-[9px] font-bold text-gray-600 mb-0.5 uppercase">
+                          Bairro (São José dos Pinhais) *
                         </label>
                         <select
                           value={zona}
@@ -1080,7 +1080,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                             setZona(e.target.value);
                             saveCustomerData({ zona: e.target.value });
                           }}
-                          className="w-full h-8 bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none font-medium transition-colors"
+                          className="w-full h-7 bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-1.5 text-[11px] outline-none font-medium transition-colors"
                         >
                           <option value="">Selecione o bairro...</option>
                           {Object.keys(zonesFees).map((z) => (
@@ -1095,36 +1095,36 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
 
                   {/* FORMAS DE PAGAMENTO ACEITAS */}
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-600 mb-1 uppercase tracking-wider">
+                    <label className="block text-[9px] font-bold text-gray-600 mb-1 uppercase tracking-wider">
                       Forma de Pagamento
                     </label>
                     {(() => {
                       const activeMethods = [
-                        paymentConfig.pix && { id: 'Pix', label: 'Pix', sub: 'QR Code & Copia e Cola' },
-                        paymentConfig.dinheiro && { id: 'Dinheiro', label: 'Dinheiro', sub: 'Na entrega/balcão' },
+                        paymentConfig.pix && { id: 'Pix', label: 'Pix', sub: 'QR Code' },
+                        paymentConfig.dinheiro && { id: 'Dinheiro', label: 'Dinheiro', sub: 'Troco' },
                         paymentConfig.credito && { id: 'Cartão de Crédito', label: 'Crédito', sub: 'Maquininha' },
                         paymentConfig.debito && { id: 'Cartão de Débito', label: 'Débito', sub: 'Maquininha' },
                       ].filter(Boolean) as { id: string; label: string; sub: string }[];
 
                       if (activeMethods.length <= 1) {
                         return (
-                          <div className="h-11 px-3.5 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-between shadow-2xs">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2.5 h-2.5 rounded-full bg-[#083d07]" />
-                              <span className="font-black text-xs text-[#083d07] tracking-wider">
+                          <div className="h-8 px-2.5 rounded-lg bg-emerald-50 border border-emerald-300 flex items-center justify-between shadow-2xs">
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-[#083d07]" />
+                              <span className="font-black text-[11px] text-[#083d07] tracking-wider">
                                 {pagamento === 'Pix' ? 'PIX' : pagamento.toUpperCase()}
                               </span>
                             </div>
-                            <span className="text-[11px] text-[#083d07] font-bold">
-                              {pagamento === 'Pix' ? 'QR Code & Copia e Cola' : 'Pagamento no Recebimento'}
+                            <span className="text-[10px] text-[#083d07] font-bold">
+                              {pagamento === 'Pix' ? 'QR Code & Copia e Cola' : 'No Recebimento'}
                             </span>
                           </div>
                         );
                       }
 
                       return (
-                        <div className="space-y-2">
-                          <div className="grid grid-cols-2 gap-1.5">
+                        <div className="space-y-1">
+                          <div className={`grid ${activeMethods.length === 3 ? 'grid-cols-3' : activeMethods.length >= 4 ? 'grid-cols-4' : 'grid-cols-2'} gap-1`}>
                             {activeMethods.map(m => {
                               const isSel = pagamento === m.id;
                               return (
@@ -1135,17 +1135,14 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                                     setPagamento(m.id);
                                     saveCustomerData({ pagamento: m.id });
                                   }}
-                                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                  className={`h-7 px-1 rounded-lg border text-center transition-all cursor-pointer flex items-center justify-center gap-1 text-[11px] font-bold truncate ${
                                     isSel
-                                      ? 'bg-emerald-50/90 border-[#083d07] text-[#083d07] font-bold shadow-2xs ring-1 ring-[#083d07]/20'
+                                      ? 'bg-emerald-700 text-white border-emerald-700 shadow-2xs'
                                       : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
                                   }`}
+                                  title={`${m.label} (${m.sub})`}
                                 >
-                                  <div className="flex items-center justify-between w-full">
-                                    <span className="text-xs font-bold">{m.label}</span>
-                                    {isSel && <span className="w-2 h-2 rounded-full bg-[#083d07]" />}
-                                  </div>
-                                  <span className="text-[10px] text-gray-500 font-normal mt-0.5">{m.sub}</span>
+                                  <span className="truncate">{m.label}</span>
                                 </button>
                               );
                             })}
@@ -1156,7 +1153,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                               placeholder="Troco para quanto? (Deixe em branco se não precisar)"
                               value={trocoPara}
                               onChange={(e) => setTrocoPara(e.target.value)}
-                              className="h-8 w-full bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none"
+                              className="h-7 w-full bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none mt-1"
                             />
                           )}
                         </div>
@@ -1165,18 +1162,18 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                   </div>
 
                   {/* CPF opcional */}
-                  <div className="pt-0.5">
+                  <div>
                     {!showNifInput && !nif ? (
                       <button
                         type="button"
                         onClick={() => setShowNifInput(true)}
-                        className="text-[10px] text-gray-400 hover:text-gray-700 flex items-center gap-0.5 cursor-pointer"
+                        className="text-[9.5px] text-gray-400 hover:text-gray-700 flex items-center gap-0.5 cursor-pointer py-0.5"
                       >
                         <FileText className="w-2.5 h-2.5" />
                         <span>+ Adicionar CPF na nota (opcional)</span>
                       </button>
                     ) : (
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1">
                         <input
                           type="text"
                           placeholder="CPF na nota (opcional)"
@@ -1185,7 +1182,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                             setNif(e.target.value);
                             saveCustomerData({ nif: e.target.value });
                           }}
-                          className="h-7 w-full bg-white border border-gray-200 focus:border-[#083d07] rounded-lg px-2 text-xs outline-none"
+                          className="h-6.5 w-full bg-white border border-gray-200 focus:border-[#083d07] rounded-md px-2 text-[11px] outline-none"
                         />
                         <button
                           type="button"
@@ -1204,33 +1201,33 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                 </div>
 
                 {/* STEP 2 FOOTER & FINAL CTA */}
-                <div className="pt-2 border-t border-gray-100 space-y-2">
-                  <div className="flex justify-between items-center text-xs">
+                <div className="pt-1.5 border-t border-gray-100 space-y-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
                     <span className="text-gray-500">
                       {orderType === "Delivery" ? (
                         zona.trim() ? (
-                          <>Taxa entrega: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${brl(deliveryFee)}`}</strong></>
+                          <>Taxa: <strong className="text-emerald-600">{deliveryFee === 0 ? 'GRÁTIS' : `R$ ${brl(deliveryFee)}`}</strong></>
                         ) : (
-                          <>Taxa entrega: <strong className="text-amber-700 font-semibold">Escolha o bairro</strong></>
+                          <>Taxa: <strong className="text-amber-700 font-semibold">Escolha o bairro</strong></>
                         )
                       ) : (
                         'Retirada no balcão'
                       )}
                     </span>
                     <div className="flex items-center gap-1">
-                      <span className="text-gray-500 font-medium">Total:</span>
-                      <span className="font-black text-[#083d07] text-base">
+                      <span className="text-gray-500 font-medium text-[11px]">Total:</span>
+                      <span className="font-black text-[#083d07] text-sm">
                         R$ {brl(total)}
                         {orderType === "Delivery" && !zona.trim() && (
-                          <span className="text-[10px] font-normal text-[#745240] ml-1">(+ entrega)</span>
+                          <span className="text-[9.5px] font-normal text-[#745240] ml-0.5">(+ taxa)</span>
                         )}
                       </span>
                     </div>
                   </div>
 
                   {formError && (
-                    <div className="bg-red-50 border border-red-200 text-red-700 p-2 rounded-lg text-[11px] font-semibold whitespace-pre-line flex items-center gap-1.5">
-                      <AlertCircle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                    <div className="bg-red-50 border border-red-200 text-red-700 p-1.5 rounded-lg text-[10px] font-semibold whitespace-pre-line flex items-center gap-1.5">
+                      <AlertCircle className="w-3 h-3 text-red-600 shrink-0" />
                       <div>{formError}</div>
                     </div>
                   )}
@@ -1239,7 +1236,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                     type="button"
                     onClick={handleCheckout}
                     disabled={isSubmitting || (!simulationMode && !businessStatus.isOpen)}
-                    className={`w-full font-black py-2.5 px-3 rounded-xl transition-all flex justify-center items-center gap-1.5 text-xs shadow-xs cursor-pointer ${
+                    className={`w-full font-black py-2 px-3 rounded-xl transition-all flex justify-center items-center gap-1.5 text-xs shadow-xs cursor-pointer ${
                       isSubmitting || (!simulationMode && !businessStatus.isOpen)
                         ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                         : 'bg-[#25D366] hover:bg-[#1EBE5D] active:scale-[0.99] text-white shadow-emerald-700/20'
@@ -1274,7 +1271,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
   return (
     <>
       {/* Desktop Inline Cart */}
-      <div className="hidden lg:block sticky top-28 w-full z-10">
+      <div className="hidden lg:block sticky top-24 xl:top-28 w-full z-10 max-h-[calc(100vh-6.5rem)] flex flex-col">
         {CartContent}
       </div>
 
@@ -1285,7 +1282,7 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
             className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
             onClick={onClose}
           />
-          <div className="relative bg-white w-full max-h-[85vh] rounded-t-3xl overflow-y-auto shadow-2xl flex flex-col p-2">
+          <div className="relative bg-white w-full max-h-[90vh] rounded-t-3xl overflow-hidden shadow-2xl flex flex-col p-1.5">
             {CartContent}
           </div>
         </div>
