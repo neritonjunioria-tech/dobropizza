@@ -42,32 +42,38 @@ const STORAGE_KEY = 'admin_system_subscription_state_v3';
 export function useSubscription() {
   const [loading, setLoading] = useState(true);
 
-  // Considera Setembro pago e define próximo vencimento para 16 de Outubro de 2026
+  // 30 dias gratuitos a contar de hoje (22/10/2026) -> próximo vencimento 22/11/2026
   const calculateCurrentDueDate = (): string => {
-    return '2026-10-16';
+    return '2026-11-22';
   };
 
   const defaultSubscription: SubscriptionData = {
-    planName: 'Licença Gestor Delivery Pro',
-    monthlyAmount: 490.00,
+    planName: 'Período Gratuito Dobro Pizza (30 dias)',
+    monthlyAmount: 0.00,
     currency: 'BRL',
-    dueDay: 16,
-    gracePeriodDays: 5,
+    dueDay: 22,
+    gracePeriodDays: 30,
     status: 'active',
-    currentPeriodDue: '2026-10-16',
-    lastPaymentDate: '2026-09-15T14:30:00.000Z',
+    currentPeriodDue: '2026-11-22',
+    lastPaymentDate: '2026-10-22T00:00:00.000Z',
     pixCode: '00020126360014BR.GOV.BCB.PIX0114+55419965600805204000053039865406490.005802BR5914SISTEMA GESTOR6008CURITIBA62150511MENSALIDADE6304F9A7',
     pixQrUrl: 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=00020126360014BR.GOV.BCB.PIX0114%2B55419965600805204000053039865406490.005802BR5914SISTEMA%20GESTOR6008CURITIBA62150511MENSALIDADE6304F9A7',
     stripePaymentLink: 'https://buy.stripe.com/test_gestor_delivery_490',
-    isManuallyOverridden: false,
-    notes: 'Mês de Setembro/2026 pago. Próximo vencimento: 16 de Outubro de 2026.'
+    isManuallyOverridden: true,
+    notes: 'Sistema 100% liberado sem mensalidade (30 dias grátis a contar de 22/10/2026).'
   };
 
   const [subscription, setSubscription] = useState<SubscriptionData>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return { ...defaultSubscription, ...JSON.parse(saved) };
+        const parsed = JSON.parse(saved);
+        // Garante que o status liberado de 30 dias prevaleça
+        if (parsed.status === 'blocked' || !parsed.isManuallyOverridden) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultSubscription));
+          return defaultSubscription;
+        }
+        return { ...defaultSubscription, ...parsed };
       }
     } catch (e) {
       console.error("Erro ao ler localStorage de assinatura", e);
@@ -116,7 +122,7 @@ export function useSubscription() {
 
   // Avaliação temporal e semântica de carência
   const evaluateStatus = useCallback((sub: SubscriptionData) => {
-    if (sub.isManuallyOverridden) {
+    if (sub.isManuallyOverridden || sub.monthlyAmount === 0) {
       return {
         status: 'active' as const,
         isBlocked: false,

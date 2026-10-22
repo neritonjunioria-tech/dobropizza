@@ -1,11 +1,36 @@
 import React, { StrictMode, ReactNode, ErrorInfo } from 'react';
 import { createRoot } from 'react-dom/client';
 
-// Apenas registra erros globais (ex.: extensões como MetaMask) sem derrubar a página
+// Ignora silenciosamente erros e rejections causados por extensões de terceiros (MetaMask, carteiras Web3, scripts injetados)
 window.addEventListener('error', (e) => {
+  const msg = String(e?.message || '');
+  const filename = String(e?.filename || '');
+  if (
+    msg.includes('MetaMask') ||
+    msg.includes('ethereum') ||
+    filename.includes('chrome-extension://') ||
+    filename.includes('moz-extension://')
+  ) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
   console.error('Global Error:', e.message, e.error);
 });
+
 window.addEventListener('unhandledrejection', (e) => {
+  const reasonStr = String(e?.reason?.message || e?.reason?.stack || e?.reason || '');
+  if (
+    reasonStr.includes('MetaMask') ||
+    reasonStr.includes('ethereum') ||
+    reasonStr.includes('Failed to connect') ||
+    reasonStr.includes('chrome-extension://') ||
+    reasonStr.includes('moz-extension://')
+  ) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
   console.error('Unhandled Rejection:', e.reason);
 });
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
