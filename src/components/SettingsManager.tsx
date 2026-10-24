@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { cashbackService, CashbackSettings } from '../services/cashbackService';
 import {
   Save, Printer, Bell, BellOff, Volume2,
   Clock, Truck, Building2, Key, FileSpreadsheet,
@@ -20,7 +21,7 @@ interface SettingsManagerProps {
   onTestSound?: () => void;
 }
 
-type SettingsTab = 'empresa' | 'pagamentos' | 'horarios' | 'impressao' | 'entregas' | 'notificacoes' | 'seguranca';
+type SettingsTab = 'empresa' | 'pagamentos' | 'cashback' | 'horarios' | 'impressao' | 'entregas' | 'notificacoes' | 'seguranca';
 
 export interface PaymentMethodsConfig {
   pix: boolean;
@@ -290,6 +291,32 @@ export default function SettingsManager({
     showSavedFeedback("Configurações de entrega salvas com sucesso!");
   };
 
+  // ────────────────── ESTADO: CASHBACK & PROGRAMA DE FIDELIDADE ──────────────────
+  const [cashbackCfg, setCashbackCfg] = useState<CashbackSettings>({
+    enabled: true,
+    percent: 5.0,
+    minOrderValue: 30.0,
+    maxDiscountPercent: 50.0,
+    expiryDays: 60
+  });
+  const [savingCashback, setSavingCashback] = useState(false);
+
+  useEffect(() => {
+    async function loadCashback() {
+      const s = await cashbackService.getSettings();
+      setCashbackCfg(s);
+    }
+    loadCashback();
+  }, []);
+
+  const handleSaveCashback = async () => {
+    setSavingCashback(true);
+    const ok = await cashbackService.saveSettings(cashbackCfg);
+    setSavingCashback(false);
+    if (ok) showSavedFeedback("Regras do Programa de Cashback salvas!");
+    else showFeedback("Erro ao salvar regras de cashback", "error");
+  };
+
   const isOnlyPixActive = paymentConfig.pix && !paymentConfig.dinheiro && !paymentConfig.credito && !paymentConfig.debito;
   const activeMethodsCount = Object.values(paymentConfig).filter(Boolean).length;
 
@@ -302,6 +329,13 @@ export default function SettingsManager({
       icon: CreditCard,
       desc: isOnlyPixActive ? 'Somente Pix Ativo Hoje' : `${activeMethodsCount} formas ativas`,
       badge: isOnlyPixActive ? 'Apenas Pix' : null
+    },
+    { 
+      id: 'cashback' as SettingsTab, 
+      label: 'Cashback & Fidelidade', 
+      icon: Sparkles, 
+      desc: cashbackCfg.enabled ? `${cashbackCfg.percent}% de retorno por pedido` : 'Programa desativado',
+      badge: cashbackCfg.enabled ? `${cashbackCfg.percent}%` : 'Off'
     },
     { id: 'horarios' as SettingsTab, label: 'Horários de Funcionamento', icon: Clock, desc: 'Turnos e dias operacionais' },
     { id: 'impressao' as SettingsTab, label: 'Impressão Térmica', icon: Printer, desc: 'Auto-impressão e atrasos' },
@@ -902,6 +936,131 @@ export default function SettingsManager({
                       <span>Testar Toque</span>
                     </button>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* ═══════════ CASHBACK & FIDELIDADE ═══════════ */}
+            {activeTab === 'cashback' && (
+              <div className="p-6 space-y-6">
+                <div className="flex items-center gap-3 pb-4 border-b border-stone-100">
+                  <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center border border-amber-200">
+                    <Sparkles size={16} />
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-stone-900">Programa de Cashback & Fidelidade</h2>
+                    <p className="text-xs text-stone-500">Configure o bônus em dinheiro que os clientes ganham a cada pedido concluído.</p>
+                  </div>
+                </div>
+
+                {/* Status Ativar / Desativar */}
+                <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-stone-900 block mb-0.5">Ativar Programa de Cashback</span>
+                    <span className="text-[11px] text-stone-500">
+                      {cashbackCfg.enabled ? 'Clientes acumulam e podem resgatar saldo no cardápio.' : 'O cashback está desativado no momento.'}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCashbackCfg(prev => ({ ...prev, enabled: !prev.enabled }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
+                      cashbackCfg.enabled ? 'bg-[#083d07]' : 'bg-stone-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        cashbackCfg.enabled ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Formulário de Parâmetros */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* % de Cashback */}
+                  <div className="p-3.5 bg-white rounded-xl border border-stone-200 space-y-1">
+                    <label className="text-xs font-bold text-stone-800 block">Percentual de Retorno (%)</label>
+                    <p className="text-[10px] text-stone-500">Porcentagem do valor do pedido que volta em crédito.</p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="number"
+                        min="1"
+                        max="30"
+                        step="0.5"
+                        value={cashbackCfg.percent}
+                        onChange={(e) => setCashbackCfg(prev => ({ ...prev, percent: Number(e.target.value) || 0 }))}
+                        className="w-24 h-8 px-2 text-xs font-bold text-stone-900 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#083d07]"
+                      />
+                      <span className="text-xs font-bold text-stone-600">% por pedido</span>
+                    </div>
+                  </div>
+
+                  {/* Pedido Mínimo para Usar */}
+                  <div className="p-3.5 bg-white rounded-xl border border-stone-200 space-y-1">
+                    <label className="text-xs font-bold text-stone-800 block">Pedido Mínimo para Resgate (R$)</label>
+                    <p className="text-[10px] text-stone-500">Valor mínimo do carrinho para liberar o uso do saldo.</p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-xs font-bold text-stone-500">R$</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="5"
+                        value={cashbackCfg.minOrderValue}
+                        onChange={(e) => setCashbackCfg(prev => ({ ...prev, minOrderValue: Number(e.target.value) || 0 }))}
+                        className="w-24 h-8 px-2 text-xs font-bold text-stone-900 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#083d07]"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Teto Máximo de Abatimento (%) */}
+                  <div className="p-3.5 bg-white rounded-xl border border-stone-200 space-y-1">
+                    <label className="text-xs font-bold text-stone-800 block">Teto de Desconto no Pedido (%)</label>
+                    <p className="text-[10px] text-stone-500">Máximo que o cliente pode abater usando saldo (ex: até 50%).</p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="number"
+                        min="10"
+                        max="100"
+                        step="5"
+                        value={cashbackCfg.maxDiscountPercent}
+                        onChange={(e) => setCashbackCfg(prev => ({ ...prev, maxDiscountPercent: Number(e.target.value) || 100 }))}
+                        className="w-24 h-8 px-2 text-xs font-bold text-stone-900 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#083d07]"
+                      />
+                      <span className="text-xs font-bold text-stone-600">% do total</span>
+                    </div>
+                  </div>
+
+                  {/* Validade dos Créditos */}
+                  <div className="p-3.5 bg-white rounded-xl border border-stone-200 space-y-1">
+                    <label className="text-xs font-bold text-stone-800 block">Validade dos Créditos (Dias)</label>
+                    <p className="text-[10px] text-stone-500">Tempo de validade para incentivar recompra rápida.</p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <input
+                        type="number"
+                        min="15"
+                        max="365"
+                        step="5"
+                        value={cashbackCfg.expiryDays}
+                        onChange={(e) => setCashbackCfg(prev => ({ ...prev, expiryDays: Number(e.target.value) || 60 }))}
+                        className="w-24 h-8 px-2 text-xs font-bold text-stone-900 bg-stone-50 border border-stone-300 rounded-lg focus:outline-none focus:border-[#083d07]"
+                      />
+                      <span className="text-xs font-bold text-stone-600">dias corridos</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botão Salvar Regras */}
+                <div className="pt-2 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={handleSaveCashback}
+                    disabled={savingCashback}
+                    className="px-5 py-2.5 bg-[#083d07] hover:bg-[#0b520a] text-white rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs border border-[#d5af7a]/50"
+                  >
+                    <Save size={14} />
+                    <span>{savingCashback ? 'Salvando...' : 'Salvar Regras de Cashback'}</span>
+                  </button>
                 </div>
               </div>
             )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import confetti from "canvas-confetti";
 import { supabase } from '../lib/supabase';
+import { cashbackService, CashbackSettings } from '../services/cashbackService';
 import { CartItem } from "../types";
 import { hapticLight, hapticMedium, hapticSuccess } from "../utils/haptics";
 import {
@@ -121,6 +122,17 @@ export default function Cart({
     credito: false,
     debito: false
   });
+
+  // Cashback state
+  const [cashbackSettings, setCashbackSettings] = useState<CashbackSettings>({
+    enabled: true,
+    percent: 5.0,
+    minOrderValue: 30.0,
+    maxDiscountPercent: 50.0,
+    expiryDays: 60
+  });
+  const [customerCashback, setCustomerCashback] = useState(0);
+  const [useCashback, setUseCashback] = useState(false);
 
 // Garante que apenas formas de pagamento válidas brasileiras sejam aceitas (elimina MB Way e formatos legados)
 const sanitizePaymentMethod = (pm: string | null | undefined): string => {
@@ -260,6 +272,24 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
     loadDeliverySettings();
   }, []);
 
+  // Carrega configurações de cashback
+  useEffect(() => {
+    cashbackService.getSettings().then(s => setCashbackSettings(s));
+  }, []);
+
+  // Busca saldo de cashback do cliente quando o telefone é digitado
+  useEffect(() => {
+    const clean = telefone.replace(/\D/g, '');
+    if (clean.length >= 9) {
+      cashbackService.getCustomerBalance(clean).then(res => {
+        setCustomerCashback(res.balance);
+      });
+    } else {
+      setCustomerCashback(0);
+      setUseCashback(false);
+    }
+  }, [telefone]);
+
   const subtotal = items.reduce(
     (acc, item) => acc + item.priceCalculated * item.quantity,
     0,
@@ -271,7 +301,13 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
     deliveryFee = zonesFees[zona] || 0;
   }
 
-  const total = subtotal + deliveryFee;
+  const availableMaxDiscount = cashbackSettings.enabled
+    ? cashbackService.calculateMaxDiscount(subtotal, customerCashback, cashbackSettings)
+    : 0;
+
+  const appliedCashbackDiscount = useCashback ? availableMaxDiscount : 0;
+  const total = Math.max(0, subtotal + deliveryFee - appliedCashbackDiscount);
+  const earnedCashback = cashbackService.calculateEarnedCashback(total, cashbackSettings);
   const businessStatus = useBusinessHours();
 
   const handleCheckout = async () => {
@@ -364,6 +400,16 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
           newTrackingCode = data[0].tracking_code;
           setSavedTrackingCode(data[0].tracking_code);
           orderSavedSuccessfully = true;
+
+          // Processa movimentação de cashback do pedido
+          if (appliedCashbackDiscount > 0 || earnedCashback > 0) {
+            cashbackService.applyOrderCashback(
+              newOrderId,
+              telefone,
+              appliedCashbackDiscount,
+              earnedCashback
+            );
+          }
         }
       } catch (err) {
         console.error("Error saving order:", err);
@@ -461,7 +507,13 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
         text += `Taxa Entrega: R$ ${brl(deliveryFee)}\n`;
       }
     }
-    text += `*TOTAL: R$ ${brl(total)}*\n`;
+    if (appliedCashbackDiscount > 0) {
+      text += `🎁 Desconto Cashback: - R$ ${brl(appliedCashbackDiscount)}\n`;
+    }
+    text += `*TOTAL A PAGAR: R$ ${brl(total)}*\n`;
+    if (earnedCashback > 0) {
+      text += `✨ Cashback Acumulado: + R$ ${brl(earnedCashback)} (liberado no próximo pedido!)\n`;
+    }
     text += `-----------------------------------\n`;
     text += `[PAGAMENTO]\n`;
     text += `Forma: ${finalPayment}\n`;
@@ -1093,6 +1145,43 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                     </div>
                   )}
 
+                  {/* BANNER / TOGGLE DE CASHBACK NO CHECKOUT */}
+                  {cashbackSettings.enabled && customerCashback > 0 && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-2.5 flex items-center justify-between text-xs transition-all">
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-900 flex items-center justify-center shrink-0">
+                          <Sparkles size={14} className="text-amber-600 fill-amber-500" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-bold text-amber-950 text-[11px] truncate">
+                            Você tem R$ {customerCashback.toFixed(2)} de Cashback!
+                          </div>
+                          <div className="text-[10px] text-amber-800 truncate">
+                            {subtotal < cashbackSettings.minOrderValue ? (
+                              `Pedido mínimo de R$ ${cashbackSettings.minOrderValue.toFixed(2)} para usar`
+                            ) : (
+                              `Abater até R$ ${availableMaxDiscount.toFixed(2)} deste pedido`
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {subtotal >= cashbackSettings.minOrderValue && (
+                        <button
+                          type="button"
+                          onClick={() => setUseCashback(!useCashback)}
+                          className={`px-2.5 py-1 rounded-lg font-bold text-[10.5px] transition-all cursor-pointer border whitespace-nowrap shrink-0 ${
+                            useCashback
+                              ? 'bg-[#083d07] text-white border-[#083d07] shadow-2xs'
+                              : 'bg-white text-stone-700 border-amber-300 hover:bg-amber-50'
+                          }`}
+                        >
+                          {useCashback ? '✓ Aplicado' : 'Usar Saldo'}
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {/* FORMAS DE PAGAMENTO ACEITAS */}
                   <div>
                     <label className="block text-[9px] font-bold text-gray-600 mb-1 uppercase tracking-wider">
@@ -1202,6 +1291,16 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
 
                 {/* STEP 2 FOOTER & FINAL CTA */}
                 <div className="pt-1.5 border-t border-gray-100 space-y-1.5">
+                  {appliedCashbackDiscount > 0 && (
+                    <div className="flex justify-between items-center text-[10.5px] text-emerald-800 font-bold bg-emerald-50/80 px-2 py-1 rounded-lg border border-emerald-200">
+                      <span className="flex items-center gap-1">
+                        <Sparkles size={11} className="text-amber-500 fill-amber-500" />
+                        Desconto Cashback:
+                      </span>
+                      <span>- R$ {brl(appliedCashbackDiscount)}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center text-[11px]">
                     <span className="text-gray-500">
                       {orderType === "Delivery" ? (
@@ -1224,6 +1323,12 @@ const sanitizePaymentMethod = (pm: string | null | undefined): string => {
                       </span>
                     </div>
                   </div>
+
+                  {earnedCashback > 0 && (
+                    <div className="text-[9.5px] text-amber-900 bg-amber-50 border border-amber-200/90 rounded-md px-2 py-0.5 text-center font-semibold">
+                      ✨ Você vai acumular <strong>+R$ {brl(earnedCashback)}</strong> de cashback neste pedido!
+                    </div>
+                  )}
 
                   {formError && (
                     <div className="bg-red-50 border border-red-200 text-red-700 p-1.5 rounded-lg text-[10px] font-semibold whitespace-pre-line flex items-center gap-1.5">

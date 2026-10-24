@@ -6,10 +6,12 @@ import {
   TrendingUp, MessageCircle, Download, Sparkles, Filter, 
   ExternalLink, RefreshCw, AlertTriangle, Heart, Flame, 
   FileText, CheckCircle2, Copy, Send, Check,
-  ArrowUpRight, Star, AlertCircle, Pizza, Bike, Store, CreditCard
+  ArrowUpRight, Star, AlertCircle, Pizza, Bike, Store, CreditCard,
+  Gift, Coins
 } from 'lucide-react';
 import PeriodFilterCompact, { PeriodFilterOption } from './PeriodFilterCompact';
 import { stripSizeSuffix } from '../utils/printHelpers';
+import { cashbackService } from '../services/cashbackService';
 
 export type CustomerSegment = 'todos' | 'vip' | 'recorrente' | 'novo' | 'em_risco' | 'inativo';
 
@@ -33,6 +35,7 @@ export interface CustomerProfile {
   favorite_items: { name: string; count: number }[];
   favorite_extras: { name: string; count: number }[];
   notes: string;
+  cashback_balance: number;
   raw_orders: any[];
 }
 
@@ -139,7 +142,7 @@ export default function CustomersManager() {
       const dbCustomers = dbCustomersRes.data || [];
       const settingsNotes = settingsNotesRes.data || [];
 
-      const notesMap: Record<string, { address?: string; notes?: string; name?: string }> = {};
+      const notesMap: Record<string, { address?: string; notes?: string; name?: string; cashback_balance?: number }> = {};
       if (settingsNotes) {
         settingsNotes.forEach((s: any) => {
           const p = s.key.replace('customer_notes_', '');
@@ -155,6 +158,7 @@ export default function CustomersManager() {
               name: c.name || notesMap[p]?.name,
               address: c.address || notesMap[p]?.address,
               notes: c.notes || notesMap[p]?.notes,
+              cashback_balance: Number(c.cashback_balance || 0),
             };
           }
         });
@@ -302,6 +306,7 @@ export default function CustomersManager() {
         const finalName = savedMeta?.name || entry.name;
         const finalAddress = savedMeta?.address || primaryAddress;
         const finalNotes = savedMeta?.notes || '';
+        const finalCashback = Number(savedMeta?.cashback_balance || 0);
 
         return {
           id: entry.phone,
@@ -323,6 +328,7 @@ export default function CustomersManager() {
           favorite_items: sortedItems,
           favorite_extras: sortedExtras,
           notes: finalNotes,
+          cashback_balance: finalCashback,
           raw_orders: entry.orders
         };
       });
@@ -788,6 +794,11 @@ export default function CustomersManager() {
                           {c.name || 'Cliente'}
                         </span>
                         {getSegmentBadge(c.segment)}
+                        {c.cashback_balance > 0 && (
+                          <span className="inline-flex items-center gap-1 text-[10.5px] font-sans font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-500/30 whitespace-nowrap">
+                            <Gift size={10} className="text-amber-600" /> R$ {c.cashback_balance.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1.5 text-[11px] text-stone-500 font-mono tabular-nums mt-0.5 whitespace-nowrap">
                         <span>{c.formattedPhone}</span>
@@ -921,6 +932,11 @@ export default function CustomersManager() {
                               {c.name || 'Cliente'}
                             </span>
                             {getSegmentBadge(c.segment)}
+                            {c.cashback_balance > 0 && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-sans font-bold px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-900 border border-amber-500/30 whitespace-nowrap" title="Saldo de Cashback disponível">
+                                <Gift size={9} className="text-amber-600" /> R$ {c.cashback_balance.toFixed(2)}
+                              </span>
+                            )}
                           </div>
                           {c.first_order_at && (
                             <span className="text-[10px] text-stone-400 font-sans mt-0.5 whitespace-nowrap">
@@ -1110,6 +1126,21 @@ export default function CustomersManager() {
         <CustomerDetailModal
           customer={selectedCustomer}
           onClose={() => setSelectedCustomer(null)}
+          onAdjustCashback={async (newBalance, reason) => {
+            const ok = await cashbackService.adjustBalance(selectedCustomer.phone, newBalance, reason);
+            if (ok) {
+              setCustomers(prev => prev.map(c => c.phone === selectedCustomer.phone ? {
+                ...c,
+                cashback_balance: newBalance
+              } : c));
+
+              setSelectedCustomer(prev => prev ? {
+                ...prev,
+                cashback_balance: newBalance
+              } : null);
+            }
+            return ok;
+          }}
           onSaveNotes={async (updatedMeta) => {
             // Salva no banco com persistência dupla (customers e settings)
             try {
@@ -1164,13 +1195,20 @@ interface CustomerDetailModalProps {
   customer: CustomerProfile;
   onClose: () => void;
   onSaveNotes: (updatedData: { name: string; address: string; notes: string }) => Promise<void>;
+  onAdjustCashback: (newBalance: number, reason?: string) => Promise<boolean>;
 }
 
-const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, onClose, onSaveNotes }: CustomerDetailModalProps) {
+const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, onClose, onSaveNotes, onAdjustCashback }: CustomerDetailModalProps) {
   const [activeTab, setActiveTab] = useState<'historico' | 'acoes_whatsapp' | 'cadastro'>('historico');
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [copiedTemplateIdx, setCopiedTemplateIdx] = useState<number | null>(null);
+
+  // Estado para ajuste de Cashback
+  const [isAdjustingCashback, setIsAdjustingCashback] = useState(false);
+  const [newCashbackValue, setNewCashbackValue] = useState(customer.cashback_balance.toString());
+  const [adjustReason, setAdjustReason] = useState('');
+  const [isSavingCashback, setIsSavingCashback] = useState(false);
 
   const [formData, setFormData] = useState({
     name: customer.name || '',
@@ -1184,7 +1222,31 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
       address: customer.primary_address || '',
       notes: customer.notes || ''
     });
+    setNewCashbackValue(customer.cashback_balance.toString());
   }, [customer]);
+
+  const handleConfirmAdjustCashback = async () => {
+    const val = parseFloat(newCashbackValue);
+    if (isNaN(val) || val < 0) {
+      alert('Digite um valor válido para o saldo.');
+      return;
+    }
+    setIsSavingCashback(true);
+    try {
+      const ok = await onAdjustCashback(val, adjustReason || 'Ajuste manual administrativo');
+      if (ok) {
+        setIsAdjustingCashback(false);
+        setAdjustReason('');
+      } else {
+        alert('Erro ao salvar o novo saldo.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao ajustar saldo.');
+    } finally {
+      setIsSavingCashback(false);
+    }
+  };
 
   const copyTemplateText = (text: string, idx: number) => {
     navigator.clipboard.writeText(text);
@@ -1209,6 +1271,11 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
   const favoritePizza = customer.favorite_items[0]?.name ? stripSizeSuffix(customer.favorite_items[0].name) : 'sua pizza favorita';
 
   const messageTemplates = [
+    {
+      title: '🎁 Saldo de Cashback Disponível',
+      desc: 'Lembrar o cliente de que ele tem créditos para resgatar na Dobro.',
+      text: `Olá ${firstName}! Tudo bem? 🍕\nPassando para avisar que você tem *R$ ${customer.cashback_balance.toFixed(2)} de Cashback* acumulado aqui na DOBRO Pizzas! 🎉\nVocê pode resgatar esse desconto hoje mesmo no seu próximo pedido. Gostaria de dar uma olhada no cardápio e aproveitar?`
+    },
     {
       title: '🎁 Reativação / Sentimos sua Falta',
       desc: 'Para clientes em risco ou inativos (+30 dias sem pedir).',
@@ -1369,6 +1436,70 @@ const CustomerDetailModal = React.memo(function CustomerDetailModal({ customer, 
                   </span>
                 </div>
               </div>
+            </div>
+
+            {/* Bloco 1.5: Cartão de Fidelidade & Cashback */}
+            <div className="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-amber-500/10 p-3 rounded-xl border border-amber-500/30 shadow-2xs space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500 text-stone-950 flex items-center justify-center font-bold shrink-0 shadow-2xs">
+                    <Gift size={16} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider block font-sans">
+                      Saldo de Cashback
+                    </span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-amber-950">
+                      R$ {customer.cashback_balance.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsAdjustingCashback(!isAdjustingCashback)}
+                  className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] font-sans rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-2xs"
+                >
+                  <Coins size={12} />
+                  <span>{isAdjustingCashback ? 'Fechar' : 'Ajustar'}</span>
+                </button>
+              </div>
+
+              {isAdjustingCashback && (
+                <div className="p-2.5 bg-white rounded-lg border border-amber-300 space-y-2 pt-2 animate-in fade-in duration-100">
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <div>
+                      <label className="block text-[9.5px] font-bold text-stone-600 uppercase mb-0.5">Novo Saldo (R$)</label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={newCashbackValue}
+                        onChange={(e) => setNewCashbackValue(e.target.value)}
+                        className="w-full h-7 px-2 bg-stone-50 border border-stone-200 rounded text-xs font-mono font-bold text-stone-900 focus:outline-none focus:border-amber-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9.5px] font-bold text-stone-600 uppercase mb-0.5">Motivo</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: Cortesia, bônus"
+                        value={adjustReason}
+                        onChange={(e) => setAdjustReason(e.target.value)}
+                        className="w-full h-7 px-2 bg-stone-50 border border-stone-200 rounded text-xs font-sans text-stone-900 focus:outline-none focus:border-amber-600"
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={isSavingCashback}
+                    onClick={handleConfirmAdjustCashback}
+                    className="w-full h-7 bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] font-sans rounded transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs disabled:opacity-50"
+                  >
+                    {isSavingCashback ? <RefreshCw size={11} className="animate-spin" /> : <Check size={11} />}
+                    <span>Confirmar Ajuste</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Bloco 2: Padrões e Preferências */}

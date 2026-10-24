@@ -86,6 +86,7 @@ import { Motoboy, DeliveryProvider, isDeliveryOrderType, getDeliveryResponsibleL
 import { SubscriptionLockoutOverlay } from '../components/SubscriptionLockoutOverlay';
 import ExtrasManager from '../components/ExtrasManager';
 import { useSubscription } from '../hooks/useSubscription';
+import RecipeManager from '../components/RecipeManager';
 
 // Aba de Cobrança oculta neste projeto por enquanto. Mudar para true reativa a aba e o bloqueio por atraso.
 const BILLING_ENABLED = false;
@@ -375,6 +376,7 @@ export default function AdminDashboard() {
     'cardapio-digital': { title: 'Cardápio Digital', subtitle: 'Espelho do que os clientes veem na loja.' },
     'gestao-cardapio': { title: 'Produtos', subtitle: 'Gerencie o cardápio, preços e fotos.' },
     'categorias': { title: 'Categorias', subtitle: 'Organize as categorias do cardápio.' },
+    'fichas-tecnicas': { title: 'Ficha Técnica & Gestão de CMV', subtitle: 'Custo de insumos, embalagem e monitoramento da margem de lucro por pizza.' },
     'relatorios': { title: 'Relatórios', subtitle: 'Vendas, ticket médio e produtos mais vendidos.' },
     'clientes': { title: 'Clientes', subtitle: 'Histórico e cadastro de clientes.' },
     'cobranca': { title: 'Cobrança', subtitle: '' },
@@ -1837,6 +1839,12 @@ export default function AdminDashboard() {
                       Categorias
                     </button>
                     <button 
+                      onClick={() => { setActiveTab("fichas-tecnicas"); setIsMobileMenuOpen(false); }} 
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'fichas-tecnicas' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
+                    >
+                      Ficha Técnica & CMV
+                    </button>
+                    <button 
                       onClick={() => { setActiveTab("banner-promocional"); setIsMobileMenuOpen(false); }} 
                       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg font-semibold transition-colors ${activeTab === 'banner-promocional' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
                     >
@@ -2072,6 +2080,15 @@ export default function AdminDashboard() {
                   Categorias
                 </button>
               )}
+              {hasPermission('gerenciar_produtos') && (
+                <button 
+                  onClick={() => setActiveTab("fichas-tecnicas")} 
+                  className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'fichas-tecnicas' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
+                >
+                  <Layers size={12} className={activeTab === 'fichas-tecnicas' ? 'text-stone-950' : 'text-[#745240]'} />
+                  Ficha Técnica & CMV
+                </button>
+              )}
               <button 
                 onClick={() => setActiveTab("banner-promocional")} 
                 className={`w-full flex items-center gap-1.5 px-2 py-[3.5px] rounded font-medium transition-colors cursor-pointer ${activeTab === 'banner-promocional' ? 'bg-[#fdfbf7] text-[#083d07] font-bold shadow-xs border border-[#d5af7a]' : 'text-[#5c4433] hover:text-[#083d07] hover:bg-[#d9cfc3]'}`}
@@ -2156,7 +2173,7 @@ export default function AdminDashboard() {
 
 
           {/* Header Section (Only for Non-Cockpit Views) */}
-          {!['despesas', 'motoboys', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos', 'agente-ia'].includes(activeTab) && (
+          {!['despesas', 'motoboys', 'relatorios', 'caixa', 'funil', 'visao-geral', 'pedidos', 'agente-ia', 'fichas-tecnicas'].includes(activeTab) && (
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 pb-2.5 border-b border-stone-200/80 mb-4">
               <div>
                 <h1 className="text-xl font-bold tracking-tight text-stone-900">
@@ -2206,6 +2223,12 @@ export default function AdminDashboard() {
         {activeTab === "categorias" && hasPermission('gerenciar_categorias') && (
           <div className="mt-1">
             <CategoryManager />
+          </div>
+        )}
+
+        {activeTab === "fichas-tecnicas" && (
+          <div className="mt-1">
+            <RecipeManager menuItems={menuItems} />
           </div>
         )}
 
